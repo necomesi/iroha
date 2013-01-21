@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+/* --------------------------------------------
+ *       styles for iroha.textExpander.js
+ * -------------------------------------------- */
+
+
+/* ----- 伸張対象テキストのコンテナ要素（基底要素ノード） ----- */
+
+.iroha-expandable-text {
+	/* display: none !important; */
+	*overflow: hidden;  /* IE7 対策 */
+
+	/* 右端で折り返される整形済テキストにする */
+	white-space: pre-wrap;       /* CSS3      */
+	white-space: -moz-pre-wrap;  /* old Gecko */
+	*white-space: pre;           /* IE 5.5+   */
+	*word-wrap: break-word;      /* IE 5.5+   */
+}
+
+.iroha-expandable-text.iroha-textexpander-enabled,
+.iroha-expandable-text.iroha-textexpander-discarded {
+	display: block !important;
+}
+
+
+
+/* ----- 「続きをみる」ボタン（JS生成） ----- */
+
+.iroha-expandable-text + .iroha-textexpander-button {
+	text-align: right;
+}

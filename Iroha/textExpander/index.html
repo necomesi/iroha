@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>Iroha.TextExpander</title>
+<link rel="stylesheet" type="text/css" href="../../_css/base.css">
+<link rel="stylesheet" type="text/css" href="iroha.textExpander.css">
+<script type="text/javascript" src="../_libs/jquery.js"></script>
+<script type="text/javascript" src="../_libs/jquery.easing.js"></script>
+<script type="text/javascript" src="../_libs/ierange.js"></script>
+<script type="text/javascript" src="../iroha/iroha.js"></script>
+<script type="text/javascript" src="iroha.textExpander.js"></script>
+<script type="text/javascript" src="_docfiles/sample.js"></script>
+</head>
+<body>
+
+<h1>Iroha.TextExpander</h1>
+
+<ul id="to-index">
+	<li><a href="../index.html">Necomesi JavaScript Library (Iroha)</a></li>
+</ul>
+
+<h2 id="overview">概要</h2>
+
+<p>文字数がたくさんある部分を、初期状態で指定の文字数までに絞っておいて、ボタン押下で残りを展開するもの。</p>
+
+<h2 id="coverage">動作確認ブラウザ</h2>
+
+<p>(fixme)</p>
+
+<h2 id="deployment">実装ファイル配置</h2>
+
+<p>(fixme)</p>
+
+<h3>HTML への組み込み</h3>
+
+<p>(fixme)</p>
+
+<h2 id="example">動作例</h2>
+
+<p>※展開されるテキストをもつ要素（Iroha.TextExpander インスタンスの基底要素にするもの）には、一切 HTML タグを含められません。</p>
+<p>※テキスト中の URL を Iroha.urlToAnchor(), jQuery().Iroha_urlToAnchor() でリンク化する場合、IE8 とそれより古い IE は DOM Range が使えずエラーが起きるため、 <a href="http://code.google.com/p/ierange/">W3C DOM Ranges for IE</a> の JS が追加で必要。</p>
+
+<p class="iroha-expandable-text">この部分が折り畳まれています。改行は改行文字そのままで反映されます。あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしいhttp://example.com/example/link/text/ 森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
+
+あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしいhttp://example.com/example/link/text/ 森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
+
+あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしいhttp://example.com/example/link/text/ 森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
+
+あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしいhttp://example.com/example/link/text/ 森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
+
+あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしいhttp://example.com/example/link/text/ 森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
+
+あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしいhttp(1000文字)</p>
+
+<h2 id="definitions">コンストラクタ・メソッド解説</h2>
+
+<p>(fixme)</p>
+
+<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2012-11-11</address>
+
+</body>
+</html>

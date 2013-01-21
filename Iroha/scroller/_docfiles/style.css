@@ -1,0 +1,24 @@
+@charset "Shift_JIS";
+
+address {
+	margin-bottom: 500px;
+}
+
+#field {
+	overflow: auto;
+	height: 150px;
+	padding: 0 0.5em;
+	border: 1px solid gray;
+}
+
+#field h3 {
+	margin: 1.5em 0 0;
+	padding: 0;
+	border: none;
+	font-size: 100%;
+}
+
+#field p {
+	margin: 0.5em 0 0;
+	font-size: 100%;
+}

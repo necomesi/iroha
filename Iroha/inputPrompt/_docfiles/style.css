@@ -1,0 +1,17 @@
+@charset "UTF-8";
+
+
+div.example {
+}
+
+div.example p {
+}
+
+input,
+textarea {
+	width: 50%;
+	border: 1px solid;
+	color: black;
+	background-color: white;
+	font-size: 100%;
+}

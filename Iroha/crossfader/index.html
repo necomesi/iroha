@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>Iroha.Crossfader</title>
+<link rel="stylesheet" type="text/css" href="../../_css/base.css">
+<link rel="styleSheet" type="text/css" href="iroha.crossfader.css">
+<link rel="stylesheet" type="text/css" href="_docfiles/sample.css">
+<script type="text/javascript" src="../_libs/jquery.js"></script>
+<script type="text/javascript" src="../iroha/iroha.js"></script>
+<script type="text/javascript" src="../fontSizeObserver/iroha.fontSizeObserver.js"></script>
+<script type="text/javascript" src="iroha.crossfader.js"></script>
+<script type="text/javascript" src="_docfiles/sample.js"></script>
+</head>
+<body>
+
+<h1>Iroha.Crossfader</h1>
+
+<ul id="to-index">
+	<li><a href="../index.html">Necomesi JavaScript Library (Iroha)</a></li>
+</ul>
+
+<h2 id="overview">概要</h2>
+
+<p>複数個ブロックの表示切り替えを、一定間隔でクロスフェードしながら行います。</p>
+
+<h2 id="coverage">動作確認ブラウザ</h2>
+
+<p>(fixme)</p>
+
+<h2 id="deployment">実装ファイル配置</h2>
+
+<p>(fixme)</p>
+
+<h3>HTML への組み込み</h3>
+
+<p>(fixme)</p>
+
+<h2 id="example">動作例</h2>
+
+<p><a href="iroha.crossfader.css">iroha.crossfader.css</a> には最低限必要なスタイルしか書かれていません。実際の案件で使えるレベルにするには、その案件でのビジュアルデザインに沿ってスタイルを作り込む必要があります。たとえば、以下の例の見た目を実現するために、追加スタイル <a href="_docfiles/sample.css">sample.css</a> が使われています。</p>
+
+<div class="iroha-crossfader">
+<div class="iroha-crossfader-group">
+
+<div class="iroha-crossfader-unit">
+<p><img src="_docfiles/pic_001.jpg" width="571" height="278" alt=""><br>■画像タイトル1■■■■</p>
+<!-- /iroha-crossfader-unit --></div>
+
+<div class="iroha-crossfader-unit">
+<p><img src="_docfiles/pic_002.jpg" width="571" height="278" alt=""><br>●●画像タイトル2●●●</p>
+<!-- /iroha-crossfader-unit --></div>
+
+<div class="iroha-crossfader-unit">
+<p><img src="_docfiles/pic_003.jpg" width="571" height="278" alt=""><br>▲▲▲画像タイトル3▲▲</p>
+<!-- /iroha-crossfader-unit --></div>
+
+<div class="iroha-crossfader-unit">
+<p><img src="_docfiles/pic_004.jpg" width="571" height="278" alt=""><br>★★★★画像タイトル4★</p>
+<!-- /iroha-crossfader-unit --></div>
+
+<!-- /iroha-crossfader-group --></div>
+
+<ul class="iroha-crossfader-btns">
+<li class="iroha-crossfader-prev-btn"><a href="#">PREV</a></li>
+<li class="iroha-crossfader-select-btn"><a href="#">1</a></li>
+<li class="iroha-crossfader-select-btn"><a href="#">2</a></li>
+<li class="iroha-crossfader-select-btn"><a href="#">3</a></li>
+<li class="iroha-crossfader-select-btn"><a href="#">4</a></li>
+<li class="iroha-crossfader-next-btn"><a href="#">NEXT</a></li>
+<!-- /iroha-crossfader-btns --></ul>
+
+<!-- /iroha-crossfader --></div>
+
+
+<h2 id="definitions">コンストラクタ・メソッド解説</h2>
+
+<p>(fixme)</p>
+
+<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2012-11-11</address>
+
+</body>
+</html>

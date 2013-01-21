@@ -1,0 +1,190 @@
+@charset "UTF-8";
+
+/* --------------------------------------------
+ *       styles for iroha.carousel.js
+ * -------------------------------------------- */
+
+
+/* =========== base block =========== */
+
+.iroha-carousel {
+}
+
+
+/* ----- script enabled ----- */
+
+.iroha-carousel-discarded,
+.iroha-carousel-enabled {
+}
+
+
+/* =========== canvas viewport =========== */
+
+.iroha-carousel-viewport {
+	/* width: XXXpx; */
+	/* height: XXXpx; */
+	margin: 0;
+	padding: 0;
+}
+
+
+/* ----- script enabled ----- */
+
+.iroha-carousel-discarded .iroha-carousel-viewport,
+.iroha-carousel-enabled   .iroha-carousel-viewport {
+	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+
+/* ----- for print ----- */
+
+@media print {
+	.iroha-carousel-discarded .iroha-carousel-viewport,
+	.iroha-carousel-enabled   .iroha-carousel-viewport {
+		overflow: visible !important;
+		overflow-x: visible !important;
+		overflow-y: visible !important;
+		height: auto !important;
+		min-height: 0 !important;
+	}
+}
+
+
+
+/* =========== content group block =========== */
+
+.iroha-carousel-group {
+	margin: 0;
+	padding: 0;
+	*zoom: 1;     /* clear float, ~WinIE7 */
+}
+
+.iroha-carousel-group:after {
+	clear: both;
+	display: block;
+	content: "";
+}
+
+
+/* ----- script enabled ----- */
+
+.iroha-carousel-discarded .iroha-carousel-group,
+.iroha-carousel-enabled   .iroha-carousel-group {
+	width: 10000000px !important;
+}
+
+
+/* ----- for print ----- */
+
+@media print {
+	.iroha-carousel-discarded .iroha-carousel-group,
+	.iroha-carousel-enabled   .iroha-carousel-group {
+		width: auto !important;
+		height: auto !important;
+		min-height: 0 !important;
+	}
+}
+
+
+
+/* =========== slide units =========== */
+
+.iroha-carousel-unit {
+	/* width: XXXpx; */
+	margin: 0 0 1em;
+	padding: 0 0 1em;
+	border-bottom: 1px dotted #ccc;
+}
+
+
+/* ----- script enabled ----- */
+
+.iroha-carousel-discarded .iroha-carousel-unit,
+.iroha-carousel-enabled   .iroha-carousel-unit {
+	float: left;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+
+/* ----- currently scrolling ----- */
+
+.iroha-carousel-enabled .iroha-carousel-unit {
+	visibility: hidden;
+}
+
+.iroha-carousel-scrolling .iroha-carousel-unit,
+.iroha-carousel-enabled   .iroha-carousel-selected {
+	visibility: visible;
+}
+
+
+/* ----- for print ----- */
+
+@media print {
+	.iroha-carousel-discarded .iroha-carousel-unit,
+	.iroha-carousel-enabled   .iroha-carousel-unit {
+		float: none !important;
+		visibility: visible !important;
+		margin-bottom: 1em !important;
+		padding-bottom: 1em !important;
+		border-bottom: 1px dotted #ccc !important;
+	}
+}
+
+
+/* =========== slide control buttons =========== */
+
+.iroha-carousel-btns {
+	display: none;
+}
+
+
+/* ----- script enabled ----- */
+
+.iroha-carousel-enabled .iroha-carousel-btns {
+	display: block;
+}
+
+
+/* ----- for print ----- */
+
+@media print {
+	.iroha-carousel-enabled .iroha-carousel-btns {
+		display: none;
+	}
+}
+
+
+/* =========== slide control each buttons =========== */
+
+.iroha-carousel-btns a,
+.iroha-carousel-btns a:link,
+.iroha-carousel-btns a:visited,
+.iroha-carousel-btns a:hover,
+.iroha-carousel-btns a:active,
+.iroha-carousel-btns a:focus {
+	cursor: pointer;
+}
+
+.iroha-carousel-btns a.iroha-carousel-selected,
+.iroha-carousel-btns *.iroha-carousel-selected a,
+.iroha-carousel-btns a.iroha-carousel-disabled,
+.iroha-carousel-btns *.iroha-carousel-disabled a {
+	cursor: default !important;
+}
+
+.iroha-carousel-btns .iroha-carousel-select-btn {
+}
+
+.iroha-carousel-btns .iroha-carousel-prev-btn {
+}
+
+.iroha-carousel-btns .iroha-carousel-next-btn {
+}
+
+
+
