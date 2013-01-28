@@ -2452,6 +2452,59 @@ Iroha.delay = function(delay, aThisObject) {
 
 
 
+/* --------------- Function : Iroha.throttle --------------- */
+/**
+ * 指定した時間に1度しか実行されない関数を生成する。
+ * @param func {Function}   対象となる関数。
+ * @param wait {Number}     制限時間。単位 ms 。
+ * @return {Function} 実行間隔が制限された関数
+ */
+Iroha.throttle = function (func, wait) {
+	var last = 0, ctx, args, timer;
+	var later = function () {
+		last = +new Date;
+		timer = null;
+		func.apply(ctx, args);
+	};
+	return function () {
+		var remains = last + wait - new Date;
+		ctx = this;
+		args = arguments;
+		if (remains <= 0) {
+			later();
+			return;
+		}
+		if (!timer) {
+			timer = window.setTimeout(later, remains);
+		}
+	};
+};
+
+
+
+/* --------------- Function : Iroha.debounce --------------- */
+/**
+ * 指定した時間呼ばれなかったら初めて実行される関数を生成する。
+ * @param func  {Function}  対象となる関数。
+ * @param delay {Number}    最後に呼んでから実行までの時間。単位 ms。
+ */
+Iroha.debounce = function (func, delay) {
+	var timer, ctx, args;
+	var delayed = function () {
+		func.apply(ctx, args);
+	};
+	return function () {
+		ctx = this
+		args = arguments;
+		if (timer) {
+			window.clearTimeout(timer);
+		}
+		timer = window.setTimeout(delayed, delay);
+	};
+};
+
+
+
 /* =============== additional jQuery plugin methods =============== */
 
 /* -------------------- jQuery.fn : Iroha_getComputedStyle -------------------- */
