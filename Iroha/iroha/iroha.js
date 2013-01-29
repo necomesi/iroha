@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.23.20130129
+ *    @version 3.24.20130129
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -1095,10 +1095,12 @@ $.extend(Iroha.ViewClass.prototype,
 	 * @private
 	 */
 	defMethods : {
-		  init      : function(node) { this.$node = $(node);       return this }
-		, dispose   : function()     { this.constructor.disposeInstance(this)  }
-		, appendTo  : function(node) { this.$node.appendTo (node); return this }
-		, prependTo : function(node) { this.$node.prependTo(node); return this }
+		  init         : function(node)   { this.$node = $(node); return this }
+		, dispose      : function()       { this.constructor.disposeInstance(this) }
+		, appendTo     : function(target) { this.$node.appendTo    (target.$node || $(target)); return this }
+		, prependTo    : function(target) { this.$node.prependTo   (target.$node || $(target)); return this }
+		, insertBefore : function(target) { this.$node.insertBefore(target.$node || $(target)); return this }
+		, insertAfter  : function(target) { this.$node.insertAfter (target.$node || $(target)); return this }
 	},
 	
 	/**
@@ -1846,6 +1848,7 @@ Iroha.debounce = function (func, delay, aThisObject) {
  * @deprecated use Iroha.debounce
  */
 Iroha.barrageShield = Iroha.debounce;
+
 
 
 /* --------------- Function : Iroha.alreadyApplied --------------- */
