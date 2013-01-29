@@ -1779,6 +1779,62 @@ Iroha.singleton = function(_constructor, /* arg1, arg2, ... */ _arguments) {
 
 
 
+/* --------------- Function : Iroha.throttle --------------- */
+/**
+ * 指定した時間に1度しか実行されない関数を生成する。
+ * @param {Function} func           対象となる関数。
+ * @param {Number} wait             制限時間。単位 ms 。
+ * @param {Object} [aThisObject]    関数内で "this" が指し示すことになるもの
+ * @return {Function} 実行間隔が制限された関数
+ */
+Iroha.throttle = function (func, wait, aThisObject) {
+	var last = 0, ctx, args, timer;
+	var later = function () {
+		last = +new Date;
+		timer = null;
+		func.apply(ctx, args);
+	};
+	return function () {
+		var remains = last + wait - new Date;
+		ctx = aThisObject || this;
+		args = arguments;
+		if (remains <= 0) {
+			later();
+			return;
+		}
+		if (!timer) {
+			timer = window.setTimeout(later, remains);
+		}
+	};
+};
+
+
+
+/* --------------- Function : Iroha.debounce --------------- */
+/**
+ * 指定した時間呼ばれなかったら初めて実行される関数を生成する。
+ * @param  {Function} func          対象となる関数。
+ * @param {Number} delay            最後に呼んでから実行までの時間。単位 ms。
+ * @param {Object} [aThisObject]    関数内で "this" が指し示すことになるもの
+ * @return {Function} 指定した時間呼ばれなかったら初めて実行される関数
+ */
+Iroha.debounce = function (func, delay, aThisObject) {
+	var timer, ctx, args;
+	var delayed = function () {
+		func.apply(ctx, args);
+	};
+	return function () {
+		ctx = aThisObject || this
+		args = arguments;
+		if (timer) {
+			window.clearTimeout(timer);
+		}
+		timer = window.setTimeout(delayed, delay);
+	};
+};
+
+
+
 /* --------------- Function : Iroha.barrageShield --------------- */
 /**
  * create wrapper function which ignores and unify barraged-function-calls.
@@ -1787,20 +1843,9 @@ Iroha.singleton = function(_constructor, /* arg1, arg2, ... */ _arguments) {
  * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the function
  * @return wrapper function.
  * @type Function
+ * @deprecated use Iroha.debounce
  */
-Iroha.barrageShield = function(func, delay, aThisObject) {
-	if (typeof func != 'function') {
-		throw new TypeError('Iroha.barrageShield: first argument must be a function object.');
-	} else {
-		return function() {
-			var _args  = arguments;
-			var _delay = Math.max(delay, 1) || 1;
-			clearTimeout(func.__Iroha_BarrageShield_Timer__);
-			func.__Iroha_BarrageShield_Timer__ = setTimeout(function() { func.apply(aThisObject || window, _args) }, _delay);
-		}
-	}
-};
-
+Iroha.barrageShield = Iroha.debounce;
 
 
 /* --------------- Function : Iroha.alreadyApplied --------------- */
@@ -2448,59 +2493,6 @@ Iroha.delay = function(delay, aThisObject) {
 		aThisObject ? dfd.resolveWith(aThisObject) : dfd.resolve();
 	}
 	return dfd.promise();
-};
-
-
-
-/* --------------- Function : Iroha.throttle --------------- */
-/**
- * 指定した時間に1度しか実行されない関数を生成する。
- * @param func {Function}   対象となる関数。
- * @param wait {Number}     制限時間。単位 ms 。
- * @return {Function} 実行間隔が制限された関数
- */
-Iroha.throttle = function (func, wait) {
-	var last = 0, ctx, args, timer;
-	var later = function () {
-		last = +new Date;
-		timer = null;
-		func.apply(ctx, args);
-	};
-	return function () {
-		var remains = last + wait - new Date;
-		ctx = this;
-		args = arguments;
-		if (remains <= 0) {
-			later();
-			return;
-		}
-		if (!timer) {
-			timer = window.setTimeout(later, remains);
-		}
-	};
-};
-
-
-
-/* --------------- Function : Iroha.debounce --------------- */
-/**
- * 指定した時間呼ばれなかったら初めて実行される関数を生成する。
- * @param func  {Function}  対象となる関数。
- * @param delay {Number}    最後に呼んでから実行までの時間。単位 ms。
- */
-Iroha.debounce = function (func, delay) {
-	var timer, ctx, args;
-	var delayed = function () {
-		func.apply(ctx, args);
-	};
-	return function () {
-		ctx = this
-		args = arguments;
-		if (timer) {
-			window.clearTimeout(timer);
-		}
-		timer = window.setTimeout(delayed, delay);
-	};
 };
 
 
