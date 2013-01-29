@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.22.20130110
+ *    @version 3.23.20130129
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -1824,7 +1824,7 @@ Iroha.debounce = function (func, delay, aThisObject) {
 		func.apply(ctx, args);
 	};
 	return function () {
-		ctx = aThisObject || this
+		ctx = aThisObject || this;
 		args = arguments;
 		if (timer) {
 			window.clearTimeout(timer);
