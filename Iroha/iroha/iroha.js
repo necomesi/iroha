@@ -1847,7 +1847,18 @@ Iroha.debounce = function (func, delay, aThisObject) {
  * @type Function
  * @deprecated use Iroha.debounce
  */
-Iroha.barrageShield = Iroha.debounce;
+Iroha.barrageShield = function(func, delay, aThisObject) {
+	if (typeof func != 'function') {
+		throw new TypeError('Iroha.barrageShield: first argument must be a function object.');
+	} else {
+		return function() {
+			var _args  = arguments;
+			var _delay = Math.max(delay, 1) || 1;
+			clearTimeout(func.__Iroha_BarrageShield_Timer__);
+			func.__Iroha_BarrageShield_Timer__ = setTimeout(function() { func.apply(aThisObject || window, _args) }, _delay);
+		}
+	}
+};
 
 
 
