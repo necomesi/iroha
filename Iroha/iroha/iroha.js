@@ -40,7 +40,7 @@ window.Iroha = $.extend(window.Iroha, new (function() {
 	var di = d.implementation;
 	var ua = navigator.userAgent;
 
-	// browser detection snippet by jQuery
+	// browser detection snippet from jQuery
 	// http://jquery.org/license
 	$.browser = $.browser || (function () {
 		var matched, browser;
