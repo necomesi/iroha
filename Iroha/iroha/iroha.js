@@ -645,7 +645,7 @@ Iroha.String.Wrapper.prototype.format = function(arg1, /* arg2, arg3 ..., */ arg
 	var data;
 	if (arguments.length == 0) {
 		return this;
-	} else if (typeof arg1 == 'object') {
+	} else if (typeof arg1 == 'object' && !(arg1 instanceof Iroha.String.Wrapper)) {
 		data = arg1;
 	} else {
 		data = $.makeArray(arguments).map(function(a) { return $.type(a) == 'undefined' ? a : String(a) });
