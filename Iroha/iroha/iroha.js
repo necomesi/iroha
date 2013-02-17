@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.26.20130213
+ *    @version 3.26.20130217
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -257,14 +257,16 @@ if (typeof window.console != 'object') {
 /* =============== regester onload func =============== */
 
 (function() {
-	// prevent background image flicker.
-	if (Iroha.ua.isIE) try { document.execCommand('BackgroundImageCache', false, true) } catch(err) { }
-
+	// prevent background image flicker on IE6.
+	if (Iroha.ua.isIE && Iroha.ua.version == 6) try { document.execCommand('BackgroundImageCache', false, true) } catch(err) { }
+	
 	$(function() {
+		// indicates that the browser has ability to manipulate DOM tree.
 		Iroha.env.isDOMReady = true;
-		new Iroha.Timeout(function() {
-			$(document.body).addClass('iroha-enabled');
-		}, 1);  // workaround for IE to avoid speed down
+		
+		// add classname which indicates "Iroha is enabled".
+		// the delay is workaround for IE to avoid speed down.
+		Iroha.delay(1).done(function() { $(document.body).addClass('iroha-enabled') });
 	});
 })();
 
