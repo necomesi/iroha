@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.24.20130129
+ *    @version 3.26.20130213
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -593,6 +593,7 @@ Iroha.String.guid = function() {
 }
 
 
+
 /* ----- Class : Iroha.String.Wrapper ----- */
 /**
  * creates string manipulator; the instance is available as return value of {@link Iroha.String}
@@ -824,6 +825,30 @@ Iroha.String.Wrapper.prototype.sanitize = function() {
 	for (var key in pairs) {
 		this.replace(new RegExp(key, 'g'), pairs[key]);
 	}
+	return this;
+};
+
+/**
+ * add percent escape using "encodeURI" or "encodeURIComponent".
+ * @param {Boolean} [bool=false]    if true, this uses "encodeURIComponent" instead of "encodeURI".
+ * @return this instance itself
+ * @type Iroha.String.Wrapper
+ */
+Iroha.String.Wrapper.prototype.encodeURI = function(bool) {
+	this.value  = bool ? encodeURIComponent(this.value) : encodeURI(this.value);
+	this.length = this.value.length;
+	return this;
+};
+
+/**
+ * add percent escape using "decodeURI" or "decodeURIComponent".
+ * @param {Boolean} [bool=false]    if true, this uses "decodeURIComponent" instead of "decodeURI".
+ * @return this instance itself
+ * @type Iroha.String.Wrapper
+ */
+Iroha.String.Wrapper.prototype.decodeURI = function(bool) {
+	this.value  = bool ? decodeURIComponent(this.value) : decodeURI(this.value);
+	this.length = this.value.length;
 	return this;
 };
 
