@@ -194,8 +194,8 @@ $.extend(Iroha.Url.prototype,
 				if (param) {
 					var pair  = param.split('=');
 					try {
-						var key   = decodeURIComponent(pair[0]);
-						var value = decodeURIComponent(pair[1].replace(/\+/g, ' '));
+						var key   = Iroha.String(pair[0]).decodeURI(true).get();
+						var value = Iroha.String(pair[1]).decodeURI(true).get();
 						ret[key] = value;
 					} catch(err) { }  // ignore decoding error caused by invalid percent-escaped-string.
 				}
