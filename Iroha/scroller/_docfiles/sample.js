@@ -3,7 +3,7 @@
  *    @fileoverview
  *       sample script for Iroha.Scroller.
  *
- *    @version 1.1.20120221
+ *    @version 1.10.20130222
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.scroller.js
@@ -14,8 +14,10 @@
 
 
 $(function() {
+	Iroha.PageScroller.init();
+	
 	var $field   = $('#field');
-	var scroller = new Iroha.Scroller($field);
+	var scroller = Iroha.Scroller.create($field);
 
 	$field.find('button')
 		.click(function(e) {
