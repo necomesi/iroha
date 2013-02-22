@@ -188,7 +188,7 @@ $.extend(Iroha.Carousel.prototype,
 	 * このインスタンスを破棄する
 	 */
 	dispose : function() {
-		this.timer && thir.timer.clear();
+		this.timer && this.timer.clear();
 		
 		this.constructor.disposeInstance(this);
 	},
