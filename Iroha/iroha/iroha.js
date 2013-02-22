@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.26.20130217
+ *    @version 3.27.20130218
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -916,12 +916,30 @@ Iroha.StyleSheets.Wrapper = function(sheets) {
 /**
  * get new instance that has a styleSheet indicated by index number.
  * @param {Number} [index]    index number to get.
- * @return new instance that has a styleSheet indicated by index number.
+ * @return new instance that has a styleSheet.
  * @type Iroha.StyleSheets.Wrapper
  */
 Iroha.StyleSheets.Wrapper.prototype.eq = function(index) {
 	var sheet = (typeof index == 'number') ? this[index] : null;
 	return new this.constructor(sheet);
+};
+
+/**
+ * get new instance that has a styleSheet of last index.
+ * @return new instance that has a styleSheet
+ * @type Iroha.StyleSheets.Wrapper
+ */
+Iroha.StyleSheets.Wrapper.prototype.first = function() {
+	return new this.constructor(this[0]);
+};
+
+/**
+ * get new instance that has a styleSheet of last index.
+ * @return new instance that has a styleSheet
+ * @type Iroha.StyleSheets.Wrapper
+ */
+Iroha.StyleSheets.Wrapper.prototype.last = function() {
+	return new this.constructor(this[this.length - 1]);
 };
 
 /**
