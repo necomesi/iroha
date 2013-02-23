@@ -4,21 +4,78 @@ address {
 	margin-bottom: 500px;
 }
 
-#field {
+
+
+#field1 {
 	overflow: auto;
+	_width: 580px;
 	height: 150px;
-	padding: 0 0.5em;
+	padding: 0 10px;
 	border: 1px solid gray;
 }
 
-#field h3 {
+#field1 > .iroha-scroller-translate-target {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+
+#field1 h3 {
 	margin: 1.5em 0 0;
 	padding: 0;
 	border: none;
 	font-size: 100%;
 }
 
-#field p {
+#field1 p {
 	margin: 0.5em 0 0;
 	font-size: 100%;
 }
+
+
+
+
+
+#field2 {
+	overflow: auto;
+	overflow-x: auto;
+	overflow-y: hidden;
+	_width: 600px;
+	height: 150px;
+	border: 1px solid gray;
+}
+
+#field2 ul,
+#field2 li {
+	display: block;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#field2 ul {
+	width: 2800px;
+	padding: 10px 50%;
+	*zoom: 1;  /* clear float for ~IE7 */
+}
+
+#field2 ul:after {
+	clear: both;
+	display: block;
+	content: "";
+}
+
+#field2 li {
+	float: left;
+	width: 130px;
+	height: 130px;
+	margin-left: 5px;
+	margin-right: 5px;
+	background: #eeeeee;
+}
+
+#field2 li:hover {
+	cursor: pointer;
+	background: #eeeeff;
+}
+

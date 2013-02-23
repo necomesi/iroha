@@ -2,8 +2,9 @@
 /** 
  *    @fileoverview
  *       Smooth Scroller
+ *       (charset : "UTF-8")
  *
- *    @version 3.02.20121224
+ *    @version 3.10.20130223
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -25,6 +26,11 @@ Iroha.Scroller = function() {
 	    @type jQuery
 	    @private */
 	this.$node = $();
+	
+	/** element node as "CSS Transform translate()" target.
+	    @type jQuery
+	    @private */
+	this.$stage = $();
 	
 	/** X-distance from original destination of scrolling (px)
 	    @type Number
@@ -82,7 +88,7 @@ $.extend(Iroha.Scroller.prototype,
 	 * @type Iroha.Scroller
 	 */
 	init : function(node, offsetX, offsetY, duration, easing, smartAbort) {
-		this.$node         = $(node).eq(0);
+		this.$node         = $(node).eq(0).addClass('iroha-scroller-enabled');;
 		this.offsetX       = Number(offsetX) || 0;
 		this.offsetY       = Number(offsetY) || 0;
 		this.duration      = (Number(duration) >= 0) ? Number(duration) : 1000;
@@ -90,14 +96,88 @@ $.extend(Iroha.Scroller.prototype,
 		this.useSmartAbort = $.type(smartAbort) == 'boolean' ? smartAbort : true;;
 	
 		var $node = (this.$node.is('html, body')) ? $(document) : this.$node;
-		this.destination = { left : this.$node.scrollLeft(), top : this.$node.scrollTop() };
+		this.destination = this.scrollPos();
 		
 		// workaround for when jquery.mousewheel.js is not loaded.
 		$node.mousewheel || ($node.mousewheel = $.noop);
 	
 		// implements "smart abort" feature.
 		var abort = $.proxy(function() { this.useSmartAbort && this.abort() }, this);
-		$node.click(abort).mousewheel(abort);
+		$node.on('click mousewheel touchstart', abort);
+		
+		return this;
+	},
+	
+	/**
+	 * スクロール処理を CSS Transform の translate() で実現するモードへ変更する。
+	 * スクロール領域内のコンテンツすべてが乗った要素ノードの位置を translate() で動かし、あたかもスクロールしているかのように見せる。
+	 * @param {jQuery|Element|String} [node]     translate() の適用対象ノード。スクロール領域内のコンテンツすべてを内包する要素。無指定時はそのような div 要素が生成される。
+	 * @return このインスタンス自身
+	 * @private
+	 */
+	useCssTranslate : function(stage) {
+		if (this.$node.is('html, body')) {
+			throw new Error('Iroha.Scroller#useTranslate: 現在のところ基底要素ノードが html, body 要素の場合に translate モードは利用不可です。');
+		
+		} else {
+			var capable = $.proxy(function() {
+				var $test = $(document.createElement('ins'))
+					.css('position', 'absolute')
+					.appendTo(document.body);
+				var a = $test.offset();
+				this.translate(10, 10, $test);
+				var b = $test.offset();
+				$test.remove();
+				return Math.abs(a.left - b.left) + Math.abs(a.top - b.top) > 0;
+			}, this)();
+			
+			if (capable) {
+				var $base  = this.$node.addClass('iroha-scroller-translate-enabled');
+				var $stage = $(stage).first();
+				
+				if (!$stage.length) {
+					$stage = $(document.createElement('div'));
+				}
+				if (!$base.children('*').is($stage)) {
+					$stage = $base.wrapInner($stage).children('*').first();
+				}
+				this.$stage = $stage.addClass('iroha-scroller-translate-target');
+				
+			}
+			
+			return this;
+		}
+	},
+	
+	/**
+	 * CSS Tranform の translate() を用いて、対象要素ノードの表示位置を移動する。
+	 * @param {Number}                [x=0]     移動距離 (X軸)。通常の translate() とは方向が逆。
+	 * @param {Number}                [y=0]     移動距離 (Y軸)。通常の translate() とは方向が逆。
+	 * @param {jQuery|Element|String} [node]    translate() の対象要素ノード。無指定時はスクロール領域の wrapper 要素。
+	 * @return このインスタンス自身
+	 * @private
+	 */
+	translate : function(x, y, node) {
+		var prefix = arguments.callee.__prefix__;
+		if (!prefix) {
+			var prefix = [];
+			var ua     = Iroha.ua;
+			ua.isWebKit && prefix.push('-webkit-');
+			ua.isGecko  && prefix.push('-moz-'   );
+			ua.isIE     && prefix.push('-ms-'    );
+			ua.isOpera  && prefix.push('-o-'     );
+			               prefix.push(''        );
+			arguments.callee.__prefix__ = prefix;
+		}
+		
+		x = (Number(x) || 0) * -1;
+		y = (Number(y) || 0) * -1;
+		$node = node ? $(node).first() : this.$stage;
+		var value = (x == 0 && y == 0) ? 'none' : 'translate(' + x + 'px,' + y + 'px)';
+		prefix.forEach(function(_prefix) {
+			$node.css(_prefix + 'transform', value);
+		});
+		$node.data('Iroha.Scroller.Translate', { x : x, y : y });
 		
 		return this;
 	},
@@ -113,20 +193,23 @@ $.extend(Iroha.Scroller.prototype,
 	scrollTo : function(x, y, duration) {
 		if (isNaN(x) || isNaN(y)) {
 			throw new TypeError('Iroha.Scroller.scrollTo: all arguments must be numbers.');
+		
 		} else {
-			var zoom = 1;  // temporary, correct zoom ratio is needed for IE7...
-			var maxX = Math.max(0, this.$node.prop('scrollWidth' ) - this.$node.prop('clientWidth' ));
-			var maxY = Math.max(0, this.$node.prop('scrollHeight') - this.$node.prop('clientHeight'));
-			duration = (Number(duration) >= 0) ? Number(duration) : this.duration;
-	
-			var $node = (Iroha.ua.isWebkit && this.$node.is('html')) ? $(document.body) : this.$node;
-			var start = {
-				  scrollLeft : $node.scrollLeft()
-				, scrollTop  : $node.scrollTop()
-			};
+			this.abort();
+			
+			var $node = this.$node.is('body') ? $(document.documentElement) : this.$node;
+			var zoom  = 1;  // temporary, correct zoom ratio is needed for IE7...
+			var maxX  = Math.max(0, $node.prop('scrollWidth' ) - $node.prop('clientWidth' ));
+			var maxY  = Math.max(0, $node.prop('scrollHeight') - $node.prop('clientHeight'));
+			duration  = (Number(duration) >= 0) ? Number(duration) : this.duration;
+			
+			var iOSps = Iroha.ua.isiOS && this.$node.is('html, body');
+			var trans = this.$stage.length > 0 && !iOSps;
+			
+			var start = this.scrollPos();
 			var end = {
-				  scrollLeft : Math.min(maxX, Math.max(0, Math.round((x + this.offsetX) * zoom)))
-				, scrollTop  : Math.min(maxY, Math.max(0, Math.round((y + this.offsetY) * zoom)))
+				  left : Math.min(maxX, Math.max(0, Math.round((x + this.offsetX) * zoom)))
+				, top  : Math.min(maxY, Math.max(0, Math.round((y + this.offsetY) * zoom)))
 			};
 			var options = {
 				  duration : duration
@@ -135,36 +218,48 @@ $.extend(Iroha.Scroller.prototype,
 				, complete : $.proxy(this.complete, this)
 			};
 			
-			if (start.scrollLeft == end.scrollLeft && start.scrollTop == end.scrollTop) {
-				this.doCallbackByName('onComplete').doCallbackByName('onDone');
+			if (start.left == end.left && start.top == end.top) {
+				this.busy = true; // complete() が busy=true でなければ無視するから。
+				options.complete();
+			
 			} else {
-				this.abort();
-				
-				this.busy        = true;
-				this.destination = { left : end.scrollLeft, top : end.scrollTop };
+				this.destination = $.extend(null, end);  // 参照切断して格納。
 				this.doCallbackByName('onStart');
 				
-				// for PC browsers on all situation, and for overflow areas on mobile devices
-				if (!Iroha.ua.isMobile || !$node.is('body')) {
-					$node.animate(end, options);
-				
-				// for page scrolling on mobile devices...
-				} else {
-					var timer       = new Iroha.Timer;
-					this.animeTimer = new Iroha.Interval(function() {
-						var _elapsed = timer.getTime();
-						var _easing  = $.easing[options.easing];
-						var _newLeft = _easing(null, _elapsed, start.scrollLeft, end.scrollLeft - start.scrollLeft, duration);
-						var _newTop  = _easing(null, _elapsed, start.scrollTop , end.scrollTop  - start.scrollTop , duration);
-						window.scrollTo(_newLeft, _newTop);
-						
-						if (duration <= _elapsed) {
-							window.scrollTo(end.scrollLeft, end.scrollTop);
-							options.complete();
-							this.animeTimer.clear();
-						}
-					}, 16, this);
+				if (trans) {
+					end.left -= start.left;
+					end.top  -= start.top;
+					start.left = 0;
+					start.top  = 0;
 				}
+				
+				// ----- 以下、スクロールアニメ処理 -----
+				// 一見、 jQuery.animate() を使えばいいように見えるが、あえてしていない。
+				
+				var timer  = new Iroha.Timer;
+				var easing = $.easing[options.easing];
+				var setPos = iOSps
+					? window.scrollTo
+					: trans
+						? $.proxy(this.translate, this)
+						: $.proxy(function(left, top) { this.$node.prop({ scrollLeft : left, scrollTop : top }) }, this); 
+				var animate = $.proxy(function() {
+					var elapsed = timer.getTime();
+					var left    = Math.round(easing(null, elapsed, start.left, end.left - start.left, duration));
+					var top     = Math.round(easing(null, elapsed, start.top , end.top  - start.top , duration));
+					
+					setPos(left, top);
+					options.step();
+					
+					if (duration <= elapsed) {
+						setPos(end.left, end.top);
+						options.complete();
+					}
+				}, this);
+				
+				duration == 0
+					? animate()
+					: (this.animeTimer = new Iroha.Interval(animate, 16));
 			}
 		}
 		return this;
@@ -179,11 +274,13 @@ $.extend(Iroha.Scroller.prototype,
 	 * @type Iroha.Scroller
 	 */
 	scrollBy : function(x, y, duration) {
+		this.abort();
+		
 		x = Number(x) || 0;
 		y = Number(y) || 0;
-		if (x != 0 || y != 0) {
-			var $node = (Iroha.ua.isWebkit && this.$node.is('html')) ? $(document.body) : this.$node;
-			this.scrollTo($node.scrollLeft() + x, $node.scrollTop() + y, duration);
+		if (x || y) {
+			var pos = this.scrollPos();
+			this.scrollTo(pos.left + x, pos.top + y, duration);
 		}
 		return this;
 	},
@@ -198,12 +295,15 @@ $.extend(Iroha.Scroller.prototype,
 	scrollToNode : function(node, duration) {
 		var $base = this.$node;
 		var $node = $(node);
-		if ($node.parents().filter(function() { return (this == $base.get(0)) }).get(0)) {
+		
+		if ($node.closest($base).length) {
+			this.abort();
+			
 			var basePos = $base.is('html, body') ? { left : 0, top : 0 } : $base.offset();
-			var baseSrl = $base.is('html, body') ? { left : 0, top : 0 } : { left : $base.scrollLeft(), top : $base.scrollTop() };
+			var baseSrl = $base.is('html, body') ? { left : 0, top : 0 } : this.scrollPos();
 			var nodePos = $node.offset();
 			this.scrollTo(
-				  nodePos.left + baseSrl.left - basePos.left + (Iroha.ua.isWebkit ? 4 : 0)
+				  nodePos.left + baseSrl.left - basePos.left
 				, nodePos.top  + baseSrl.top  - basePos.top
 				, duration
 			);
@@ -223,10 +323,20 @@ $.extend(Iroha.Scroller.prototype,
 	 */
 	scrollPos : function() {
 		switch (arguments.length) {
-			case 0  : return { left : this.$node.scrollLeft(), top : this.$node.scrollTop() };
-			case 1  : throw new ReferenceError('Iroha.Scroller#scrollPos: 2 arguments are required in setter mode.');
-			case 2  : this.scrollTo(arguments[0], arguments[1], 0);
-			default : return this;
+			case 0  :
+				var $node = this.$node;
+				var trans = this.$stage.data('Iroha.Scroller.Translate') || { x : 0, y : 0 };
+				return { left : $node.scrollLeft() - trans.x, top : $node.scrollTop() - trans.y };
+			case 1  :
+				throw new ReferenceError('Iroha.Scroller#scrollPos: 2 arguments are required in setter mode.');
+			case 2  :
+				var ignore = $.proxy(this.ignoreCallback, this);
+				var names  = [ 'onStart', 'onScroll', 'onDone', 'onComplete' ];
+				names.forEach(function(name) { ignore(name, 'all' ) });
+				this.scrollTo(arguments[0], arguments[1], 0);
+				names.forEach(function(name) { ignore(name, 'none') });
+			default :
+				return this;
 		}
 	},
 	
@@ -235,6 +345,7 @@ $.extend(Iroha.Scroller.prototype,
 	 * @private
 	 */
 	step : function() {
+		this.busy = true;
 		this.doCallbackByName('onScroll');
 	},
 	
@@ -244,8 +355,8 @@ $.extend(Iroha.Scroller.prototype,
 	 */
 	complete : function() {
 		if (this.busy) {
-			this.busy = false;
-			this.doCallbackByName('onComplete').doCallbackByName('onDone');
+			this.postProcess();
+			this.doCallbackByName('onComplete');
 		}
 	},
 	
@@ -256,11 +367,30 @@ $.extend(Iroha.Scroller.prototype,
 	 */
 	abort : function() {
 		if (this.busy) {
-			this.busy = false;
-			(Iroha.ua.isWebkit && this.$node.is('html') ? $(document.body) : this.$node).stop();
-			this.animeTimer.clear();
-			this.doCallbackByName('onAbort').doCallbackByName('onDone');
+			this.postProcess();
+			this.doCallbackByName('onAbort');
 		}
+		return this;
+	},
+	
+	/**
+	 * post process for end of scrolling.
+	 * @return this instance
+	 * @type Iroha.Scroller
+	 * @private
+	 */
+	postProcess : function () {
+		this.busy = false;
+		this.$node.stop();
+		this.animeTimer.clear();
+		
+		if (this.$stage.length) {
+			var pos = this.scrollPos();
+			this.translate(0, 0);
+			this.$node.prop({ scrollLeft : pos.left, scrollTop : pos.top });
+		}
+		
+		this.doCallbackByName('onDone');
 		return this;
 	},
 	
@@ -287,7 +417,9 @@ $.extend(Iroha.Scroller.prototype,
 	 * @private
 	 */
 	doCallbackByName : function(name) {
-		this.doCallback(name, this.$node.scrollLeft(), this.$node.scrollTop(), this.destination.left, this.destination.top);
+		var pos  = this.scrollPos();
+		var dest = this.destination;
+		this.doCallback(name, pos.left, pos.top, dest.left, dest.top);
 		return this;
 	}
 });
@@ -312,9 +444,11 @@ Iroha.PageScroller = {
 		
 		var settings   = $.extend(Iroha.PageScroller.Setting.create(), setting);
 		
-		var pageNode   = Iroha.ua.isQuirksMode ? document.body : document.documentElement;
-		var scroller   = Iroha.Scroller.create(pageNode, settings.offsetX, settings.offsetY, settings.duration, settings.easing);
+		var pageNode   = Iroha.ua.isWebKit || Iroha.ua.isQuirksMode ? document.body : document.documentElement;
+		var scroller   = Iroha.Scroller.create(pageNode, settings.offsetX, settings.offsetY, settings.duration, settings.easing, settings.smartAbort);
 		var lastAnchor = null;
+		
+		$(document.body).addClass('iroha-pagescroller-enabled');
 		
 		// add event
 		$(document).on('click', 'a, area', function(e) {
@@ -373,6 +507,9 @@ Iroha.PageScroller.Setting = function() {
 	/** easing function name existing in jQuery.easing
 	    @name String */
 	this.easing      = 'easeInOutCubic';
+	/** avaliability of "smart abort" feature.
+	    @type Boolean */
+	this.smartAbort  = true;
 	/** a jQuery object, an element node, a node list of elements, an array of element nodes, or an expression,
 	    to specify an clicked element which doesn't start scrolling.
 	    @type jQuery|Element|Element[]|NodeList|String */
@@ -389,8 +526,8 @@ Iroha.PageScroller.Setting = function() {
 	/** a callback for when scrolling is completed
 	    @type Function */
 	this.onComplete  = function(x, y, lastAnchor) {
-		var B = Iroha.ua;
-		if (lastAnchor && (B.isGecko || B.isIE || (B.isWebkit && B.version > 522))) {
+		var ua = Iroha.ua;
+		if (lastAnchor && !ua.isMobile && (ua.isGecko || ua.isIE || (ua.isWebKit && ua.version > 522))) {
 			location.href = lastAnchor.href;
 		}
 	};
