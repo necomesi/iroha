@@ -3,7 +3,7 @@
  *    @fileoverview
  *       sample script for Iroha.Scroller.
  *
- *    @version 1.10.20130222
+ *    @version 1.11.20130224
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.scroller.js
@@ -39,7 +39,7 @@ $(function() {
 	var $field2 = $('#field2');
 	var $stage  = $field2.children('ul');
 	var field2  = Iroha.Scroller.create($field2)
-		.useCssTranslate($stage)
+		.useCssTranslate($stage, 'norevise')
 		.addCallback('onStart'   , function() { console.log('field2 : start   ', arguments) })
 		.addCallback('onScroll'  , function() { console.log('field2 : scroll  ', arguments) })
 		.addCallback('onDone'    , function() { console.log('field2 : done    ', arguments) })

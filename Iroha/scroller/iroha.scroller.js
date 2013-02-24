@@ -4,7 +4,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.12.20130224
+ *    @version 3.13.20130224
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -98,12 +98,13 @@ $.extend(Iroha.Scroller.prototype,
 		var $node = (this.$node.is('html, body')) ? $(document) : this.$node;
 		this.destination = this.scrollPos();
 		
-		// workaround for when jquery.mousewheel.js is not loaded.
+		// （ jquery.mousewheel.js が無く）.mousewheel() がない状況への考慮
 		$node.mousewheel || ($node.mousewheel = $.noop);
-	
-		// implements "smart abort" feature.
-		var abort = $.proxy(function() { this.useSmartAbort && this.abort() }, this);
-		$node.on('click mousewheel touchstart', abort);
+		
+		// "smart abort"。スクロール注に領域内のクリック、ホイール操作、タップ等されたら、スクロールを止める。
+		// smartAbort = true の場合、スクロール領域内の任意要素のクリック等のイベントによりスクロールを
+		// 発動させるなら、そのイベントのバブリングを停止 (event.stopPropagation()) しないとダメ。
+		$node.on('click mousewheel touchstart', $.proxy(function() { this.useSmartAbort && this.abort() }, this));
 		
 		(this.$node.is('html') ? $(document.body) : this.$node)
 			.addClass('iroha-scroller-enabled');
@@ -133,9 +134,6 @@ $.extend(Iroha.Scroller.prototype,
 			var maxY  = Math.max(0, $node.prop('scrollHeight') - $node.prop('clientHeight'));
 			duration  = (Number(duration) >= 0) ? Number(duration) : this.duration;
 			
-			var iOSps = Iroha.ua.isiOS && this.$node.is('html, body');
-			var trans = this.$stage.length > 0;
-			
 			var start = this.scrollPos();
 			var end = {
 				  left : Math.min(maxX, Math.max(0, Math.round((x + this.offsetX) * zoom)))
@@ -160,11 +158,13 @@ $.extend(Iroha.Scroller.prototype,
 				
 				// CSS transform, translate(3d), transition によりスクロール（しているかのように見せる）
 				// GPU による加速が期待できるかわりに表示に不具合を起こしがち。スマホ、タブレットデバイス等向け。
-				if (trans) {
-					end.left -= start.left;
-					end.top  -= start.top;
-					start.left = 0;
-					start.top  = 0;
+				if (this.cssTranslateMode) {
+					if (!this.cssTranslateNoRevise) {
+						end.left -= start.left;
+						end.top  -= start.top;
+						start.left = 0;
+						start.top  = 0;
+					}
 					
 					this.translate(end.left, end.top, duration)
 						.progress(function(name) { options.step()     })
@@ -175,10 +175,10 @@ $.extend(Iroha.Scroller.prototype,
 				// PC ブラウザであればこれで十分にパフォーマンスする。
 				} else {
 					// 一見、 jQuery.animate() を使えばいいように見えるが、あえてしていない。
-					var $node  = this.$node;
-					var timer  = new Iroha.Timer;
-					var easing = $.easing[options.easing];
-					var setPos = iOSps
+					var $node    = this.$node;
+					var timer    = new Iroha.Timer;
+					var easing   = $.easing[options.easing];
+					var scrollTo = (Iroha.ua.isiOS && this.$node.is('html, body'))
 						? window.scrollTo
 						: function(left, top) { $node.prop({ scrollLeft : left, scrollTop : top }) };
 					
@@ -188,11 +188,11 @@ $.extend(Iroha.Scroller.prototype,
 						var left    = Math.round(easing(null, elapsed, start.left, end.left - start.left, duration));
 						var top     = Math.round(easing(null, elapsed, start.top , end.top  - start.top , duration));
 						
-						setPos(left, top);
+						scrollTo(left, top);
 						options.step();
 						
 						if (duration <= elapsed) {
-							setPos(end.left, end.top);
+							scrollTo(end.left, end.top);
 							options.complete();
 						}
 					}, this);
@@ -239,8 +239,6 @@ $.extend(Iroha.Scroller.prototype,
 		var $node = $(node);
 		
 		if ($node.closest($base).length) {
-			this.abort();
-			
 			var basePos = $base.is('html, body') ? { left : 0, top : 0 } : $base.offset();
 			var baseSrl = $base.is('html, body') ? { left : 0, top : 0 } : this.scrollPos();
 			var nodePos = $node.offset();
@@ -285,18 +283,20 @@ $.extend(Iroha.Scroller.prototype,
 	/**
 	 * スクロール処理を CSS Transform の translate() で実現するモードへ変更する。
 	 * スクロール領域内のコンテンツすべてが乗った要素ノードの位置を translate() で動かし、あたかもスクロールしているかのように見せる。
-	 * @param {jQuery|Element|String} [node]     translate() の適用対象ノード。スクロール領域内のコンテンツすべてを内包する要素。無指定時はそのような div 要素が生成される。
+	 * @param {jQuery|Element|String} [node]        translate() の適用対象ノード。スクロール領域内のコンテンツすべてを内包する要素。無指定時はそのような div 要素が生成される。
+	 * @param {Boolean|String}        [norevice]    true または "norevise" のとき、スクロール領域の実スクロール位置を調整しない（translate による位置変更のみでスクロールを表現する）モードになる。
 	 * @return このインスタンス自身
 	 * @private
 	 */
-	useCssTranslate : function(stage) {
-		// CSS Translate と CSS Transition が両方使えるものを適合ブラウザとする。
-		// WebKit ブラウザは予めそれが明白なブラウザ。
-		var capable = Iroha.ua.isWebkit;
+	useCssTranslate : function(stage, norevise) {
+		var $base    = (this.$node.is('html') ? $(document.body) : this.$node);
+		var $stage   = $(stage).first();
+		    norevise = $.type(norevise) == 'boolean' ? norevise : (norevise == 'norevise');
+		
+		// 適合ブラウザ（後述）に対して、必要な準備を行う。適合ブラウザと判別され次第これを実行。
 		var prepare = $.proxy(function() {
-			var cnpfx  = 'iroha-scroller-translate';
-			var $base  = (this.$node.is('html') ? $(document.body) : this.$node).addClass(cnpfx + '-enabled');
-			var $stage = $(stage).first();
+			this.cssTranslateMode     = true;
+			this.cssTranslateNoRevise = norevise;
 			
 			if (!$stage.length) {
 				$stage = $(document.createElement('div'));
@@ -304,29 +304,50 @@ $.extend(Iroha.Scroller.prototype,
 			if (!$base.children('*').is($stage)) {
 				$stage = $base.wrapInner($stage).children('*').first();
 			}
-			this.$stage = $stage.addClass(cnpfx + '-target');
+			this.$stage = $stage;
+			
+			var cnpfx  = 'iroha-scroller-translate';
+			$base .addClass(cnpfx + '-enabled');
+			$stage.addClass(cnpfx + '-target' );
 			
 			// transform, transition 等のプロパティ初期値をあらかじめセットしておくことで、スクロール開始時のチラツキを抑える。
 			this.translate(0, 0, 0, $stage);
 		}, this);
+
+		// CSS Translate と CSS Transition が両方使えるものを適合ブラウザとする。
+		// 特定のブラウザについては指名により適合・不適合を決めつけ。
+		var capable;
+		var ua    = Iroha.ua;
+		var IEver = ua.documentMode;
+		(ua.isWebKit || ua.isGecko || ua.isIE && IEver >= 10) && (capable = true );
+		(                             ua.isIE && IEver <=  0) && (capable = false);
 		
+		// 適合を指名されたブラウザ
 		if (capable) {
 			prepare();
 		
-		// 適合ブラウザかどうか、実際に Translate と Transition を動かして判定。
-		} else {
+		// 特定ブラウザ以外：適合かどうか、実際に translate と transition を動かして判定。
+		} else if ($.type(capable) != 'boolean') {
 			var $test  = $(document.createElement('ins')).css('position', 'absolute').appendTo(document.body);
 			var before = $test.offset();
 			
-			// duration の 500ms は最低このくらい無いと判定にしくじりやすい印象
-			this.translate(100, 100, 500, $test)
+			this.translate(100, 100, 16, $test)
+			
+				// 500ms くらいのディレイが無いと判定にしくじる人がいる（ Android Browser とか…）
+				.pipe(function() { return Iroha.delay(500) })  // deferred.pipe() は jQuery 1.8 で Deprecated とされてる…しかし…
+//				.then(function() { return Iroha.delay(500) })  // deferred.then() の動きが 1.7 以前と 1.8 以降で違っている…。
+				
 				.done($.proxy(function() {
 					var after   = $test.offset();
-					    capable = Math.abs(before.left - after.left) + Math.abs(before.top - after.top) > 0;
+					var capable = Math.abs(before.left - after.left) + Math.abs(before.top - after.top) > 0;
 					capable && prepare();
 					$test.remove();
 				}, this));
 		}
+		
+		// 適合・非適合ブラウザ関係なく、
+		// 実スクロール位置の補正をしないモードの指定なら、スクロール領域の基底要素ノードは overflow:hidden にしておく。
+		norevise && $base.css('overflow', 'hidden');
 		
 		return this;
 	},
@@ -341,8 +362,8 @@ $.extend(Iroha.Scroller.prototype,
 	 * @private
 	 */
 	translate : function(x, y, d, node) {
-		var dfd    = $.Deferred();
-		var ns     = 'Iroha.Scroller.Translate';
+		var dfd = $.Deferred();
+		var ns  = 'Iroha.Scroller.Translate';
 		
 		// ベンダープレフィクスの適合を探して格納
 		var prefix = arguments.callee.__prefix__;
@@ -462,7 +483,7 @@ $.extend(Iroha.Scroller.prototype,
 		if (this.busy) {
 			// CSS transform, translate(3d), transition により
 			// 擬似的にスクロールさせているのを中断するために、transition プロパティを消す。
-			this.$stage.css('transition', '');
+			this.cssTranslateMode && this.$stage.css('transition', '');
 			
 			this.postProcess();
 			this.doCallbackByName('onAbort');
@@ -484,7 +505,7 @@ $.extend(Iroha.Scroller.prototype,
 		// CSS transform, translate(3d), transition により擬似的にスクロールさせていたなら
 		// translate で動かした分を実際のスクロール量に置き換え、translate は無かったことにして
 		// つじつまを合わせる。
-		if (this.$stage.length) {
+		if (this.cssTranslateMode && !this.cssTranslateNoRevise) {
 			var pos = this.scrollPos();
 			this.translate(0, 0, 0);
 			this.$node.prop({ scrollLeft : pos.left, scrollTop : pos.top });
