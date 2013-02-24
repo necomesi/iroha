@@ -4,7 +4,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.11.20130223
+ *    @version 3.12.20130224
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -59,7 +59,7 @@ Iroha.Scroller = function() {
 	
 	/** avaliability of "smart abort" feature; it can abort scrolling on mouse click, mouse wheel events.
 	    @type Boolean */
-	this.useSmartAbort = true;
+	this.useSmartAbort = false;
 	
 	/** interval timer which handles scrolling animation (for page scrolling on mobile devices).
 	    @type Iroha.Interval
@@ -78,12 +78,12 @@ $.extend(Iroha.Scroller.prototype,
 {
 	/**
 	 * initialize.
-	 * @param {Element|jQuery|String} node                 element to apply behavior
-	 * @param {Number}                [offsetX=0]          X-distance from original destination of scrolling (px)
-	 * @param {Number}                [offsetY=0]          Y-distance from original destination of scrolling (px)
-	 * @param {Number}                [duration=1000]      animation duration (ms)
-	 * @param {String}                [easing="swing"]     easing function name existing in jQuery.easing
-	 * @param {Boolean}               [smartAbort=true]    avaliability of "smart abort" feature; it can abort scrolling on mouse click, mouse wheel events.
+	 * @param {Element|jQuery|String} node                  element to apply behavior
+	 * @param {Number}                [offsetX=0]           X-distance from original destination of scrolling (px)
+	 * @param {Number}                [offsetY=0]           Y-distance from original destination of scrolling (px)
+	 * @param {Number}                [duration=1000]       animation duration (ms)
+	 * @param {String}                [easing="swing"]      easing function name existing in jQuery.easing
+	 * @param {Boolean}               [smartAbort=false]    avaliability of "smart abort" feature; it can abort scrolling on mouse click, mouse wheel events.
 	 * @return this instance
 	 * @type Iroha.Scroller
 	 */
@@ -93,8 +93,8 @@ $.extend(Iroha.Scroller.prototype,
 		this.offsetY       = Number(offsetY) || 0;
 		this.duration      = (Number(duration) >= 0) ? Number(duration) : 1000;
 		this.easing        = ($.easing[easing]) ? easing : 'swing';
-		this.useSmartAbort = $.type(smartAbort) == 'boolean' ? smartAbort : true;;
-	
+		this.useSmartAbort = $.type(smartAbort) == 'boolean' ? smartAbort : false;
+		
 		var $node = (this.$node.is('html, body')) ? $(document) : this.$node;
 		this.destination = this.scrollPos();
 		
