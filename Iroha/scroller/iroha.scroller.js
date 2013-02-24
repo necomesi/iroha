@@ -4,7 +4,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.13.20130224
+ *    @version 3.14.20130224
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -187,7 +187,9 @@ $.extend(Iroha.Scroller.prototype,
 					// 一見、 jQuery.animate() を使えばいいように見えるが、あえてしていない。
 					var $node    = this.$node;
 					var timer    = new Iroha.Timer;
-					var easing   = $.easing[options.easing];
+					var easing   = options.easing == 'linear'
+						? function(x, t, b, c, d) { return b + c * t / d }
+						: $.easing[options.easing];
 					var scrollTo = (Iroha.ua.isiOS && this.$node.is('html, body'))
 						? window.scrollTo
 						: function(left, top) { $node.prop({ scrollLeft : left, scrollTop : top }) };
@@ -403,11 +405,19 @@ $.extend(Iroha.Scroller.prototype,
 		x = (Number(x) || 0) * -1;
 		y = (Number(y) || 0) * -1;
 		d = Math.max(0, d) || 0;
-
+		f = (function(easing) {
+			easing = Iroha.String(easing);
+			     if (easing.startsWith('easeInOut')) return 'ease-in-out';
+			else if (easing.startsWith('easeIn'   )) return 'ease-in';
+			else if (easing.startsWith('easeOut'  )) return 'ease-out';
+			else if (easing.isMatch   ('linear'   )) return 'linear';
+			else                                     return 'ease';
+		})(this.easing);
+		
 		var $node      = node ? $(node).first() : this.$stage;
 		var transform  = /* x == 0 && y == 0 ? '' : */ 'translate3d(${x}px, ${y}px, 0px)';
-		var transition = /* d == 0           ? '' : */ '${pfx}transform ${d}s ease 0s';
-		var params     = { x : x, y : y, d : d / 1000 };
+		var transition = /* d == 0           ? '' : */ '${pfx}transform ${d}s ${f} 0s';
+		var params     = { x : x, y : y, d : d / 1000, f : f };
 		var origin     = $node.offset();
 		
 		// 既存のタイマーを停止
