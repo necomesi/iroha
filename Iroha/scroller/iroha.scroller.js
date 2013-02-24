@@ -61,6 +61,16 @@ Iroha.Scroller = function() {
 	    @type Boolean */
 	this.useSmartAbort = false;
 	
+	/** [experimental] スクロール処理を CSS Transform の translate() で実現するモードかどうか
+	    @type Object
+	    @private */
+	this.cssTranslateMode = false;
+	
+	/** [experimental] スクロール処理を CSS Transform の translate() で実現するモードで、スクロール完了後の実スクロール位置を調整しないモードかどうか
+	    @type Object
+	    @private */
+	this.cssTranslateNoRevise = false;
+	
 	/** interval timer which handles scrolling animation (for page scrolling on mobile devices).
 	    @type Iroha.Interval
 	    @private */
@@ -281,12 +291,12 @@ $.extend(Iroha.Scroller.prototype,
 	},
 	
 	/**
-	 * スクロール処理を CSS Transform の translate() で実現するモードへ変更する。
+	 * [experimental] スクロール処理を CSS Transform の translate() で実現するモードへ変更する。
 	 * スクロール領域内のコンテンツすべてが乗った要素ノードの位置を translate() で動かし、あたかもスクロールしているかのように見せる。
 	 * @param {jQuery|Element|String} [node]        translate() の適用対象ノード。スクロール領域内のコンテンツすべてを内包する要素。無指定時はそのような div 要素が生成される。
-	 * @param {Boolean|String}        [norevice]    true または "norevise" のとき、スクロール領域の実スクロール位置を調整しない（translate による位置変更のみでスクロールを表現する）モードになる。
+	 * @param {Boolean|String}        [norevise]    true または "norevise" のとき、スクロール領域の実スクロール位置を調整しない（translate による位置変更のみでスクロールを表現する）モードになる。
 	 * @return このインスタンス自身
-	 * @private
+	 * @type Iroha.Scroller
 	 */
 	useCssTranslate : function(stage, norevise) {
 		var $base    = (this.$node.is('html') ? $(document.body) : this.$node);
@@ -353,12 +363,13 @@ $.extend(Iroha.Scroller.prototype,
 	},
 	
 	/**
-	 * CSS Tranform の translate() を用いて、対象要素ノードの表示位置を移動する。
+	 * [experimental] CSS Tranform の translate() を用いて、対象要素ノードの表示位置を移動する。
 	 * @param {Number}                [x=0]     移動距離 (X軸)。通常の translate() とは方向が逆。
 	 * @param {Number}                [y=0]     移動距離 (Y軸)。通常の translate() とは方向が逆。
 	 * @param {Number}                [d=0]     トランジション時間。ミリ秒で指定。
 	 * @param {jQuery|Element|String} [node]    translate() の対象要素ノード。無指定時はスクロール領域の wrapper 要素。
-	 * @return このインスタンス自身
+	 * @return jQuery.Deferred.Promise オブジェクト
+	 * @type jQuery.Deferred.Promise
 	 * @private
 	 */
 	translate : function(x, y, d, node) {
