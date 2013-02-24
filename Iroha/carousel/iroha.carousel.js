@@ -4,7 +4,7 @@
  *       いわゆるカルーセル
  *       (charset : "UTF-8")
  *
- *    @version 3.10.20121111
+ *    @version 3.12.20130224
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.scroller.js
@@ -48,6 +48,20 @@ Iroha.Carousel = function() {
 	 * @private
 	 */
 	this.$node = $();
+	
+	/**
+	 * jQuery object indicating viewport element which contains a grouping block.
+	 * @type jQuery
+	 * @private
+	 */
+	this.$viewport = $();
+	
+	/**
+	 * jQuery object indicating grouping block element which contains content-units elements.
+	 * @type jQuery
+	 * @private
+	 */
+	this.$group = $();
 	
 	/**
 	 * jQuery object indicating the content-unit elements in the carousel.
@@ -133,13 +147,13 @@ $.extend(Iroha.Carousel.prototype,
 	 * @private
 	 */
 	init : function(node, setting) {
-		this.setting = $.extend(Iroha.Carousel.Setting.create(), setting);
-		this.$node   = $(node).eq(0);
-		
 		var cname     = this.constructor.CLASSNAME;
-		var setting   = this.setting;
+		var setting   = this.setting   = $.extend(Iroha.Carousel.Setting.create(), setting);
+		var $node     = this.$node     = $(node).eq(0);
+		var $viewport = this.$viewport = $node    .find(setting.viewport).first();
+		var $group    = this.$group    = $viewport.find(setting.group   ).first();
+		var $units    = this.$units    = $group   .find(setting.units   );
 		var step      = setting.groupedUnit;
-		var $viewport = this.$node.find(setting.viewport).eq(0);
 		
 		// init scroll field.
 		this.scroller = Iroha.Scroller.create(
@@ -151,21 +165,18 @@ $.extend(Iroha.Carousel.prototype,
 			, /* smartAbort */ false
 		);
 		
-		// initiate existing carousel unit blocks
-		this.$units = $viewport.find(setting.units);
-		
 		// initiate prev buttons
-		this.prevBtn = this.$node.find(setting.prevBtn).get().map(function(node) {
+		this.prevBtn = $node.find(setting.prevBtn).get().map(function(node) {
 			return Iroha.Carousel.StepBtn.create(node, -1 * step).addCallback('onClick', this.selectBy, this);
 		}, this);
 		
 		// initiate next buttons
-		this.nextBtn = this.$node.find(setting.nextBtn).get().map(function(node) {
+		this.nextBtn = $node.find(setting.nextBtn).get().map(function(node) {
 			return Iroha.Carousel.StepBtn.create(node, +1 * step).addCallback('onClick', this.selectBy, this);
 		}, this);
 		
 		// initiate select buttons
-		this.selectBtn = this.$node.find(setting.selectBtn).get().map(function(node, i) {
+		this.selectBtn = $node.find(setting.selectBtn).get().map(function(node, i) {
 			return Iroha.Carousel.SelectBtn.create(node, i).addCallback('onClick', this.select, this);
 		}, this);
 		
@@ -176,7 +187,7 @@ $.extend(Iroha.Carousel.prototype,
 		// select first carousel unit.
 		this.select(0);
 		// this shows units which is needed to be shown
-		this.$units.slice(0, setting.visibleUnit).addClass(cname.selected);
+		$units.slice(0, setting.visibleUnit).addClass(cname.selected);
 		
 		// auto start rotation (if necessary)
 		this.startRotate(setting.interval);
@@ -233,14 +244,23 @@ $.extend(Iroha.Carousel.prototype,
 	},
 	
 	/**
+	 * [experimental] カルーセル内のスクロール処理を CSS Transform の translate() で実現するモードへ変更する。
+	 * @return このインスタンス自身
+	 * @type Iroha.Carousel
+	 */
+	useCssTranslate : function() {
+		this.scroller.useCssTranslate(this.$group, 'norevise');
+		return this;
+	},
+	
+	/**
 	 * add carousel unit block.
 	 * @param {Element|jQuery|String} node    an element node which indicates carousel unit block
 	 * @reutn this instance
 	 * @type Iroha.Carousel
 	 */
 	addUnit : function(node) {
-		var $node = $(node).appendTo(this.$node.find(this.setting.group));
-		this.$units = this.$units.add($node);
+		this.$units = this.$units.add($(node).appendTo(this.$group));
 		this.updateStatus();
 		return this;
 	},
@@ -268,7 +288,6 @@ $.extend(Iroha.Carousel.prototype,
 		var cname  = this.constructor.CLASSNAME;
 		var vunits = this.setting.visibleUnit;
 		var size   = this.$units.size();
-		var preventInfiniteLoop;
 		
 		num = Math.min(num, size - (this.setting.endless ? 0 : vunits));
 		num = Math.max(num, 0);
@@ -303,11 +322,10 @@ $.extend(Iroha.Carousel.prototype,
 							
 							// このブロック内部にある scrollToNode() を呼び出すと、完了時コールバックが発生する。
 							// 結果、再度ここへ実行コンテキストが戻ってくることになり、無限ループに陥るため、それを防がなければならない。
-							if (!preventInfiniteLoop) {
-								preventInfiniteLoop = true;
-								this.scroller.scrollToNode(_node, 0);
-								preventInfiniteLoop = false;
-							}
+							this.scroller
+								.ignoreCallback('onComplete', 'all')
+								.scrollToNode(_node, 0)
+								.ignoreCallback('onComplete', 'none')
 						}
 					}
 					this.doCallback('onSelect', num);

@@ -3,7 +3,7 @@
  *    @fileoverview
  *       sample script for Iroha.Carousel.
  *
- *    @version 3.01.20121111
+ *    @version 3.02.20121111
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.carousel.js
@@ -14,7 +14,10 @@
 
 
 $(function() {
-	Iroha.Carousel.create('.iroha-carousel');
+	var carousel = Iroha.Carousel.create('.iroha-carousel');
+	
+	// experimental
+	carousel.useCssTranslate();
 });
 
 
