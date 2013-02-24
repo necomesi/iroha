@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.27.20130218
+ *    @version 3.28.20130224
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -727,6 +727,16 @@ Iroha.String.Wrapper.prototype.endsWith = function(str) {
  */
 Iroha.String.Wrapper.prototype.contains = function(str) {
 	return (this.value.indexOf(str) != -1);
+};
+
+/**
+ * returns true if the string is exactly matched with specified keyword.
+ * @param {String} str    checking keyword
+ * @return does the string match width the keyword exactly?
+ * @type Boolean
+ */
+Iroha.String.Wrapper.prototype.isMatch = function(str) {
+	return (this.value === str);
 };
 
 /**
