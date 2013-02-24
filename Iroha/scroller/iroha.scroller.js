@@ -4,7 +4,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.10.20130223
+ *    @version 3.11.20130223
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -88,7 +88,7 @@ $.extend(Iroha.Scroller.prototype,
 	 * @type Iroha.Scroller
 	 */
 	init : function(node, offsetX, offsetY, duration, easing, smartAbort) {
-		this.$node         = $(node).eq(0).addClass('iroha-scroller-enabled');;
+		this.$node         = $(node).eq(0);
 		this.offsetX       = Number(offsetX) || 0;
 		this.offsetY       = Number(offsetY) || 0;
 		this.duration      = (Number(duration) >= 0) ? Number(duration) : 1000;
@@ -105,79 +105,8 @@ $.extend(Iroha.Scroller.prototype,
 		var abort = $.proxy(function() { this.useSmartAbort && this.abort() }, this);
 		$node.on('click mousewheel touchstart', abort);
 		
-		return this;
-	},
-	
-	/**
-	 * スクロール処理を CSS Transform の translate() で実現するモードへ変更する。
-	 * スクロール領域内のコンテンツすべてが乗った要素ノードの位置を translate() で動かし、あたかもスクロールしているかのように見せる。
-	 * @param {jQuery|Element|String} [node]     translate() の適用対象ノード。スクロール領域内のコンテンツすべてを内包する要素。無指定時はそのような div 要素が生成される。
-	 * @return このインスタンス自身
-	 * @private
-	 */
-	useCssTranslate : function(stage) {
-		if (this.$node.is('html, body')) {
-			throw new Error('Iroha.Scroller#useTranslate: 現在のところ基底要素ノードが html, body 要素の場合に translate モードは利用不可です。');
-		
-		} else {
-			var capable = $.proxy(function() {
-				var $test = $(document.createElement('ins'))
-					.css('position', 'absolute')
-					.appendTo(document.body);
-				var a = $test.offset();
-				this.translate(10, 10, $test);
-				var b = $test.offset();
-				$test.remove();
-				return Math.abs(a.left - b.left) + Math.abs(a.top - b.top) > 0;
-			}, this)();
-			
-			if (capable) {
-				var $base  = this.$node.addClass('iroha-scroller-translate-enabled');
-				var $stage = $(stage).first();
-				
-				if (!$stage.length) {
-					$stage = $(document.createElement('div'));
-				}
-				if (!$base.children('*').is($stage)) {
-					$stage = $base.wrapInner($stage).children('*').first();
-				}
-				this.$stage = $stage.addClass('iroha-scroller-translate-target');
-				
-			}
-			
-			return this;
-		}
-	},
-	
-	/**
-	 * CSS Tranform の translate() を用いて、対象要素ノードの表示位置を移動する。
-	 * @param {Number}                [x=0]     移動距離 (X軸)。通常の translate() とは方向が逆。
-	 * @param {Number}                [y=0]     移動距離 (Y軸)。通常の translate() とは方向が逆。
-	 * @param {jQuery|Element|String} [node]    translate() の対象要素ノード。無指定時はスクロール領域の wrapper 要素。
-	 * @return このインスタンス自身
-	 * @private
-	 */
-	translate : function(x, y, node) {
-		var prefix = arguments.callee.__prefix__;
-		if (!prefix) {
-			var prefix = [];
-			var ua     = Iroha.ua;
-			ua.isWebKit && prefix.push('-webkit-');
-			ua.isGecko  && prefix.push('-moz-'   );
-			ua.isIE     && prefix.push('-ms-'    );
-			ua.isOpera  && prefix.push('-o-'     );
-			               prefix.push(''        );
-			arguments.callee.__prefix__ = prefix;
-		}
-		
-		x = (Number(x) || 0) * -1;
-		y = (Number(y) || 0) * -1;
-		$node = node ? $(node).first() : this.$stage;
-		var value = (x == 0 && y == 0) ? 'none' : 'translate(' + x + 'px,' + y + 'px)';
-		prefix.forEach(function(_prefix) {
-			$node.css(_prefix + 'transform', value);
-		});
-		$node.data('Iroha.Scroller.Translate', { x : x, y : y });
+		(this.$node.is('html') ? $(document.body) : this.$node)
+			.addClass('iroha-scroller-enabled');
 		
 		return this;
 	},
@@ -196,6 +125,7 @@ $.extend(Iroha.Scroller.prototype,
 		
 		} else {
 			this.abort();
+			this.busy = true;
 			
 			var $node = this.$node.is('body') ? $(document.documentElement) : this.$node;
 			var zoom  = 1;  // temporary, correct zoom ratio is needed for IE7...
@@ -204,7 +134,7 @@ $.extend(Iroha.Scroller.prototype,
 			duration  = (Number(duration) >= 0) ? Number(duration) : this.duration;
 			
 			var iOSps = Iroha.ua.isiOS && this.$node.is('html, body');
-			var trans = this.$stage.length > 0 && !iOSps;
+			var trans = this.$stage.length > 0;
 			
 			var start = this.scrollPos();
 			var end = {
@@ -218,48 +148,60 @@ $.extend(Iroha.Scroller.prototype,
 				, complete : $.proxy(this.complete, this)
 			};
 			
+			// スクロールの必要がまったくない場合。それでも完了コールバックをする。
 			if (start.left == end.left && start.top == end.top) {
-				this.busy = true; // complete() が busy=true でなければ無視するから。
 				options.complete();
 			
 			} else {
 				this.destination = $.extend(null, end);  // 参照切断して格納。
 				this.doCallbackByName('onStart');
 				
+				// ----- 以下、スクロールアニメ処理 -----
+				
+				// CSS transform, translate(3d), transition によりスクロール（しているかのように見せる）
+				// GPU による加速が期待できるかわりに表示に不具合を起こしがち。スマホ、タブレットデバイス等向け。
 				if (trans) {
 					end.left -= start.left;
 					end.top  -= start.top;
 					start.left = 0;
 					start.top  = 0;
+					
+					this.translate(end.left, end.top, duration)
+						.progress(function(name) { options.step()     })
+						.done    (function()     { options.complete() });
+				
+				
+				// 旧来の DOM メソッド使用のスクロール。
+				// PC ブラウザであればこれで十分にパフォーマンスする。
+				} else {
+					// 一見、 jQuery.animate() を使えばいいように見えるが、あえてしていない。
+					var $node  = this.$node;
+					var timer  = new Iroha.Timer;
+					var easing = $.easing[options.easing];
+					var setPos = iOSps
+						? window.scrollTo
+						: function(left, top) { $node.prop({ scrollLeft : left, scrollTop : top }) };
+					
+					// 実際にスクロールを駆動させている
+					var animate = $.proxy(function() {
+						var elapsed = timer.getTime();
+						var left    = Math.round(easing(null, elapsed, start.left, end.left - start.left, duration));
+						var top     = Math.round(easing(null, elapsed, start.top , end.top  - start.top , duration));
+						
+						setPos(left, top);
+						options.step();
+						
+						if (duration <= elapsed) {
+							setPos(end.left, end.top);
+							options.complete();
+						}
+					}, this);
+					
+					// スクロール開始
+					duration == 0
+						? animate()
+						: (this.animeTimer = new Iroha.Interval(animate, 16));
 				}
-				
-				// ----- 以下、スクロールアニメ処理 -----
-				// 一見、 jQuery.animate() を使えばいいように見えるが、あえてしていない。
-				
-				var timer  = new Iroha.Timer;
-				var easing = $.easing[options.easing];
-				var setPos = iOSps
-					? window.scrollTo
-					: trans
-						? $.proxy(this.translate, this)
-						: $.proxy(function(left, top) { this.$node.prop({ scrollLeft : left, scrollTop : top }) }, this); 
-				var animate = $.proxy(function() {
-					var elapsed = timer.getTime();
-					var left    = Math.round(easing(null, elapsed, start.left, end.left - start.left, duration));
-					var top     = Math.round(easing(null, elapsed, start.top , end.top  - start.top , duration));
-					
-					setPos(left, top);
-					options.step();
-					
-					if (duration <= elapsed) {
-						setPos(end.left, end.top);
-						options.complete();
-					}
-				}, this);
-				
-				duration == 0
-					? animate()
-					: (this.animeTimer = new Iroha.Interval(animate, 16));
 			}
 		}
 		return this;
@@ -325,8 +267,8 @@ $.extend(Iroha.Scroller.prototype,
 		switch (arguments.length) {
 			case 0  :
 				var $node = this.$node;
-				var trans = this.$stage.data('Iroha.Scroller.Translate') || { x : 0, y : 0 };
-				return { left : $node.scrollLeft() - trans.x, top : $node.scrollTop() - trans.y };
+				var pos   = this.$stage.data('Iroha.Scroller.Translate.pos') || { left : 0, top : 0 };
+				return { left : $node.scrollLeft() - pos.left, top : $node.scrollTop() - pos.top };
 			case 1  :
 				throw new ReferenceError('Iroha.Scroller#scrollPos: 2 arguments are required in setter mode.');
 			case 2  :
@@ -341,11 +283,162 @@ $.extend(Iroha.Scroller.prototype,
 	},
 	
 	/**
+	 * スクロール処理を CSS Transform の translate() で実現するモードへ変更する。
+	 * スクロール領域内のコンテンツすべてが乗った要素ノードの位置を translate() で動かし、あたかもスクロールしているかのように見せる。
+	 * @param {jQuery|Element|String} [node]     translate() の適用対象ノード。スクロール領域内のコンテンツすべてを内包する要素。無指定時はそのような div 要素が生成される。
+	 * @return このインスタンス自身
+	 * @private
+	 */
+	useCssTranslate : function(stage) {
+		// CSS Translate と CSS Transition が両方使えるものを適合ブラウザとする。
+		// WebKit ブラウザは予めそれが明白なブラウザ。
+		var capable = Iroha.ua.isWebkit;
+		var prepare = $.proxy(function() {
+			var cnpfx  = 'iroha-scroller-translate';
+			var $base  = (this.$node.is('html') ? $(document.body) : this.$node).addClass(cnpfx + '-enabled');
+			var $stage = $(stage).first();
+			
+			if (!$stage.length) {
+				$stage = $(document.createElement('div'));
+			}
+			if (!$base.children('*').is($stage)) {
+				$stage = $base.wrapInner($stage).children('*').first();
+			}
+			this.$stage = $stage.addClass(cnpfx + '-target');
+			
+			// transform, transition 等のプロパティ初期値をあらかじめセットしておくことで、スクロール開始時のチラツキを抑える。
+			this.translate(0, 0, 0, $stage);
+		}, this);
+		
+		if (capable) {
+			prepare();
+		
+		// 適合ブラウザかどうか、実際に Translate と Transition を動かして判定。
+		} else {
+			var $test  = $(document.createElement('ins')).css('position', 'absolute').appendTo(document.body);
+			var before = $test.offset();
+			
+			// duration の 500ms は最低このくらい無いと判定にしくじりやすい印象
+			this.translate(100, 100, 500, $test)
+				.done($.proxy(function() {
+					var after   = $test.offset();
+					    capable = Math.abs(before.left - after.left) + Math.abs(before.top - after.top) > 0;
+					capable && prepare();
+					$test.remove();
+				}, this));
+		}
+		
+		return this;
+	},
+	
+	/**
+	 * CSS Tranform の translate() を用いて、対象要素ノードの表示位置を移動する。
+	 * @param {Number}                [x=0]     移動距離 (X軸)。通常の translate() とは方向が逆。
+	 * @param {Number}                [y=0]     移動距離 (Y軸)。通常の translate() とは方向が逆。
+	 * @param {Number}                [d=0]     トランジション時間。ミリ秒で指定。
+	 * @param {jQuery|Element|String} [node]    translate() の対象要素ノード。無指定時はスクロール領域の wrapper 要素。
+	 * @return このインスタンス自身
+	 * @private
+	 */
+	translate : function(x, y, d, node) {
+		var dfd    = $.Deferred();
+		var ns     = 'Iroha.Scroller.Translate';
+		
+		// ベンダープレフィクスの適合を探して格納
+		var prefix = arguments.callee.__prefix__;
+		if (!prefix) {
+			var prefix = [];
+			var ua     = Iroha.ua;
+			ua.isWebKit && prefix.push('-webkit-');
+			ua.isGecko  && prefix.push('-moz-'   );
+			ua.isIE     && prefix.push('-ms-'    );
+			ua.isOpera  && prefix.push('-o-'     );
+			               prefix.push(''        );
+			arguments.callee.__prefix__ = prefix;
+		}
+		
+		// transitionend イベント名にベンダープレフィクスと、名前空間文字列を付与したものを作成。
+		var transend = arguments.callee.__transend__;
+		if (!transend) {
+			transend = 'TransitionEnd';
+			transend = prefix.map(function(pfx) {
+				pfx = pfx.replace(/-/g, '');
+				return (pfx ? pfx + transend : transend.toLowerCase()) + '.' + ns;
+			}).join(' ');
+			arguments.callee.__transend__ = transend;
+		}
+		
+		x = (Number(x) || 0) * -1;
+		y = (Number(y) || 0) * -1;
+		d = Math.max(0, d) || 0;
+
+		var $node      = node ? $(node).first() : this.$stage;
+		var transform  = /* x == 0 && y == 0 ? '' : */ 'translate3d(${x}px, ${y}px, 0px)';
+		var transition = /* d == 0           ? '' : */ '${pfx}transform ${d}s ease 0s';
+		var params     = { x : x, y : y, d : d / 1000 };
+		var origin     = $node.offset();
+		
+		// 既存のタイマーを停止
+		clearInterval($node.data(ns + '.interval'));
+		clearTimeout ($node.data(ns + '.timeout' ));
+		
+		// 疑似スクロールアニメーション発動開始
+		prefix.forEach(function(pfx) {
+			$.extend(params, { pfx : pfx });
+			$node
+				.css(pfx + 'transition', Iroha.String(transition).format(params).get())
+				.css(pfx + 'transform' , Iroha.String(transform ).format(params).get())
+				.css(pfx + 'backface-visibility', 'hidden');
+		});
+		
+		// 所要時間 0 の指定なら即座に完了をコールバック
+		if (d == 0) {
+			$node.data(ns + '.pos', { left : x, top : y });
+			dfd.notify();
+			dfd.resolve();
+		
+		// そうでなければふつうに TransitionEnd を検出して完了をコールバック
+		} else {
+			// 途中経過を等間隔でコールバックしつづけるインターバルタイマー。
+			// translate による表示位置の移動量を、純粋な引き算で検出しつつ
+			// data 属性に保持。これを {@link #scrollPos} メソッドが利用する。
+			var interval = setInterval(function() {
+				var pos = $node.offset();
+				$node.data(ns + '.pos', { left : Math.round(pos.left - origin.left), top : Math.round(pos.top - origin.top) });
+				dfd.notify();
+			}, 16);
+			
+			// TransitionEnd が所要時間内に終わらない場合があるのを考慮。
+			// 時間が来たら強制的に発火。
+			var timeout  = setTimeout (function() {
+				$node.trigger(transend.split(' ')[0])
+			}, d);
+			
+			// 上記のタイマーを保持して走らせつつ、TransitionEnd を待つ。
+			$node
+				.data(ns + '.interval', interval)
+				.data(ns + '.timeout' , timeout )
+				
+				// {@link #abort} したときにイベントが unbind されず残って、不具合を起こすのを回避。
+				.unbind(transend)
+				
+				// transition 完了（または強制発火）により完了コールバック
+				.bind(transend, function() {
+					$node.unbind(transend).data(ns + '.pos', { left : x, top : y });
+					clearInterval(interval);
+					clearTimeout(timeout  );
+					dfd.resolve();
+				});
+		}
+		
+		return dfd.promise();
+	},
+	
+	/**
 	 * callback func for scrolling
 	 * @private
 	 */
 	step : function() {
-		this.busy = true;
 		this.doCallbackByName('onScroll');
 	},
 	
@@ -367,6 +460,10 @@ $.extend(Iroha.Scroller.prototype,
 	 */
 	abort : function() {
 		if (this.busy) {
+			// CSS transform, translate(3d), transition により
+			// 擬似的にスクロールさせているのを中断するために、transition プロパティを消す。
+			this.$stage.css('transition', '');
+			
 			this.postProcess();
 			this.doCallbackByName('onAbort');
 		}
@@ -384,9 +481,12 @@ $.extend(Iroha.Scroller.prototype,
 		this.$node.stop();
 		this.animeTimer.clear();
 		
+		// CSS transform, translate(3d), transition により擬似的にスクロールさせていたなら
+		// translate で動かした分を実際のスクロール量に置き換え、translate は無かったことにして
+		// つじつまを合わせる。
 		if (this.$stage.length) {
 			var pos = this.scrollPos();
-			this.translate(0, 0);
+			this.translate(0, 0, 0);
 			this.$node.prop({ scrollLeft : pos.left, scrollTop : pos.top });
 		}
 		

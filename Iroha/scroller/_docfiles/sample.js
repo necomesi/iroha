@@ -15,6 +15,7 @@
 
 $(function() {
 	Iroha.PageScroller.init()
+//		.useCssTranslate()
 		.addCallback('onStart'   , function() { console.log('page : start   ', arguments) })
 		.addCallback('onScroll'  , function() { console.log('page : scroll  ', arguments) })
 		.addCallback('onDone'    , function() { console.log('page : done    ', arguments) })
@@ -36,8 +37,9 @@ $(function() {
 		});
 
 	var $field2 = $('#field2');
+	var $stage  = $field2.children('ul');
 	var field2  = Iroha.Scroller.create($field2)
-		.useCssTranslate($field2.children('ul'))
+		.useCssTranslate($stage)
 		.addCallback('onStart'   , function() { console.log('field2 : start   ', arguments) })
 		.addCallback('onScroll'  , function() { console.log('field2 : scroll  ', arguments) })
 		.addCallback('onDone'    , function() { console.log('field2 : done    ', arguments) })
