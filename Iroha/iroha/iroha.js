@@ -2793,6 +2793,37 @@ Iroha.delay = function(delay, aThisObject) {
 
 
 
+/* --------------- Function : Iroha.injectWeinre --------------- */
+/**
+ * Weinre をつかってインスペクトを始める（そのための外部 JS を非同期で注入する）。
+ * Weinre : {@link http://people.apache.org/~pmuellr/weinre/docs/latest/}
+ * @param {String} [ident="anonymous"]         アプリケーション識別子。任意に設定。
+ * @param {Stirng] [host=location.hostname]    Weinre が稼働しているマシンのホストネーム。無指定時は表示中の HTML と同じものが指定される。
+ * @param {Stirng] [port="8080"]               Weinre が稼働している（Listenしている）ポート番号。無指定時はデフォルトの "8080"。
+ * @return Iroha オブジェクト
+ * @type Iroha
+ */
+Iroha.injectWeinre = function(ident, host, port) {
+	if (!Iroha.alreadyApplied(arguments.callee)) {
+		var url   = '${protocol}//${host}:${port}/target/target-script-min.js#${ident}';
+		var param = {
+			  protocol : location.protocol
+			, ident    : ident || 'anonymous'
+			, host     : host  || location.hostname
+			, port     : port  || '8080'
+		}
+		$(function() {
+			$(document.createElement('script'))
+				.prop('src', Iroha.String(url).format(param).get())
+				.addClass('iroha-inject-weinre')
+				.appendTo('head');
+		});
+	}
+	return this;
+};
+
+
+
 /* =============== additional jQuery plugin methods =============== */
 
 /* -------------------- jQuery.fn : Iroha_getComputedStyle -------------------- */
