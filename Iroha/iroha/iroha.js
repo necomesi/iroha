@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.28.20130224
+ *    @version 3.30.20130303
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -458,637 +458,6 @@ if (!Array.prototype.every) {
 
 
 
-/* ============================== Iroha build-in object wrapper classes ============================== */
-
-/* --------------- Class : Iroha.Number --------------- */
-/**
- * get number manipulator {@link Iroha.Number.Wrapper}.
- * @namespace number manipulator
- * @param {Number} [value]    number to manipulate.
- * @return Iroha.Number.Wrapper instance
- * @type Iroha.Number.Wrapper
- */
-Iroha.Number = function(value) {
-	return new Iroha.Number.Wrapper(value);
-};
-
-/* ----- Class : Iroha.Number.Wrapper ----- */
-/**
- * number manipulator; the instance is available as return value of {@link Iroha.Number}
- * @class number manipulator.
- * @param {Number} [value=0]    number to manipulate.
- * @constructor
- * @see Iroha.Number
- */
-Iroha.Number.Wrapper = function(value) {
-	/** stored number to manipulate
-	    @type Number
-	    @private */
-	this.value = Number(value) || 0;
-};
-
-/**
- * get current number as string
- * @returns get current number as string
- * @type String
- */
-Iroha.Number.Wrapper.prototype.toString = function() {
-	return String(this.value);
-};
-
-/**
- * get current number
- * @returns get current number
- * @type Number
- */
-Iroha.Number.Wrapper.prototype.get = function() {
-	return this.value;
-};
-
-/**
- * simple number formatter.
- * @param {String} format     fomatter string
- * @return string manipulator instance contains result string of this method
- * @type Iroha.String.Wrapper
- * @example
- *  Iroha.Number(     '56'   ).format(      '000'    ).get() ->        '056'
- *  Iroha.Number( '123456'   ).format(      '###'    ).get() ->        '456'
- *  Iroha.Number( '123456.78').format('#,###,###'    ).get() ->    '123,457'
- *  Iroha.Number( '123456.78').format('#,###,###.#'  ).get() ->    '123,456.8'
- *  Iroha.Number('-123456.78').format('0,###,###.000').get() -> '-0,123,456.780'
- */
-Iroha.Number.Wrapper.prototype.format = function(format) {
-	if (!format || typeof format != 'string') {
-		throw new TypeError('Iroha.Number.Wrapper.format: first argument must be a formatting string.');
-	} else {
-		var ret       = [];
-		var num       = parseFloat(this.value) || 0;
-		var intFormat = format.split('.')[0].split('');
-		var decFormat = format.split('.')[1] || '';
-		var value     = (decFormat) ? Math.abs(num) : Math.round(Math.abs(num));
-		var sign      = (num < 0) ? '-' : '';
-		var intValue  = value.toString().split('.')[0].split('');
-		do {
-			var _value  = intValue .pop() || '';
-			var _format = intFormat.pop() || '';
-			switch (_format) {
-				case '0' : ret.push(_value  ? _value : '0');                        break;
-				case '#' : ret.push(_value  ? _value : '' );                        break;
-				case ''  : /* exit do-while loop */          intValue = [];         break;
-				default  : ret.push(_format               ); intValue.push(_value); break;
-			}
-		} while (intValue.length > 0 || intFormat.length > 0);
-		ret = ret.reverse().join('').replace(/^\D+/, '');
-		if (decFormat) {
-			var scale     = Math.pow(10, decFormat.length);
-			var rounded   = Math.round(value * scale) / scale;
-			if (rounded - ret == 1) {
-				ret++;
-			}
-			var decValue  = rounded.toString().split('.')[1] || '0';
-			    decValue  = decValue .split('').reverse().join('');
-			    decFormat = decFormat.split('').reverse().join('');
-			    ret       = ret + '.' + Iroha.Number(decValue).format(decFormat).split('').reverse().join('');
-		}
-		if (Iroha.String(decFormat).startsWith('#') && Iroha.String(ret).endsWith('.0')) {
-			ret = Iroha.String(ret).getBefore('.0');
-		}
-		return Iroha.String(sign + ret);
-	}
-};
-
-
-
-/* --------------- Class : Iroha.String --------------- */
-/**
- * get string manipulator {@link Iroha.String.Wrapper}.
- * @namespace string manipulator
- * @param {String} [value]    string to manipulate.
- * @returns Iroha.String.Wrapper instance
- * @type Iroha.String.Wrapper
- */
-Iroha.String = function(value) {
-	return new Iroha.String.Wrapper(value);
-};
-
-/**
- * get random string.
- * @param {String} [chars]    characters which is using for random string.
- * @param {Number} num        number of characters
- * @returns Iroha.String.Wrapper instance
- * @type Iroha.String.Wrapper
- */
-Iroha.String.random = function(chars, num) {
-	var chars = ($.type(chars) == 'string') ? chars : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	var num   = (num > 0) ? num : 24;
-	var ret   = '';
-	while (num--) {
-		ret += chars.split('')[parseInt(Math.random() * chars.length)]
-	}
-	return this(ret);
-};
-
-Iroha.String.guid = function() {
-	var chars = '0123456789ABCDEF';
-	var arr   = [ 8, 4, 4, 4, 12 ].map(function(n) { return Iroha.String.random(chars, n).get() });
-	return Iroha.String('${0}-${1}-${2}-${3}-${4}').format(arr);
-}
-
-
-
-/* ----- Class : Iroha.String.Wrapper ----- */
-/**
- * creates string manipulator; the instance is available as return value of {@link Iroha.String}
- * @class string manipulator.
- * @param {String} [value='']    string to manipulate.
- * @constructor
- * @see Iroha.String
- */
-Iroha.String.Wrapper = function(value) {
-	/** stored string to manipulate
-	    @type String
-	    @private */
-	this.value  = String(value === undefined ? '' : value);
-	/** string length
-	    @type Number */
-	this.length = this.value.length;
-};
-
-/**
- * get current string
- * @returns current string
- * @type String
- */
-Iroha.String.Wrapper.prototype.toString = function() {
-	return this.value;
-};
-
-/**
- * get current string
- * @returns current string
- * @type String
- * @function
- */
-Iroha.String.Wrapper.prototype.get = Iroha.String.Wrapper.prototype.toString
-
-/**
- * simple text formatter. (super tiny!)
- * @param {String|String[]|Object}  arg1     a string, an array, or an associative array.
- * @param {String}                 [argN]    a string
- * @return this instance itself
- * @type Iroha.String.Wrapper
- * @example
- *  Iroha.String('${0}HOGE${1}FUGA${2}').format(    'xxx', '  yyy',   'zzz'  ).get()
- *  Iroha.String('${0}HOGE${1}FUGA${2}').format([   'xxx',   'yyy',   'zzz' ]).get()
- *  Iroha.String('${A}HOGE${B}FUGA${C}').format({ A:'xxx', B:'yyy', C:'zzz' }).get()
- *  Iroha.String('${A}HOGE${B.C}FUGA${B.D.E}').format({ A: 'xxx', B: { C:'yyy', D: { E:'zzz' } } }).get()
- *      -> 'xxxHOGEyyyFUGAzzz'
- */
-Iroha.String.Wrapper.prototype.format = function(arg1, /* arg2, arg3 ..., */ argN) {
-	var data;
-	if (arguments.length == 0) {
-		return this;
-	} else if (typeof arg1 == 'object' && !(arg1 instanceof Iroha.String.Wrapper)) {
-		data = arg1;
-	} else {
-		data = $.makeArray(arguments).map(function(a) { return $.type(a) == 'undefined' ? a : String(a) });
-	}
-	this.replace(/\$\{(.+?)\}/g, function(_, key) {
-		var replace = $.type(data) == 'array' ? data[key] : Iroha.getValue(key, data);
-		return ($.type(replace) == 'undefined') ? '${' + key + '}' : replace;
-	})
-	return this;
-};
-
-/**
- * get string before specified keyword.
- * @param {String}  str            find keyword
- * @param {Boolean} [include]      if true, 'str' is included in manipulating string
- * @param {Boolean} [longMatch]    if true, use longest match (returned text length is longer)
- * @return this instance itself
- * @type Iroha.String.Wrapper
- */
-Iroha.String.Wrapper.prototype.getBefore = function(str, include, longMatch) {
-	if (typeof str != 'string') {
-		throw new TypeError('Iroha.String.Wrapper.getBefore: first argument must be a string.');
-	} else if (str) {
-		var idx     = (!longMatch) ? this.value.indexOf(str) : this.value.lastIndexOf(str);
-		this.value  = (idx == -1) ? '' : this.value.substring(0, idx) + (include ? str : '');
-		this.length = this.value.length;
-	}
-	return this;
-};
-
-/**
- * get string after specified keyword.
- * @param {String}  str            find keyword
- * @param {Boolean} [include]      if true, 'str' is included in manipulating string
- * @param {Boolean} [longMatch]    if true, use longest match (returned text length is shorter)
- * @return this instance itself
- * @type Iroha.String.Wrapper
- */
-Iroha.String.Wrapper.prototype.getAfter = function(str, include, longMatch) {
-	if (typeof str != 'string') {
-		throw new TypeError('String.Wrapper.getAfter: first argument must be a string.');
-	} else if (str) {
-		var idx     = (!longMatch) ? this.value.indexOf(str) : this.value.lastIndexOf(str);
-		this.value  = (idx == -1) ? '' : (include ? str : '') + this.value.substring(idx + str.length, this.value.length);
-		this.length = this.value.length;
-	}
-	return this;
-};
-
-/**
- * returns true if the string is started with specified keyword.
- * @param {String}  str    checking keyword
- * @return is the string started with the keyword?
- * @type Boolean
- */
-Iroha.String.Wrapper.prototype.startsWith = function(str) {
-	return (this.value.indexOf(str) == 0);
-};
-
-/**
- * returns true if the string is ended with specified keyword.
- * @param {String} str    checking keyword
- * @return is the string ended with the keyword?
- * @type Boolean
- */
-Iroha.String.Wrapper.prototype.endsWith = function(str) {
-	var idx = this.value.lastIndexOf(str);
-	return (idx > -1 && idx + str.length == this.value.length);
-};
-
-/**
- * returns true if the string contains specified keyword.
- * @param {String} str    checking keyword
- * @return does the string contain the keyword?
- * @type Boolean
- */
-Iroha.String.Wrapper.prototype.contains = function(str) {
-	return (this.value.indexOf(str) != -1);
-};
-
-/**
- * returns true if the string is exactly matched with specified keyword.
- * @param {String} str    checking keyword
- * @return does the string match width the keyword exactly?
- * @type Boolean
- */
-Iroha.String.Wrapper.prototype.isMatch = function(str) {
-	return (this.value === str);
-};
-
-/**
- * convert relative path/URL to absolute path/URL.
- * @param {String} base    absolute path/URL as a base.
- * @return this instance itself
- * @type Iroha.String.Wrapper
- * @example
- *  Iroha.String('../target/').rel2abs('/path/to/base/'      ).get() -> '/path/to/target/'
- *  Iroha.String('../target/').rel2abs('http://path/to/base/').get() -> 'http://path/to/target/'
- */
-Iroha.String.Wrapper.prototype.rel2abs = function(base) {
-	var target = this.value;
-	var b      = base  .split('/');
-	var t      = target.split('/');
-	var ptn = /^(\/|\w+:)/;
-	if (!base.match(ptn)) {
-		throw new TypeError('Iroha.String.Wrapper.rel2abs: first argument must be an absolute path/URL.');
-	} else if (target.match(ptn)) {
-		// do nothing
-	} else if (target.charAt(0) == '#' || target.charAt(0) == '?') {
-		this.value = base + target;
-	} else if (t[0] == '.' || t[0] == '..') {
-		this.value = Iroha.String(t.slice(1, t.length).join('/')).rel2abs(b.slice(0, b.length - t[0].length).join('/') + '/').get();
-	} else {
-		this.value = b.slice(0, b.length - 1).join('/') + '/' + target;
-	}
-	this.length = this.value.length;
-	return this;
-};
-
-/**
- * convert absolute path/URL to relative path/URL.
- * @param {String} base    absolute path/URL as a base.
- * @return this instance itself
- * @type Iroha.String.Wrapper
- * @example
- *  Iroha.String(      '/path/to/target/').abs2rel('/path/to/base/'      ).get() -> '../target/'
- *  Iroha.String('http://path/to/target/').abs2rel('http://path/to/base/').get() -> '../target/'
- */
-Iroha.String.Wrapper.prototype.abs2rel = function(base) {
-	var ptn = /^(\/|\w+:)/;
-	if (!base.match(ptn)) {
-		throw new TypeError('Iroha.String.Wrapper.abs2rel: first argument must be an absolute path/URL.');
-	} else if (!this.value.match(ptn)) {
-		throw new TypeError('Iroha.String.Wrapper.abs2rel: current string is not an absolute path/URL.');
-	} else {
-		this.value  =  _compare(base, this.value).replace(/^\//, '') || base;
-		this.length = this.value.length;
-	}
-	return this;
-	
-	function _compare(base, target) {
-		var b = base  .split('/');
-		var t = target.split('/');
-		if (!base) {
-			return target;
-		} else if (!target) {
-			return _goup(base);
-		} else if (b[0] != t[0]) {
-			return _goup(base) + target;
-		} else {
-			return arguments.callee(b.slice(1).join('/'), t.slice(1).join('/'));
-		}
-	}
-	
-	function _goup(path) {
-		return path.split('/').slice(1).map(function() { return '..' }).join('/') + '/';
-	}
-};
-
-/**
- * replace string, similar to String#replace.
- * @param {String|RegExp} find       expression to find target.
- * @param {String}        replace    replacing text.
- * @return this instance itself
- * @type Iroha.String.Wrapper
- */
-Iroha.String.Wrapper.prototype.replace = function(find, replace) {
-	this.value  = this.value.replace(find, replace);
-	this.length = this.value.length;
-	return this;
-};
-
-/**
- * convert to sanitized string
- * @return this instance itself
- * @type Iroha.String.Wrapper
- */
-Iroha.String.Wrapper.prototype.sanitize = function() {
-	var pairs = {
-		  '&'      : '&amp;'
-		, '<'      : '&lt;'
-		, '>'      : '&gt;'
-		, '\u0022' : '&quot;'
-		, '\u0027' : '&apos;'
-	};
-	for (var key in pairs) {
-		this.replace(new RegExp(key, 'g'), pairs[key]);
-	}
-	return this;
-};
-
-/**
- * add percent escape using "encodeURI" or "encodeURIComponent".
- * @param {Boolean} [bool=false]    if true, this uses "encodeURIComponent" instead of "encodeURI".
- * @return this instance itself
- * @type Iroha.String.Wrapper
- */
-Iroha.String.Wrapper.prototype.encodeURI = function(bool) {
-	this.value  = bool ? encodeURIComponent(this.value) : encodeURI(this.value);
-	this.length = this.value.length;
-	return this;
-};
-
-/**
- * add percent escape using "decodeURI" or "decodeURIComponent".
- * @param {Boolean} [bool=false]    if true, this uses "decodeURIComponent" instead of "decodeURI".
- * @return this instance itself
- * @type Iroha.String.Wrapper
- */
-Iroha.String.Wrapper.prototype.decodeURI = function(bool) {
-	this.value  = bool ? decodeURIComponent(this.value) : decodeURI(this.value);
-	this.length = this.value.length;
-	return this;
-};
-
-
-
-/* --------------- Class : Iroha.StyleSheets --------------- */
-/**
- * get styleSheet wrapper instance.
- * @namespace styleSheet manipulator
- * @param {Number|StyleSheet} [arg]    index number in StyleSheet list / StyleSheet object
- * @return styleSheet wrapper instance
- * @type Iroha.StyleSheets.Wrapper
- * @example
- *  Iroha.StyleSheets().insertRule('body { color: red }');          // set font color to red
- *  Iroha.StyleSheets().each(function() { this.disabled = true });  // diable all style
- */
-Iroha.StyleSheets = function(arg) {
-	var sheets = document.styleSheets;
-	
-	if (Iroha.ua.isSafari) {
-		var $cssNode = $('link').filter(function() { return Boolean(this.sheet) });
-		var dataName = 'Iroha.StyleSheets.Sheet.disabled';
-
-		if ($cssNode.length > sheets.length) {
-			$cssNode.each(function() {
-				$(this).data(dataName, ($.inArray(this.sheet, sheets) == -1));
-				this.disabled = true;
-				this.disabled = false;
-			});
-			$.each(sheets, function() {
-				this.disabled = $(this.ownerNode).data(dataName);
-			});
-		}
-	}
-
-	if (typeof arg == 'number') {
-		sheets = sheets[arg];
-	} else if (typeof arg == 'object' && arg.type == 'text/css') {
-		sheets = arg;
-	}
-
-	return new Iroha.StyleSheets.Wrapper(sheets);
-};
-
-/* ----- Class : Iroha.StyleSheets.Wrapper ----- */
-/**
- * styleSheet wrapper; the instance is available as return value of {@link Iroha.StyleSheets}
- * @class styleSheet wrapper
- * @param {StyleSheetList} [sheets]    styleSheet list
- * @constructor
- */
-Iroha.StyleSheets.Wrapper = function(sheets) {
-	/** number of styleSheets owned by this instance.
-	    @type Number */
-	this.length = 0;
-
-	$.makeArray(sheets).forEach(function(sheet, i) {
-		this[i] = sheet;
-		this.length++;
-	}, this);
-};
-
-/**
- * get new instance that has a styleSheet indicated by index number.
- * @param {Number} [index]    index number to get.
- * @return new instance that has a styleSheet.
- * @type Iroha.StyleSheets.Wrapper
- */
-Iroha.StyleSheets.Wrapper.prototype.eq = function(index) {
-	var sheet = (typeof index == 'number') ? this[index] : null;
-	return new this.constructor(sheet);
-};
-
-/**
- * get new instance that has a styleSheet of last index.
- * @return new instance that has a styleSheet
- * @type Iroha.StyleSheets.Wrapper
- */
-Iroha.StyleSheets.Wrapper.prototype.first = function() {
-	return new this.constructor(this[0]);
-};
-
-/**
- * get new instance that has a styleSheet of last index.
- * @return new instance that has a styleSheet
- * @type Iroha.StyleSheets.Wrapper
- */
-Iroha.StyleSheets.Wrapper.prototype.last = function() {
-	return new this.constructor(this[this.length - 1]);
-};
-
-/**
- * get DOM StyleSheet object specified by index number, or an array of StyleSheets
- * @param {Number} [index]    index number to get.
- * @return StyleSheet object specified by index number, or an array of StyleSheets
- * @type StyleSheet|Array
- */
-Iroha.StyleSheets.Wrapper.prototype.get = function(index) {
-	return (typeof index == 'number') ? this[index] : Array.prototype.slice.call(this);
-};
-
-/**
- * get "ownerNode" of a DOM StyleSheet specified by index number, or an array of ownerNodes of the StyleSheets.
- * @param {Number} [index]    index number to get.
- * @return "ownerNode" of a DOM StyleSheet specified by index number, or an array of ownerNodes of the StyleSheets
- * @type Element|Element[]
- */
-Iroha.StyleSheets.Wrapper.prototype.getOwnerNode = function(index) {
-	if (typeof index == 'number') {
-		return this[index].ownerNode || this[index].owingElement;
-	} else {
-		return Array.prototype.map.call(this, function(e, i) { return this.getOwnerNode(i) }, this);
-	}
-};
-
-/**
- * get number of styleSheets owned by this instance.
- * @return number of styleSheets owned by this instance.
- * @type Number
- */
-Iroha.StyleSheets.Wrapper.prototype.size = function() {
-	return this.length;
-};
-
-/**
- * calls a function for each styleSheet in this instance; compatible with jQuery.each().
- * @param {Iroha.StyleSheets.Wrapper.callback.test} aCallback    the function to exec for every styleSheet; if the func returns false, it terminates iteration.
- * @return this instance itself
- * @type Iroha.StyleSheets.Wrapper
- */
-Iroha.StyleSheets.Wrapper.prototype.each = function(aCallback) {
-	$.each(this.get(), aCallback);
-	return this;
-};
-
-/**
- * filter styleSheets in this instance; compatible with jQuery.filter().
- * @param {Iroha.StyleSheets.Wrapper.callback.test} aCallback    the function to exec for every styleSheet; if the func returns false, the styleSheet is filtered.
- * @return new instance that has filtered styleSheets.
- * @type Iroha.StyleSheets.Wrapper
- */
-Iroha.StyleSheets.Wrapper.prototype.filter = function(aCallback) {
-	return new this.constructor(this.get().filter(function(s, i) { return aCallback.call(s, i, s) }));
-};
-
-/**
- * insert css rule; the rule insert to the first styleSheet in this instance.
- * @param {String} cssText    css rule text to add
- * @return this instance itself
- * @type Iroha.StyleSheets.Wrapper
- */
-Iroha.StyleSheets.Wrapper.prototype.insertRule = function(cssText) {
-	var expr  = /([^\{]+)(\{.+\})/;
-	var sheet = this.get(0);
-	if (!sheet) {
-		return;
-	} else if (!expr.test(cssText)) {
-		throw new TypeError('Iroha.StyleSheets.Wrapper.insertRule : first argument must be a style rule text.');
-	} else {
-		if (!sheet.insertRule && !sheet.addRule) {
-			var style = document.createElement('style');
-			style.type= 'text/css';
-			style.appendChild(document.createTextNode(cssText));
-			document.getElementsByTagName('head')[0].appendChild(style);
-		} else if (sheet.insertRule) {  // Std DOM.
-			var pos = sheet.cssRules ? sheet.cssRules.length : 0;  // workaround for Chrome in "file:" protocol.
-			sheet.insertRule(cssText, pos);
-		} else if (sheet.addRule) {     // old IE
-			var regex     = expr.exec(cssText);
-			var selector  = $.trim(regex[1]);
-			var predicate = $.trim(regex[2]);
-			if (Iroha.ua.documentMode >= 8) {
-				predicate = predicate.slice(1, predicate.length - 1);
-			}
-			selector.split(',').forEach(function(_selector) {
-				sheet.addRule(_selector, predicate);
-			});
-		}
-		return this;
-	}
-};
-
-/**
- * 現在保持しているスタイルシートのうち最初のものが持つ、スタイルルールオブジェクト群を得る
- * @return スタイルルールオブジェクト群
- * @type CSSRuleList
- */
-Iroha.StyleSheets.Wrapper.prototype.getRules = function() {
-	var sheet = this.get(0);
-	return !sheet ? undefined : sheet.cssRules || sheet.rules;
-};
-
-/**
- * 現在保持しているスタイルシートのうち最初のものの、指定インデックス番号にあるスタイルルールを削除する。
- * @param {Number} index    削除対象のスタイルルールインデックス番号。非負整数。
- * @return このインスタンス自身
- * @type Iroha.StyleSheets.Wrapper
- */
-Iroha.StyleSheets.Wrapper.prototype.removeRule = function(index) {
-	var sheet = this.get(0);
-	sheet && sheet.removeRule(index);
-	return this;
-};
-
-
-
-/* ----- for JSDoc toolkit output ----- */
-/**
- * higher-order functions for member methods of {@link Iroha.StyleSheets.Wrapper}
- * @name Iroha.StyleSheets.Wrapper.callback
- * @namespace higher-order functions for member methods of  {@link Iroha.StyleSheets.Wrapper}
- */
-/**
- * higher-order function for {@link Iroha.StyleSheets.Wrapper#each}, {@link Iroha.StyleSheets.Wrapper#filter}
- * @function
- * @name Iroha.StyleSheets.Wrapper.callback.test
- * @param {Number}      anIndex      current processing index-num of the styleSheet.
- * @param {StyleSheet}  anSheet      current styleSheet.
- * @returns processing result value (boolean) of this function
- * @type Boolean
- */
-
-
-
-
-
-
-
 /* ============================== Iroha classes ============================== */
 
 /* -------------------- Class : Iroha.ViewClass -------------------- */
@@ -1124,7 +493,7 @@ $.extend(Iroha.ViewClass,
 	 * @type Function
 	 */
 	applyTo : function(constructor) {
-		$.isFunction(constructor) || (constructor = function(){});
+		$.isFunction(constructor) || (constructor = new Function);
 		return $.extend(constructor, this.create());
 	}
 });
@@ -1256,29 +625,755 @@ $.extend(Iroha.ViewClass.prototype,
 	 * @type Function
 	 */
 	extend : function(constructor) {
-		$.isFunction(constructor) || (constructor = function(){});
+		$.isFunction(constructor) || (constructor = new Function);
 		$.extend(this.prototype, new constructor);
+		
 		return this;
 	}
 });
 
 
 
+
+/* --------------- Class : Iroha.Number --------------- */
+/**
+ * @class 数値をいろいろ操作
+ */
+Iroha.Number = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+
+	/**
+	 * 処理対象となっている数値
+	 * @type Number
+	 * @private
+	 */
+	this.value = 0;
+};
+
+/**
+ * Iroha.Number のインスタンスを作って返す。
+ * @return Iroha.Number の新規インスタンス
+ * @type Iroha.Number
+ */
+Iroha.Number.create = function() {
+	var instance = new this;
+	return instance.init.apply(instance, arguments);
+};
+
+$.extend(Iroha.Number.prototype,
+/** @lends Iroha.Number.prototype */
+{
+	/**
+	 * 初期化
+	 * @param {Number} [value=0]    処理対象とする数値。
+	 * @return このインスタンス自身
+	 * @type Iroha.Number
+	 */
+	init : function(value) {
+		this.value = Number(value) || 0;
+		return this;
+	},
+	
+	/**
+	 * 現在の数値を文字列として取得する。
+	 * @returns 現在の数値を文字列化したもの
+	 * @type String
+	 */
+	toString : function() {
+		return String(this.value);
+	},
+	
+	/**
+	 * 現在の数値を取得する
+	 * @returns 現在の数値
+	 * @type Number
+	 */
+	get : function() {
+		return this.value;
+	},
+	
+	/**
+	 * 簡易フォーマッタ。現在の数値を指定形式の文字列へ整形する。
+	 * @param {String} format     整形フォーマット
+	 * @return 整形された文字列を保持している {@link Iroha.String} インスタンス
+	 * @type Iroha.String
+	 * @example
+	 *  Iroha.Number(     '56'   ).format(      '000'    ).get() ->        '056'
+	 *  Iroha.Number( '123456'   ).format(      '###'    ).get() ->        '456'
+	 *  Iroha.Number( '123456.78').format('#,###,###'    ).get() ->    '123,457'
+	 *  Iroha.Number( '123456.78').format('#,###,###.#'  ).get() ->    '123,456.8'
+	 *  Iroha.Number('-123456.78').format('0,###,###.000').get() -> '-0,123,456.780'
+	 */
+	format : function(format) {
+		if (!format || typeof format != 'string') {
+			throw new TypeError('Iroha.Number#format: first argument must be a formatting string.');
+		
+		} else {
+			var ret       = [];
+			var num       = parseFloat(this.value) || 0;
+			var intFormat = format.split('.')[0].split('');
+			var decFormat = format.split('.')[1] || '';
+			var value     = (decFormat) ? Math.abs(num) : Math.round(Math.abs(num));
+			var sign      = (num < 0) ? '-' : '';
+			var intValue  = value.toString().split('.')[0].split('');
+			
+			do {
+				var _value  = intValue .pop() || '';
+				var _format = intFormat.pop() || '';
+				switch (_format) {
+					case '0' : ret.push(_value  ? _value : '0');                        break;
+					case '#' : ret.push(_value  ? _value : '' );                        break;
+					case ''  : /* exit do-while loop */          intValue = [];         break;
+					default  : ret.push(_format               ); intValue.push(_value); break;
+				}
+			} while (intValue.length > 0 || intFormat.length > 0);
+			
+			ret = ret.reverse().join('').replace(/^\D+/, '');
+			
+			if (decFormat) {
+				var scale     = Math.pow(10, decFormat.length);
+				var rounded   = Math.round(value * scale) / scale;
+				if (rounded - ret == 1) {
+					ret++;
+				}
+				var decValue  = rounded.toString().split('.')[1] || '0';
+					decValue  = decValue .split('').reverse().join('');
+					decFormat = decFormat.split('').reverse().join('');
+					ret       = ret + '.' + Iroha.Number(decValue).format(decFormat).split('').reverse().join('');
+			}
+			
+			if (Iroha.String(decFormat).startsWith('#') && Iroha.String(ret).endsWith('.0')) {
+				ret = Iroha.String(ret).getBefore('.0');
+			}
+			
+			return Iroha.String(sign + ret);
+		}
+	}
+});
+
+
+
+/* --------------- Class : Iroha.String --------------- */
+/**
+ * @class 文字列をいろいろ操作
+ */
+Iroha.String = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
+	/**
+	 * 処理対象となっている文字列
+	 * @type String
+	 * @private
+	 */
+	this.value = '';
+	
+	/**
+	 * 処理対象となっている文字列の現在の長さ
+	 * @type Number
+	 */
+	this.length = 0;
+};
+
+$.extend(Iroha.String,
+/** @lends Iroha.String */
+{
+	/**
+	 * ランダムな文字列を得る。
+	 * @param {Number} [num=24]    ランダム文字列の長さ
+	 * @param {String} [chars]     ランダム文字列を構成する文字群
+	 * @returns 作成したランダム文字列を保持している Iroha.String インスタンス
+	 * @type Iroha.String
+	 */
+	random : function(num, chars) {
+		var num   = (num > 0) ? num : 24;
+		var chars = ($.type(chars) == 'string') ? chars : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		var ret   = '';
+		while (num--) {
+			ret += chars.split('')[parseInt(Math.random() * chars.length)]
+		}
+		return new this(ret);
+	},
+	
+	/**
+	 * グローバル一意識別子を得る。
+	 * @returns 作成したグローバル一意識別子を保持している Iroha.String インスタンス
+	 * @type Iroha.String
+	 */
+	guid : function() {
+		var chars = '0123456789ABCDEF';
+		var arr   = [ 8, 4, 4, 4, 12 ].map(function(n) { return this.random(n, chars).get() }, this);
+		return (new this('${0}-${1}-${2}-${3}-${4}')).format(arr);
+	},
+	
+	/**
+	 * Iroha.String のインスタンスを作って返す。
+	 * @return Iroha.String の新規インスタンス
+	 * @type Iroha.String
+	 */
+	create : function() {
+		var instance = new this;
+		return instance.init.apply(instance, arguments);
+	}
+});
+
+$.extend(Iroha.String.prototype,
+/** @lends Iroha.String.prototype */
+{
+	/**
+	 * 初期化
+	 * @param {Number} [value=""]    処理対象とする文字列。
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 */
+	init : function(value) {
+		this.value  = String(value === undefined ? '' : value);
+		this.length = this.value.length;
+		return this;
+	},
+	
+	/**
+	 * 現在の文字列を取得する。
+	 * @returns 現在の文字列を取得
+	 * @type String
+	 */
+	toString : function() {
+		return this.value;
+	},
+	
+	/**
+	 * 現在の文字列を取得する。
+	 * @returns 現在の文字列を取得
+	 * @type String
+	 */
+	get : function() {
+		return this.toString.apply(this, arguments);
+	},
+	
+	/**
+	 * 簡易フォーマッタ。現在の文字列を指定の形式へ整形する。
+	 * @param {String|String[]|Object}  arg1     文字列、または文字列の入っている配列、または文字列をプロパティ値とする連想配列。
+	 * @param {String}                 [argN]    文字列（2個目以降）
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 * @example
+	 *  Iroha.String('${0}HOGE${1}FUGA${2}').format(    'xxx', '  yyy',   'zzz'  ).get()
+	 *  Iroha.String('${0}HOGE${1}FUGA${2}').format([   'xxx',   'yyy',   'zzz' ]).get()
+	 *  Iroha.String('${A}HOGE${B}FUGA${C}').format({ A:'xxx', B:'yyy', C:'zzz' }).get()
+	 *  Iroha.String('${A}HOGE${B.C}FUGA${B.D.E}').format({ A: 'xxx', B: { C:'yyy', D: { E:'zzz' } } }).get()
+	 *      -> 'xxxHOGEyyyFUGAzzz'
+	 */
+	format : function(arg1, /* arg2, arg3 ..., */ argN) {
+		var data;
+		if (arguments.length == 0) {
+			return this;
+		} else if (typeof arg1 == 'object' && !(arg1 instanceof Iroha.String)) {
+			data = arg1;
+		} else {
+			data = $.makeArray(arguments).map(function(a) { return $.type(a) == 'undefined' ? a : String(a) });
+		}
+		this.replace(/\$\{(.+?)\}/g, function(_, key) {
+			var replace = $.type(data) == 'array' ? data[key] : Iroha.getValue(key, data);
+			return ($.type(replace) == 'undefined') ? '${' + key + '}' : replace;
+		})
+		return this;
+	},
+	
+	/**
+	 * 指定の文字列より前の部分の文字列を得る。
+	 * @param {String}  str            検索文字列
+	 * @param {Boolean} [include]      true の場合、戻値は検索文字列自身を含む。
+	 * @param {Boolean} [longMatch]    true の場合、最長一致で探す。
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 */
+	getBefore : function(str, include, longMatch) {
+		if (typeof str != 'string') {
+			throw new TypeError('Iroha.String#getBefore: first argument must be a string.');
+		} else if (str) {
+			var idx     = (!longMatch) ? this.value.indexOf(str) : this.value.lastIndexOf(str);
+			this.value  = (idx == -1) ? '' : this.value.substring(0, idx) + (include ? str : '');
+			this.length = this.value.length;
+		}
+		return this;
+	},
+	
+	/**
+	 * 指定の文字列より後ろの部分の文字列を得る。
+	 * @param {String}  str            検索文字列
+	 * @param {Boolean} [include]      true の場合、戻値は検索文字列自身を含む。
+	 * @param {Boolean} [longMatch]    true の場合、最長一致で探す。
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 */
+	getAfter : function(str, include, longMatch) {
+		if (typeof str != 'string') {
+			throw new TypeError('String.Wrapper.getAfter: first argument must be a string.');
+		} else if (str) {
+			var idx     = (!longMatch) ? this.value.indexOf(str) : this.value.lastIndexOf(str);
+			this.value  = (idx == -1) ? '' : (include ? str : '') + this.value.substring(idx + str.length, this.value.length);
+			this.length = this.value.length;
+		}
+		return this;
+	},
+	
+	/**
+	 * 現在の文字列が指定文字列から始まっていれば true を返す。
+	 * @param {String}  str    検索文字列
+	 * @return 現在の文字列が指定文字列から始まっていれば true。
+	 * @type Boolean
+	 */
+	startsWith : function(str) {
+		return (this.value.indexOf(str) == 0);
+	},
+	
+	/**
+	 * 現在の文字列が指定文字列で終わっていれば true を返す。
+	 * @param {String}  str    検索文字列
+	 * @return 現在の文字列が指定文字列で終わっていれば true。
+	 * @type Boolean
+	 */
+	endsWith : function(str) {
+		var idx = this.value.lastIndexOf(str);
+		return (idx > -1 && idx + str.length == this.value.length);
+	},
+	
+	/**
+	 * 現在の文字列が指定文字列を含んでいれば true を返す。
+	 * @param {String}  str    検索文字列
+	 * @return 現在の文字列が指定文字列を含んでいれば true。
+	 * @type Boolean
+	 */
+	contains : function(str) {
+		return (this.value.indexOf(str) != -1);
+	},
+	
+	/**
+	 * 現在の文字列が指定文字列と完全に一致するなら true を返す。
+	 * @param {String}  str    検索文字列
+	 * @return 現在の文字列が指定文字列と完全に一致するなら true。
+	 * @type Boolean
+	 */
+	isMatch : function(str) {
+		return (this.value === str);
+	},
+	
+	/**
+	 * 相対パス(URL)を絶対パス(URL)へ変換する。
+	 * @param {String} base    相対パス(URL)の起点となる場所を絶対パス(URL)で示したもの
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 * @example
+	 *  Iroha.String('../target/').rel2abs('/path/to/base/'      ).get() -> '/path/to/target/'
+	 *  Iroha.String('../target/').rel2abs('http://path/to/base/').get() -> 'http://path/to/target/'
+	 */
+	rel2abs : function(base) {
+		var target = this.value;
+		var b      = base  .split('/');
+		var t      = target.split('/');
+		var ptn = /^(\/|\w+:)/;
+		if (!base.match(ptn)) {
+			throw new TypeError('Iroha.String#rel2abs: first argument must be an absolute path/URL.');
+		} else if (target.match(ptn)) {
+			// do nothing
+		} else if (target.charAt(0) == '#' || target.charAt(0) == '?') {
+			this.value = base + target;
+		} else if (t[0] == '.' || t[0] == '..') {
+			this.value = Iroha.String(t.slice(1, t.length).join('/')).rel2abs(b.slice(0, b.length - t[0].length).join('/') + '/').get();
+		} else {
+			this.value = b.slice(0, b.length - 1).join('/') + '/' + target;
+		}
+		this.length = this.value.length;
+		return this;
+	},
+	
+	/**
+	 * 絶対パス(URL)を相対パス(URL)へ変換する。
+	 * @param {String} base    相対パス(URL)の起点となる場所を絶対パス(URL)で示したもの
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 * @example
+	 *  Iroha.String(      '/path/to/target/').abs2rel('/path/to/base/'      ).get() -> '../target/'
+	 *  Iroha.String('http://path/to/target/').abs2rel('http://path/to/base/').get() -> '../target/'
+	 */
+	abs2rel : function(base) {
+		var ptn = /^(\/|\w+:)/;
+		if (!base.match(ptn)) {
+			throw new TypeError('Iroha.String#abs2rel: first argument must be an absolute path/URL.');
+		} else if (!this.value.match(ptn)) {
+			throw new TypeError('Iroha.String#abs2rel: current string is not an absolute path/URL.');
+		} else {
+			this.value  =  _compare(base, this.value).replace(/^\//, '') || base;
+			this.length = this.value.length;
+		}
+		return this;
+		
+		function _compare(base, target) {
+			var b = base  .split('/');
+			var t = target.split('/');
+			if (!base) {
+				return target;
+			} else if (!target) {
+				return _goup(base);
+			} else if (b[0] != t[0]) {
+				return _goup(base) + target;
+			} else {
+				return arguments.callee(b.slice(1).join('/'), t.slice(1).join('/'));
+			}
+		}
+		
+		function _goup(path) {
+			return path.split('/').slice(1).map(function() { return '..' }).join('/') + '/';
+		}
+	},
+	
+	/**
+	 * 文字列置換。 String#replace をインスタンス内で実施。
+	 * @param {String|RegExp} find       検索文字列、または正規表現
+	 * @param {String}        replace    置換文字列
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 */
+	replace : function(find, replace) {
+		this.value  = this.value.replace(find, replace);
+		this.length = this.value.length;
+		return this;
+	},
+	
+	/**
+	 * 文字列を「サニタイズ」する。
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 */
+	sanitize : function() {
+		var pairs = {
+			  '&'      : '&amp;'
+			, '<'      : '&lt;'
+			, '>'      : '&gt;'
+			, '\u0022' : '&quot;'
+			, '\u0027' : '&apos;'
+		};
+		for (var key in pairs) {
+			this.replace(new RegExp(key, 'g'), pairs[key]);
+		}
+		return this;
+	},
+	
+	/**
+	 * 文字列を％エスケープに変換する。"encodeURI" か "encodeURIComponent" を使用している。
+	 * @param {Boolean} [bool=false]    true の場合, "encodeURIComponent" で変換。それ以外は "encodeURI" で変換。
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 */
+	encodeURI : function(bool) {
+		this.value  = bool ? encodeURIComponent(this.value) : encodeURI(this.value);
+		this.length = this.value.length;
+		return this;
+	},
+	
+	/**
+	 * ％エスケープされた文字列を元に戻す。"decodeURI" か "decodeURIComponent" を使用している。
+	 * @param {Boolean} [bool=false]    true の場合, "decodeURIComponent" で変換。それ以外は "decodeURI" で変換。
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 */
+	decodeURI : function(bool) {
+		this.value  = bool ? decodeURIComponent(this.value) : decodeURI(this.value);
+		this.length = this.value.length;
+		return this;
+	}
+});
+
+
+
+/* --------------- Class : Iroha.StyleSheets --------------- */
+
+/**
+ * @class スタイルシートコレクションをいろいろ操作
+ * @example
+ *  Iroha.StyleSheets().insertRule('body { color: red }');          // set font color to red
+ *  Iroha.StyleSheets().each(function() { this.disabled = true });  // diable all style
+ */
+Iroha.StyleSheets = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+
+	/**
+	 * このインスタンスが保持しているスタイルシートオブジェクトの数。
+	 * @type Number
+	 */
+	this.length = 0;
+};
+
+/**
+ * Iroha.StyleSheets のインスタンスを作って返す。
+ * @return Iroha.StyleSheets の新規インスタンス
+ * @type Iroha.StyleSheets
+ */
+Iroha.StyleSheets.create = function() {
+	var instance = new this;
+	return instance.init.apply(instance, arguments);
+};
+
+$.extend(Iroha.StyleSheets.prototype,
+/** @lends Iroha.StyleSheets.prototype */
+{
+	/**
+	 * 初期化（指定番号、あるいは直接与えられたスタイルシート(群)を保持）
+	 * @param {Number|StyleSheet|StyleSheet[]} [arg]    保持するスタイルシート。インデックス番号で指定、またはスタイルシートオブジェクト(群)を指定。
+	 * @return このインスタンス自身
+	 * @type Iroha.StyleSheets
+	 */
+	init : function(arg) {
+		var sheets = arg;
+		
+		if (arguments.length == 0 || $.type(arg) == 'number') {
+			sheets = document.styleSheets;
+			
+			if (Iroha.ua.isSafari) {
+				var $cssNode = $('link').filter(function() { return Boolean(this.sheet) });
+				var dataName = 'Iroha.StyleSheets.Sheet.disabled';
+				
+				if ($cssNode.length > sheets.length) {
+					$cssNode.each(function() {
+						$(this).data(dataName, ($.inArray(this.sheet, sheets) == -1));
+						this.disabled = true;
+						this.disabled = false;
+					});
+					$.each(sheets, function() {
+						this.disabled = $(this.ownerNode).data(dataName);
+					});
+				}
+			}
+			
+			// 指定インデックス番号の物のみに絞る
+			($.type(arg) == 'number') && (sheets = sheets[arg]);
+		}
+		
+		return this.add(sheets);
+	},
+	
+	/**
+	 * このインスタンスが保持しているスタイルシートのコレクションに新たにスタイルシートを追加する。
+	 * @param {StyleSheet|StyleSheet[]} [arg]    追加するスタイルシートオブジェクト(群)
+	 * @return このインスタンス自身
+	 * @type Iroha.StyleSheets
+	 */
+	add : function(sheets) {
+		$.makeArray(sheets).forEach(function(sheet, i) {
+			if (sheet.type == 'text/css') {
+				this[this.length++] = sheet;
+			}
+		}, this);
+		
+		return this;
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群のうち指定番号に該当する物を取り出し、それを保持した新規インスタンスを得る
+	 * @param {Number} [index]    インデックス番号
+	 * @return 該当スタイルシートオブジェクトを保持した新規インスタンス
+	 * @type Iroha.StyleSheets
+	 */
+	eq : function(index) {
+		var sheet = (typeof index == 'number') ? this[index] : null;
+		return new this.constructor(sheet);
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群のうち1番目のものを取り出し、それを保持した新規インスタンスを得る
+	 * @return new instance that has a styleSheet
+	 * @type Iroha.StyleSheets.Wrapper
+	 */
+	first : function() {
+		return new this.constructor(this[0]);
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群のうち最後のものを取り出し、それを保持した新規インスタンスを得る
+	 * @return new instance that has a styleSheet
+	 * @type Iroha.StyleSheets.Wrapper
+	 */
+	last : function() {
+		return new this.constructor(this[this.length - 1]);
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群のうち指定番号のもの、あるいはすべてを取り出す。
+	 * @param {Number} [index]    番号指定。
+	 * @return 単体のスタイルシートオブジェクト (DOM StyleSheet) 、または保持しているスタイルシートオブジェクトすべてからなる配列。
+	 * @type StyleSheet|StyleSheet[]
+	 */
+	get : function(index) {
+		return (typeof index == 'number') ? this[index] : Array.prototype.slice.call(this);
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群の "ownerNode" を得る。
+	 * @param {Number} [index]    番号指定。
+	 * @return 番号指定時はコレクション中の特定スタイルシートのもの、無指定時はコレクションすべての分を収めた配列。
+	 * @type Element|Element[]
+	 */
+	getOwnerNode : function(index) {
+		if (typeof index == 'number') {
+			return this[index].ownerNode || this[index].owingElement;
+		} else {
+			return Array.prototype.map.call(this, function(e, i) { return this.getOwnerNode(i) }, this);
+		}
+	},
+	
+	/**
+	 * 現在保持しているスタイルシートの個数を得る。
+	 * @return number of styleSheets owned by this instance.
+	 * @type Number
+	 */
+	size : function() {
+		return this.length;
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群それぞれに対して処理を実施（イテレーション）。jQuery(selector).each(aCallback) に相似。
+	 * @param {Iroha.StyleSheets.Callback.each} aCallback    実施する処理（コールバック関数）。この関数が false を返したらそこでイテレーションを止める。
+	 * @return このインスタンス自身
+	 * @type Iroha.StyleSheets
+	 */
+	each : function(aCallback) {
+		$.each(this.get(), aCallback);
+		return this;
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群の絞り込み処理を実施。jQuery(selector).filterh(aCallback) に相似。
+	 * @param {Iroha.StyleSheets.Callback.filter} aCallback    絞り込み処理（コールバック関数）。この関数が true を返したスタイルシートが残る。
+	 * @return 絞り込まれたスタイルシート群のみを保持する新規インスタンス
+	 * @type Iroha.StyleSheets
+	 */
+	filter : function(aCallback) {
+		return new this.constructor(this.get().filter(function(s, i) { return aCallback.call(s, i, s) }));
+	},
+	
+	/**
+	 * スタイルルールを追加する。現在保持しているスタイルシート群のうち1番目のものに追加される。
+	 * @param {String} cssText    追加するスタイルルールのテキスト。
+	 * @return このインスタンス自身
+	 * @type Iroha.StyleSheets
+	 */
+	insertRule : function(cssText) {
+		var expr  = /([^\{]+)(\{.+\})/;
+		var sheet = this.get(0);
+		
+		if (!sheet) {
+			return this;
+		
+		} else if (!expr.test(cssText)) {
+			throw new TypeError('Iroha.StyleSheets.Wrapper.insertRule : first argument must be a style rule text.');
+		
+		} else {
+			if (!sheet.insertRule && !sheet.addRule) {
+				var style = document.createElement('style');
+				style.type= 'text/css';
+				style.appendChild(document.createTextNode(cssText));
+				document.getElementsByTagName('head')[0].appendChild(style);
+			
+			} else if (sheet.insertRule) {  // Std DOM.
+				var pos = sheet.cssRules ? sheet.cssRules.length : 0;  // workaround for Chrome in "file:" protocol.
+				sheet.insertRule(cssText, pos);
+			
+			} else if (sheet.addRule) {     // old IE
+				var regex     = expr.exec(cssText);
+				var selector  = $.trim(regex[1]);
+				var predicate = $.trim(regex[2]);
+				if (Iroha.ua.documentMode >= 8) {
+					predicate = predicate.slice(1, predicate.length - 1);
+				}
+				selector.split(',').forEach(function(_selector) {
+					sheet.addRule(_selector, predicate);
+				});
+			}
+			
+			return this;
+		}
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群のうち最初の物が持つ、スタイルルール群を得る
+	 * @return スタイルルールオブジェクト群
+	 * @type CSSRuleList
+	 */
+	getRules : function() {
+		var sheet = this.get(0);
+		return !sheet ? undefined : sheet.cssRules || sheet.rules;
+	},
+	
+	/**
+	 * 現在保持しているスタイルシート群のうち最初の物の中の、指定インデックス番号にあるスタイルルールを削除する。
+	 * @param {Number} index    削除対象のスタイルルールインデックス番号。非負整数。
+	 * @return このインスタンス自身
+	 * @type Iroha.StyleSheets
+	 */
+	removeRule : function(index) {
+		var sheet = this.get(0);
+		sheet && sheet.removeRule(index);
+		return this;
+	}
+});
+
+/* ----- for JSDoc toolkit output ----- */
+/**
+ * @namespace {@link Iroha.StyleSheets} のメンバーメソッドに与えることができるコールバック関数群。
+ * @name Iroha.StyleSheets.Callback
+ */
+/**
+ * {@link Iroha.StyleSheets#each} に与えるコールバック関数。
+ * @function
+ * @name Iroha.StyleSheets.Callback.each
+ * @param {Number}      anIndex      ループカウンタ。0 始まり正整数。
+ * @param {StyleSheet}  anSheet      スタイルシートオブジェクト
+ * @returns false を返した場合、イテレーション（ループ）がそこで停止される。
+ * @type Boolean
+ */
+/**
+ * {@link Iroha.StyleSheets#filter} に与えるコールバック関数。
+ * @function
+ * @name Iroha.StyleSheets.Callback.filter
+ * @param {Number}      anIndex      ループカウンタ。0 始まり正整数。
+ * @param {StyleSheet}  anSheet      スタイルシートオブジェクト
+ * @returns true を返したスタイルシートオブジェクトだけが残される。
+ * @type Boolean
+ */
+
+
+
 /* -------------------- Class : Iroha.Observable -------------------- */
 /**
- * create observable object
- * @class observable
- * @constructor
+ * @class observable object
  */
 Iroha.Observable = function() {
-	/** callback function chain, pair of key name and function.
-	    @type Object
-	    @private */
-	this.callbackChains      = null;
-	/** callback ignoring level - pairs of callback name and level string; 'all', 'preserved', 'disposable', 'none'.
-	    @type Object
-	    @private */
-	this.callbackIgnoreLevel = {};
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
+	/**
+	 * callback function chain, pair of key name and function.
+	 * @type Object
+	 * @private
+	 */
+	this.callbackChains = null;
+	
+	/**
+	 * callback ignoring level - pairs of callback name and level string; 'all', 'preserved', 'disposable', 'none'.
+	 * @type Object
+	 * @private
+	 */
+	this.callbackIgnoreLevel = null;
 };
 
 /**
@@ -1287,153 +1382,192 @@ Iroha.Observable = function() {
  * @type Iroha.Observable
  */
 Iroha.Observable.create = function() {
-	return new this;
+	var instance = new this;
+	return instance.init.apply(instance, arguments);
 };
 
-/**
- * process callback functions.
- * @param {String} name            callback name (preferred to start with 'on')
- * @param {Object} [_arguments]    arguments for callback function
- * @return result value of last one of the callback functions chain.
- * @type Object
- */
-Iroha.Observable.prototype.doCallback = function(name, /* arg1, arg2, ... */ _arguments) {
-	var chain = this.callbackChains;
-	if (!chain || !chain[name]) {
-		return undefined;
-	} else {
-		var ret;
-		var args = Array.prototype.slice.call(arguments, 1);
+$.extend(Iroha.Observable.prototype,
+/** @lends Iroha.Observable.prototype */
+{
+	/**
+	 * 初期化
+	 * @return このインスタンス自身
+	 * @type Iroha.Observable
+	 */
+	init : function() {
+		return this;
+	},
 
-		chain[name]
-			.filter(function(delegate) {
-				var level = this.callbackIgnoreLevel[name] || 'none';
-				switch (level) {
-					case 'preserved'  : return  delegate.isDisposable;
-					case 'disposable' : return !delegate.isDisposable;
-					case 'all'        : return  false;
-					case 'none'       : return  true;
-					default           : return  true;
-				}
-			}, this)
-			.forEach(function(delegate) {
-				ret = delegate.apply(null, args);
-			});
-
-		this.removeDisposableCallback(name);
-		return ret;
-	}
-};
-
-/**
- * add callback function.
- * @param {String}   name             callback name (preferred to start with 'on')
- * @param {Function} func             callback function/method
- * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
- * @param {String}   [disposable]     if 'disposable' specified, the callback function is treated as 'disposable'.
- * @return this instance
- * @type Iroha.Observable
- */
-Iroha.Observable.prototype.addCallback = function(name, func, aThisObject, disposable) {
-	if (typeof name != 'string' || name == '') {
-		throw new TypeError('Iroha.Observable.addCallback: argument \'name\' must be a string as callback name.');
-	} else if (typeof func != 'function') {
-		throw new TypeError('Iroha.Observable.addCallback: argument \'func\' must be a Function object.');
-	} else {
-		if (!this.callbackChains      ) this.callbackChains       = {};
-		if (!this.callbackChains[name]) this.callbackChains[name] = [];
-
-		var delegate = $.proxy(func, aThisObject);
-		delegate.isDisposable = (disposable == 'disposable');
-		this.callbackChains[name].push(delegate);
-	}
-	return this;
-};
-
-/**
- * remove callback function.
- * @param {String}   name             callback name (preferred to start with 'on')
- * @param {Function} [func]           callback function/method to remove, if no funcs given, all callback funcs will be removed.
- * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
- * @return this instance
- * @type Iroha.Observable
- */
-Iroha.Observable.prototype.removeCallback = function(name, func, aThisObject) {
-	var chain = this.callbackChains;
-	if (typeof name != 'string' || name == '') {
-		throw new TypeError('Iroha.Observable.removeCallback: argument \'name\' must be a string as callback name.');
-	} else if (chain && chain[name]) {
-		if (typeof func != 'function') {
-			delete chain[name];
+	/**
+	 * process callback functions.
+	 * @param {String} name      callback name (preferred to start with 'on')
+	 * @param {Object} [args]    arguments for callback function
+	 * @return result value of last one of the callback functions chain.
+	 * @type Object
+	 */
+	doCallback : function(name, /* arg1, arg2, ... */ args) {
+		var chains = this.callbackChains;
+		var ignore = this.callbackIgnoreLevel || {};
+		
+		if (!chains || !chains[name]) {
+			return undefined;
+		
 		} else {
-			var obj = (typeof aThisObject == 'object' && aThisObject) ? aThisObject : window;
-			chain[name] = chain[name].filter(function(delegate) {
-				return (delegate.func !== func || delegate.aThisObject !== obj);
-			});
+			var ret;
+			var args = Array.prototype.slice.call(arguments, 1);
+	
+			chains[name]
+				.filter(function(delegate) {
+					var level = ignore[name] || 'none';
+					switch (level) {
+						case 'preserved'  : return  delegate.isDisposable;
+						case 'disposable' : return !delegate.isDisposable;
+						case 'all'        : return  false;
+						case 'none'       : return  true;
+						default           : return  true;
+					}
+				}, this)
+				.forEach(function(delegate) {
+					ret = delegate.apply(null, args);
+				});
+	
+			this.removeDisposableCallback(name);
+			return ret;
 		}
+	},
+	
+	/**
+	 * add callback function.
+	 * @param {String}   name             callback name (preferred to start with 'on')
+	 * @param {Function} func             callback function/method
+	 * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
+	 * @param {String}   [disposable]     if 'disposable' specified, the callback function is treated as 'disposable'.
+	 * @return this instance
+	 * @type Iroha.Observable
+	 */
+	addCallback : function(name, func, aThisObject, disposable) {
+		if (typeof name != 'string' || name == '') {
+			throw new TypeError('Iroha.Observable#addCallback: argument \'name\' must be a string as callback name.');
+			
+		} else if (typeof func != 'function') {
+			throw new TypeError('Iroha.Observable#addCallback: argument \'func\' must be a Function object.');
+		
+		} else {
+			if (!this.callbackChains      ) this.callbackChains       = {};
+			if (!this.callbackChains[name]) this.callbackChains[name] = [];
+	
+			var delegate = $.proxy(func, aThisObject);
+			delegate.isDisposable = (disposable == 'disposable');
+			this.callbackChains[name].push(delegate);
+		}
+		return this;
+	},
+	
+	/**
+	 * remove callback function.
+	 * @param {String}   name             callback name (preferred to start with 'on')
+	 * @param {Function} [func]           callback function/method to remove, if no funcs given, all callback funcs will be removed.
+	 * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
+	 * @return this instance
+	 * @type Iroha.Observable
+	 */
+	removeCallback : function(name, func, aThisObject) {
+		var chains = this.callbackChains;
+		if (typeof name != 'string' || name == '') {
+			throw new TypeError('Iroha.Observable.removeCallback: argument \'name\' must be a string as callback name.');
+			
+		} else if (chains && chains[name]) {
+			if (typeof func != 'function') {
+				delete chains[name];
+			} else {
+				var obj = (typeof aThisObject == 'object' && aThisObject) ? aThisObject : window;
+				chains[name] = chains[name].filter(function(delegate) {
+					return (delegate.func !== func || delegate.aThisObject !== obj);
+				});
+			}
+		}
+		return this;
+	},
+	
+	/**
+	 * remove 'disposable' callback function.
+	 * @param {String} name    callback name (preferred to start with 'on')
+	 * @return this instance
+	 * @type Iroha.Observable
+	 */
+	removeDisposableCallback : function(name) {
+		var chains = this.callbackChains;
+		if (chains && chains[name]) {
+			chains[name] = chains[name].filter(function(delegate) { return !delegate.isDisposable });
+		}
+		return this;
+	},
+	
+	/**
+	 * set callback ignoring level.
+	 * @param {String} name             callback name (preferred to start with 'on')
+	 * @param {String} [level="all"]    ignoring level - 'all', 'preserved', 'disposable', 'none'
+	 * @return this instance
+	 * @type Iroha.Observable
+	 */
+	ignoreCallback : function(name, level) {
+		var chains = this.callbackChains;
+		if (typeof name != 'string' || name == '') {
+			throw new TypeError('Iroha.Observable.ignoreCallback: argument \'name\' must be a string as callback name.');
+		
+		} else if (chains && chains[name]) {
+			var levels = ['all', 'preserved', 'disposable', 'none'];
+			this.callbackIgnoreLevel[name] = (levels.indexOf(level) != -1) ? level : 'all';
+		}
+		return this;
 	}
-	return this;
-};
-
-/**
- * remove 'disposable' callback function.
- * @param {String} name    callback name (preferred to start with 'on')
- * @return this instance
- * @type Iroha.Observable
- */
-Iroha.Observable.prototype.removeDisposableCallback = function(name) {
-	var chain = this.callbackChains;
-	if (chain && chain[name]) {
-		chain[name] = chain[name].filter(function(delegate) { return !delegate.isDisposable });
-	}
-	return this;
-};
-
-/**
- * set callback ignoring level.
- * @param {String} name             callback name (preferred to start with 'on')
- * @param {String} [level="all"]    ignoring level - 'all', 'preserved', 'disposable', 'none'
- * @return this instance
- * @type Iroha.Observable
- */
-Iroha.Observable.prototype.ignoreCallback = function(name, level) {
-	var chain = this.callbackChains;
-	if (typeof name != 'string' || name == '') {
-		throw new TypeError('Iroha.Observable.ignoreCallback: argument \'name\' must be a string as callback name.');
-	} else if (chain && chain[name]) {
-		var levels = ['all', 'preserved', 'disposable', 'none'];
-		this.callbackIgnoreLevel[name] = (levels.indexOf(level) != -1) ? level : 'all';
-	}
-	return this;
-};
+});
 
 
 
 /* --------------- Class : Iroha.Iterator --------------- */
 /**
- * create iterator object
  * @class iterator
  */
-Iroha.Iterator = function(obj, mode) {
-	/** iterated elements; an associative array, an array, or an object like those.
-	    @type Object
-	    @private */
+Iroha.Iterator = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
+	/**
+	 * iterated elements; an associative array, an array, or an object like those.
+	 * @type Object
+	 * @private
+	 */
 	this.targets = undefined;
-	/** an array of keys in iterated elements.
-	    @type String[]
-	    @private */
-	this.keys    = [];
-	/** a number of current position of the iterator.
-	    @type Number
-	    @private */
+	
+	/**
+	 * an array of keys in iterated elements.
+	 * @type String[]
+	 * @private
+	 */
+	this.keys = [];
+	
+	/**
+	 * a number of current position of the iterator.
+	 * @type Number
+	 * @private
+	 */
 	this.counter = 0;
-	/** element getting mode; "key", "value", or "both".
-	    @type String
-	    @private */
-	this.mode    = 'value';
-	/** flag to abort automatic iterating
-	    @type Boolean
-	    @private */
+	
+	/**
+	 * element getting mode; "key", "value", or "both".
+	 * @type String
+	 * @private
+	 */
+	this.mode = 'value';
+	
+	/**
+	 * flag to abort automatic iterating
+	 * @type Boolean
+	 * @private
+	 */
 	this.aborted = false;
 };
 
@@ -1444,325 +1578,421 @@ Iroha.Iterator = function(obj, mode) {
  */
 Iroha.Iterator.create = function() {
 	var instance = new this;
-	instance.init.apply(instance, arguments);
-	return instance;
+	return instance.init.apply(instance, arguments);
 };
 
-/**
- * initialize
- * @param {Object} targets           iterated elements; an associative array, an array, or an object like those.
- * @param {Object} [mode="value"]    element getting mode; 'key', 'value', or 'both'
- * @return this instance
- * @type Iroha.Iterator
- */
-Iroha.Iterator.prototype.init = function(targets, mode) {
-	if (!targets || typeof targets != 'object') {
-		throw new TypeError('Iroha.Iterator#init: invalid object type.');
-	} else {
-		this.targets = targets;
-		this.mode    = mode || 'value';
-		$.each(this.targets, $.proxy(function(key) { this.keys.push(key) }, this));
-	}
-	return this;
-};
-
-/**
- * does the iterator has next element?
- * @return true if the iterator has next element.
- * @type Boolean
- */
-Iroha.Iterator.prototype.hasNext = function() {
-	return (this.counter < this.keys.length);
-};
-
-/**
- * get next element in the iteration; the form of an acquired element depends on "element getting mode"
- * @return next element in the iteration
- * @type Object
- */
-Iroha.Iterator.prototype.next = function() {
-	if (!this.hasNext()) {
-		throw new ReferenceError('Iroha.Iterator#next: StopIteration');
-	} else {
-		var key   = this.keys[this.counter++];
-		var value = this.targets[key];
-		switch(this.mode) {
-			case 'key'   : return key;
-			case 'value' : return value;
-			case 'both'  : return [key, value];
-			default      : return undefined;
+$.extend(Iroha.Iterator.prototype,
+/** @lends Iroha.Iterator.prototype */
+{
+	/**
+	 * initialize
+	 * @param {Object} targets           iterated elements; an associative array, an array, or an object like those.
+	 * @param {Object} [mode="value"]    element getting mode; 'key', 'value', or 'both'
+	 * @return this instance
+	 * @type Iroha.Iterator
+	 */
+	init : function(targets, mode) {
+		var modes = [ 'key', 'value', 'both' ];
+		
+		if (!targets || typeof targets != 'object') {
+			throw new TypeError('Iroha.Iterator#init: invalid object type.');
+		
+		} else if (mode && modes.indexOf(mode) == -1) {
+			throw new ReferenceError('Iroha.Iterator#init: invalid mode.');
+		
+		} else {
+			this.targets = targets;
+			this.keys    = [];
+			this.mode    = mode || 'value';
+			$.each(this.targets, $.proxy(function(key) { this.keys.push(key) }, this));
 		}
-	}
-};
-
-/*
- * start automatic iterating.
- * @param {Function} func             callback function
- * @param {Number}   [ms=0]           milliseconds to interval
- * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
- * @return this instance
- * @type Iroha.Iterator
- */
-Iroha.Iterator.prototype.iterate = function(func, ms, aThisObject) {
-	if (typeof func != 'function') {
-		throw new TypeError('Iroha.Iterator#iterate: first argument must be a function object.');
-	} else {
-		var flag = (!this.aborted && this.hasNext()) ?
-		           	func.apply(aThisObject, $.makeArray(this.next())) :
-		           	false;
-		if (flag !== false) {
-			if (ms > 0) {
-				new Iroha.Timeout(function() {
-					this.iterate(func, ms, aThisObject);
-				}, ms, this);
-			} else {
-				this.iterate(func, ms, aThisObject);
+		
+		return this;
+	},
+	
+	/**
+	 * does the iterator has next element?
+	 * @return true if the iterator has next element.
+	 * @type Boolean
+	 */
+	hasNext : function() {
+		return (this.counter < this.keys.length);
+	},
+	
+	/**
+	 * get next element in the iteration; the form of an acquired element depends on "element getting mode"
+	 * @return next element in the iteration
+	 * @type Object
+	 */
+	next : function() {
+		if (!this.hasNext()) {
+			throw new ReferenceError('Iroha.Iterator#next: stopped iteration.');
+		
+		} else {
+			var key   = this.keys[this.counter++];
+			var value = this.targets[key];
+			switch(this.mode) {
+				case 'key'   : return key;
+				case 'value' : return value;
+				case 'both'  : return [key, value];
+				default      : return undefined;
 			}
 		}
+	},
+	
+	/*
+	 * start automatic iterating.
+	 * @param {Function} func             callback function
+	 * @param {Number}   [ms=0]           milliseconds to interval
+	 * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
+	 * @return this instance
+	 * @type Iroha.Iterator
+	 */
+	iterate : function(func, ms, aThisObject) {
+		if (typeof func != 'function') {
+			throw new TypeError('Iroha.Iterator#iterate: first argument must be a function object.');
+		
+		} else {
+			var flag = !this.aborted && this.hasNext()
+				? func.apply(aThisObject, $.makeArray(this.next()))
+				: false;
+			if (flag !== false) {
+				ms > 0
+					? Iroha.delay(ms, this).done(function() { this.iterate(func, ms, aThisObject) })
+					: this.iterate(func, ms, aThisObject);
+			}
+		}
+		return this;
+	},
+	
+	/**
+	 * abort automatic iterating 
+	 * @return this instance
+	 * @type Iroha.Iterator
+	 */
+	abort : function() {
+		this.aborted = true;
+		return this;
 	}
-	return this;
-};
-
-/**
- * abort automatic iterating 
- * @return this instance
- * @type Iroha.Iterator
- */
-Iroha.Iterator.prototype.abort = function() {
-	this.aborted = true;
-	return this;
-};
+});
 
 
 
 /* --------------- Class : Iroha.Timeout --------------- */
 /**
- * a wrapper of 'setTimeout()'.
- * @class timeout timer
- * @param {Function} [func]           callback function
- * @param {Number}   [ms=0]           milliseconds to timeout
- * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
- * @constructor
+ * @class a wrapper of 'setTimeout()'.
  */
-Iroha.Timeout = function(func, ms, aThisObject) {
-	/** timer ID.
-	    @type Number
-	    @private */
-	this.timer       = 0;
-	/** callback function
-	    @type Function
-	    @private
-	    @constant */
-	this.func        = $.isFunction(func) ? func : new Function;
-	/** milliseconds to timeout
-	    @type Function
-	    @private
-	    @constant */
-	this.ms          = Math.max(0, ms) || 0
-	/** the object that will be a global object ('this') in the func
-	    @type Object
-	    @private
-	    @constant */
-	this.aThisObject = aThisObject || window;
-	/** native timer function name; 'setTimeout' or 'setInterval'
-	    @type String
-	    @private
-	    @constant */
-	this.timerFunc   = 'setTimeout';
+Iroha.Timeout = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
+	/**
+	 * timer ID.
+	 * @type Number
+	 * @private
+	 */
+	this.id = 0;
+	
+	/**
+	 * native timer function name.
+	 * @type String
+	 * @private
+	 * @constant
+	 */
+	this.timerFunc = 'setTimeout';
+};
 
-	if (arguments.length) {
-		this.init();
+/**
+ * Iroha.Timeout のインスタンスを作って返す。
+ * @return Iroha.Timeout の新規インスタンス
+ * @type Iroha.Timeout
+ */
+Iroha.Timeout.create = function() {
+	var instance = new this;
+	return instance.init.apply(instance, arguments);
+};
+
+$.extend(Iroha.Timeout.prototype,
+/** @lends Iroha.Timeout.prototype */
+{
+	/**
+	 * initialize.
+	 * @param {Function} func             callback function
+	 * @param {Number}   [ms=0]           milliseconds to timeout
+	 * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
+	 * @param {Boolean}  [immediate]      if true, do immediate callback at start
+	 * @return this instance
+	 * @type Iroha.Timeout
+	 */
+	init : function(func, ms, aThisObject, immediate) {
+		var func  = $.proxy($.isFunction(func) ? func : new Function, aThisObject);
+		var timer = window[this.timerFunc];
+		if (ms > 0) {
+			this.id = (Iroha.ua.isIE)
+				? timer(func, ms, 'JScript')  // workaround to the page weaved with vbscript.
+				: timer(func, ms);
+		} else {
+			immediate = true;
+		}
+		if (immediate) {
+			func();
+		}
+		return this;
+	},
+	
+	/**
+	 * clear timer.
+	 * @return this instance
+	 * @type Iroha.Timeout
+	 */
+	clear : function() {
+		clearTimeout (this.id);
+		clearInterval(this.id);
+		return this;
+	},
+	
+	/**
+	 * @deprecated use {@link #clear} method instead of this method.
+	 * @return this instance
+	 * @type Iroha.Timeout
+	 */
+	clearTimer : function() {
+		return this.clear.apply(this, arguments);
 	}
-};
-
-/**
- * initialize.
- * @private
- */
-Iroha.Timeout.prototype.init = function() {
-	var delegate  = $.proxy(this.func, this.aThisObject);
-	var timerFunc = window[this.timerFunc];
-	this.timer    = (Iroha.ua.isIE) ?
-	              	timerFunc(delegate, this.ms, 'JScript') : // workaround to the page weaved with vbscript.
-	              	timerFunc(delegate, this.ms           ) ;
-};
-
-/**
- * clear timer.
- */
-Iroha.Timeout.prototype.clear = function() {
-	clearTimeout (this.timer);
-	clearInterval(this.timer);
-};
-
-/** @deprecated use {@link #clear} method instead of this method. */
-Iroha.Timeout.prototype.clearTimer = function() { return this.clear.apply(this, arguments) };
+});
 
 
 
 /* --------------- Class : Iroha.Interval --------------- */
 /**
- * a wrapper of 'setInterval()'.
- * @class interval timer
+ * @class a wrapper of 'setInterval()'.
  * @extends Iroha.Timeout
- * @param {Function} func             callback function
- * @param {Number}   [ms=0]           milliseconds to interval
- * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
- * @constructor
  */
-Iroha.Interval = function(func, ms, aThisObject) {
-	/** timer ID.
-	    @type Number
-	    @private */
-	this.timer       = 0;
-	/** callback function
-	    @type Function
-	    @private
-	    @constant */
-	this.func        = func;
-	/** milliseconds to timeout
-	    @type Function
-	    @private
-	    @constant */
-	this.ms          = Math.max(0, ms) || 0
-	/** the object that will be a global object ('this') in the func
-	    @type Object
-	    @private
-	    @constant */
-	this.aThisObject = aThisObject || window;
-	/** native timer function name; 'setTimeout' or 'setInterval'
-	    @type String
-	    @private
-	    @constant */
-	this.timerFunc   = 'setInterval';
-
-	if (arguments.length) {
-		this.init();
-	}
+Iroha.Interval = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
+	/**
+	 * timer ID.
+	 * @type Number
+	 * @private
+	 */
+	this.id = 0;
+	
+	/**
+	 * native timer function name.
+	 * @type String
+	 * @private
+	 * @constant
+	 */
+	this.timerFunc = 'setInterval';
 };
+
+/**
+ * Iroha.Interval のインスタンスを作って返す。
+ * @return Iroha.Interval の新規インスタンス
+ * @type Iroha.Interval
+ */
+Iroha.Interval.create = function() {
+	var instance = new this;
+	return instance.init.apply(instance, arguments);
+};
+
 Iroha.Interval.prototype = new Iroha.Timeout;
 
 
 
 /* --------------- Class : Iroha.Timer --------------- */
 /**
- * construct simple elapsed timer object.
  * @class simple elapsed timer.
- * @constructor
  */
 Iroha.Timer = function() {
-	/** started time of the timer in 'epoch time'.
-	    @type Number
-	    @private */
-	this.startTime = null;
-
-	this.reset();
+	var self = arguments.callee;
+	return self === this.constructor ? this.init() : new self;
 };
 
 /**
- * reset timer.
+ * Iroha.Timer のインスタンスを作って返す。
+ * @return Iroha.Timer の新規インスタンス
+ * @type Iroha.Timer
  */
-Iroha.Timer.prototype.reset = function() {
-	this.startTime = (new Date()).getTime();
+Iroha.Timer.create = function() {
+	return new this;
 };
 
-/**
- * get acquire time progress in milisecond.
- * @return acquire time progress in milisecond.
- * @type Number
- */
-Iroha.Timer.prototype.getTime = function() {
-	return (new Date()).getTime() - this.startTime;
-};
-
-/**
- * get acquire time progress in second.
- * @return acquire time progress in second.
- * @type Number
- */
-Iroha.Timer.prototype.getSeconds = function() {
-	return this.getTime() / 1000;
-};
+$.extend(Iroha.Timer.prototype,
+/** @lends Iroha.Timer.prototype */
+{
+	/**
+	 * started time of this timer.
+	 * @type Date
+	 * @private
+	 */
+	started : undefined,
+	
+	/**
+	 * initialize
+	 * @return this instance
+	 * @type Iroha.Timer
+	 */
+	init : function() {
+		return this.reset();
+	},
+	
+	/**
+	 * reset timer.
+	 * @return this instance
+	 * @type Iroha.Timer
+	 */
+	reset : function() {
+		this.started = new Date;
+		return this;
+	},
+	
+	/**
+	 * get acquire time progress in milisecond.
+	 * @return acquire time progress in milisecond.
+	 * @type Number
+	 */
+	getTime : function() {
+		return (new Date) - this.started;
+	},
+	
+	/**
+	 * get acquire time progress in second.
+	 * @return acquire time progress in second.
+	 * @type Number
+	 */
+	getSeconds : function() {
+		return this.getTime() / 1000;
+	}
+});
 
 
 
 /* --------------- Class : Iroha.Tag --------------- */
 /**
- * create tag string object for document.write().
- * @class tagstring as element object.
- * @constructor
- * @param {String} tagName    element name to create
- * @param {Object} [attrs]    associative array of attributes { name1 : value1, name2 : value2 ... }
+ * @class tag-string as element object.
  */
-Iroha.Tag = function(tagName, attrs) {
-	/** tag name (element name) to create
-	    @type String
-	    @constant */
-	this.tagName    = tagName;
-	/** associative array of attributes { name1 : value1, name2 : value2 ... }
-	    @type Object */
-	this.attributes = attrs || {};
-	/** array of {@link Iroha.Tag} instances
-	    @type Iroha.Tag[] */
+Iroha.Tag = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
+	/**
+	 * tag name (element name) to create.
+	 * @type String
+	 */
+	this.tagName = '';
+	
+	/**
+	 * associative array of attributes { name1 : value1, name2 : value2 ... }
+	 * @type Object
+	 */
+	this.attributes = {};
+	
+	/**
+	 * array of {@link Iroha.Tag} instances
+	 * @type Iroha.Tag[]
+	 */
 	this.childNodes = [];
 };
 
 /**
- * get/set attribute value.
- * @param {String} name    attribute name
- * @param {String} [value]    value to set
+ * Iroha.Tag のインスタンスを作って返す。
+ * @return Iroha.Tag の新規インスタンス
+ * @type Iroha.Tag
  */
-Iroha.Tag.prototype.attr = function(name, value) {
-	if (typeof name != 'string') {
-		throw new TypeError('Iroha.Tag.attr: first argument must be a string (name).');
-	} else if (value == undefined) {
-		return this.attributes[name] || '';
-	} else {
-		return (this.attributes[name] = String(value));
-	}
+Iroha.Tag.create = function() {
+	var instance = new this;
+	return instance.init.apply(instance, arguments);
 };
 
-/**
- * append child instance.
- * @param {Iroha.Tag|String} arg     instance to append
- */
-Iroha.Tag.prototype.append = function(arg) {
-	if (arg == undefined || arg == null) {
-		throw new TypeError('Iroha.Tag.append: first argument must be a string or a Iroha.Tag instance.');
-	} else {
-		if (arg.constructor != this.constructor) {
-			arg = String(arg);
+$.extend(Iroha.Tag.prototype,
+/** @lends Iroha.Tag.prototype */
+{
+	/**
+	 * initialize
+	 * @param {String} tagName    element name to create
+	 * @param {Object} [attrs]    associative array of attributes { name1 : value1, name2 : value2 ... }
+	 * @return このインスタンス自身
+	 * @type Iroha.Tag
+	 */
+	init : function(tagName, attrs) {
+		if (typeof tagName != 'string') {
+			throw new TypeError('Iroha.Tag#.init: first argument must be a string (tagName).');
+		} else {
+			this.tagName    = tagName;
+			this.attributes = attrs || {};
+			this.childNodes = [];
+			
+			return this;
 		}
-		this.childNodes.push(arg);
+	},
+	
+	/**
+	 * 属性値を設定する／読み出す
+	 * @param {String} name       対象とする属性の名前
+	 * @param {String} [value]    その属性に値を設定する場合は、その値。（無指定時は属性値の読み出しとなる）
+	 * @return 指定された属性の現在の値、または今セットした値そのもの、
+	 * @type String
+	 */
+	attr : function(name, value) {
+		if (typeof name != 'string') {
+			throw new TypeError('Iroha.Tag#.attr: first argument must be a string (name).');
+		} else if (value == undefined) {
+			return this.attributes[name] || '';
+		} else {
+			return (this.attributes[name] = String(value));
+		}
+	},
+	
+	/**
+	 * append child instance.
+	 * @param {Iroha.Tag|String} arg 　　instance to append
+	 * @return このインスタンス自身
+	 * @type Iroha.Tag
+	 */
+	append : function(arg) {
+		if (arg == undefined || arg == null) {
+			throw new TypeError('Iroha.Tag#append: first argument must be a string or a Iroha.Tag instance.');
+		} else {
+			if (arg.constructor != this.constructor) {
+				arg = String(arg);
+			}
+			this.childNodes.push(arg);
+			return this;
+		}
+	},
+	
+	/**
+	 * output instance data as tag string. typically to use document.write().
+	 * @param {Boolean} [debug=false]    debug mode - escaped output
+	 * @return HTML tag string
+	 * @type String
+	 */
+	toString : function(debug) {
+		var tagOpen    = (debug) ? '&lt;' : '<';
+		var tagClose   = (debug) ? '&gt;' : '>';
+		var tag        = tagOpen + this.tagName;
+		var content    = (this.childNodes.length) ? '' : null;
+		for (var i = 0, n = this.childNodes.length; i < n; i++) {
+			content += this.childNodes[i].toString(debug);
+		}
+		for (var attr in this.attributes) {
+			tag += ' ' + attr + '="' + this.attributes[attr] + '"';
+		}
+		tag += (content != null) ?
+			tagClose + content + tagOpen + '/' + this.tagName + tagClose :
+			' /' + tagClose;
+		return tag;
 	}
-};
-
-/**
- * output instance data as tag string. typically to use document.write().
- * @param {Boolean} [debug=false]    debug mode - escaped output
- * @return HTML tag string
- * @type String
- */
-Iroha.Tag.prototype.toString = function(debug) {
-	var tagOpen    = (debug) ? '&lt;' : '<';
-	var tagClose   = (debug) ? '&gt;' : '>';
-	var tag        = tagOpen + this.tagName;
-	var content    = (this.childNodes.length) ? '' : null;
-	for (var i = 0, n = this.childNodes.length; i < n; i++) {
-		content += this.childNodes[i].toString(debug);
-	}
-	for (var attr in this.attributes) {
-		tag += ' ' + attr + '="' + this.attributes[attr] + '"';
-	}
-	tag += (content != null) ?
-		tagClose + content + tagOpen + '/' + this.tagName + tagClose :
-		' /' + tagClose;
-	return tag;
-};
-
-
-
-
+});
 
 
 
@@ -2553,14 +2783,11 @@ Iroha.fireShigekix = function(target) {
  * @type jQuery.Deferred.Promise
  */
 Iroha.delay = function(delay, aThisObject) {
-	var dfd = $.Deferred();
-	if (delay > 0) {
-		new Iroha.Timeout(function() {
-			aThisObject ? dfd.resolveWith(aThisObject) : dfd.resolve();
-		}, delay);
-	} else {
-		aThisObject ? dfd.resolveWith(aThisObject) : dfd.resolve();
-	}
+	var dfd     = $.Deferred();
+	var resolve = function() { aThisObject ? dfd.resolveWith(aThisObject) : dfd.resolve() };
+	delay > 0
+		? setTimeout(resolve, delay)
+		: resolve();
 	return dfd.promise();
 };
 
@@ -2712,10 +2939,6 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 	}
 	return this;
 };
-
-
-
-
 
 
 
