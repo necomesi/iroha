@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.30.20130303
+ *    @version 3.30.20130305
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -795,7 +795,7 @@ $.extend(Iroha.String,
 		var chars = ($.type(chars) == 'string') ? chars : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		var ret   = '';
 		while (num--) {
-			ret += chars.split('')[parseInt(Math.random() * chars.length)]
+			ret += chars.split('')[Math.floor(Math.random() * chars.length)]
 		}
 		return new this(ret);
 	},
