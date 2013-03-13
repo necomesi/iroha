@@ -179,7 +179,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 		}
 	
 		// create throbber
-		if (Iroha.Throbber && setting.throbber && !$.isEmptyObject(this.throbber)) {
+		if (Iroha.Throbber && setting.throbber && !$.isEmptyObject(setting.throbber)) {
 			this.throbber = Iroha.Throbber.create(setting.throbber);
 		}
 	
@@ -384,6 +384,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 	 * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
 	 * @return this instance itself
 	 * @type Iroha.PseudoDialog
+	 * @deprecated
 	 */
 	setCloseCallback : function(func, aThisObject) {
 		this.removeDisposableCallback('onClose');
@@ -576,8 +577,8 @@ $.extend(Iroha.PDContentFrame.prototype,
 	 */
 	init : function(setting) {
 		var setting    = $.extend(Iroha.PDContentFrame.Setting.create(), setting);
-		this.$node     = $('iframe[name="' + setting.name + '"]');
-		this.frame     = window.frames[setting.name];
+		this.$node     = $('iframe[name="' + setting.name + '"]'); // Iroha.PseudoDialog は今や複数インスタンスが同時に存在する可能性があるから、こんなずさんなのではいけない。
+		this.frame     = window.frames[setting.name];              // 同上。
 		this.url       = 
 		this.initial   = setting.initial || 'about:blank';
 		this.maxWidth  = setting.maxWidth;
@@ -1219,7 +1220,7 @@ Iroha.PseudoDialog.Setting = function() {
 	this.effect         = {
 	                      	  'duration' : 500
 	                      };
-	this.throbber       = {};  // Iroha.Throbber.Setting オブジェクトか、既存の Iroha.Throbber インスタンスの基底要素ノードが見つかるセレクタ文字列。
+	this.throbber       = {};  // Throbber　の設定オブジェクト。(Iroha.Throbber.Setting インスタンス)
 	this.contentFrame   = Iroha.PDContentFrame.Setting.create();
 	this.clickShield    = Iroha.ClickShield.Setting.create()
 	this.useShield      = {
