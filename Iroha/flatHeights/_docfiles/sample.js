@@ -3,7 +3,7 @@
  *    @fileoverview
  *       sample script for Iroha.FlatHeights.
  *
- *    @version 3.0.20120405
+ *    @version 3.01.20130313
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.flatHeights.js
@@ -15,7 +15,7 @@
 
 $(function() {
 	$('button')
-		.live('click', function() {
+		.on('click', function() {
 			var $btn = $(this).attr('disabled', true);
 			var code = $btn.parent().prev('pre').text();
 			$.globalEval(code);
