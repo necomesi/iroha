@@ -106,10 +106,10 @@ $.extend(Iroha.InputPrompt,
 	autoSetup : function(selector, setting) {
 		if ($.type(selector) == 'string' && selector) {
 			// 現在見つかる対象に適用
-			$(selector).each(function() { Iroha.InputPrompt.create(this, setting) });
+			$(selector).Iroha_InputPrompt(setting);
 			
 			// 今はまだ存在しない対象はオンデマンドで適用
-			$(document).on('focus', selector, function() { Iroha.InputPrompt.create(this, setting) });
+			$(document).on('focus', selector, function() { $(this).Iroha_InputPrompt(setting) });
 		}
 	}
 });
