@@ -4,7 +4,7 @@
  *       keyboard equivalents system.
  *       (charset : "UTF-8")
  *
- *    @version 3.00.20121126
+ *    @version 3.01.20130313
  *    @requires jquery.js
  *    @requires iroha.js
  */
@@ -19,6 +19,11 @@
  * @extends Iroha.Observable
  */
 Iroha.KeyEquiv = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
 	/**
 	 * 基底要素ノード（キーイベントを拾う要素）
 	 * @type jQuery
@@ -51,19 +56,6 @@ $.extend(Iroha.KeyEquiv,
 		'}' : { name : '\u2193' , keyCode : 40, DOMName : ''         }   /* down  */
 	},
 	
-	/** @private */
-	createMain : Iroha.KeyEquiv.create,
-	
-	/**
-	 * 新しくインスタンスを生成するか、基底要素ノードから既存のインスタンスを得る。
-	 * 第1引数に要素ノードを与えたときは、それを基底要素とする既存のインスタンスを探し、なければインスタンスを新規作成する。
-	 * 第1引数に何も与えない場合は、document.documentElement を基底要素ノードして既存インスタンスを探し、なければインスタンスを新規作成する。
-	 * @param {jQuery|Element|String} [node]    基底要素要素ノード。無指定時は document.documentElement とみなす。
-	 */
-	create : function(node) {
-		return this.createMain.call(this, node || document.documentElement);
-	},
-	
 	/**
 	 * 特殊キーの別名記号をキーコード指定により得る。
 	 * @param {Number} keyCode    特殊キーのキーコード
@@ -81,6 +73,15 @@ $.extend(Iroha.KeyEquiv,
 			});
 			return ret;
 		}
+	},
+	
+	/**
+	 * 新しくインスタンスを生成するか、既存のインスタンスを得る。
+	 * @param {jQuery|Element|String} [node=document.documentElement]    基底要素ノード（＝キーイベントを拾う要素）。
+	 */
+	create : function(node) {
+		node || (node = document.documentElement);
+		return this.getInstance(node) || this.add(node);
 	}
 });
 
@@ -94,7 +95,6 @@ $.extend(Iroha.KeyEquiv.prototype,
 	 */
 	init : function(node) {
 		this.$node = $(node).keydown($.proxy(this.onKeyDown, this));
-//		$(document).keydown($.proxy(this.onKeyDown, this));
 		return this;
 	},
 	
@@ -132,6 +132,16 @@ $.extend(Iroha.KeyEquiv.prototype,
 				return !alias ? key : alias.name;
 			}, this);
 		}
+	},
+	
+	/**
+	 * 特殊キーの別名記号をキーコード指定により得る。
+	 * @param {Number} keyCode    特殊キーのキーコード
+	 * @return 特殊キーの別名記号。該当するものがなければ空文字列 ""。
+	 * @type String
+	 */
+	getKeyAlias : function(keyCode) {
+		return this.constructor.getKeyAlias(keyCode);
 	},
 	
 	/**

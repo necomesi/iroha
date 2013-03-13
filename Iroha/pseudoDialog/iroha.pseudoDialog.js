@@ -4,7 +4,7 @@
  *       Pseudo Dialog.
  *       (charset : "UTF-8")
  *
- *    @version 3.04.20121114
+ *    @version 3.04.20130313
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires jquery.mousewheel.js
@@ -12,7 +12,7 @@
  *    @requires iroha.balloon.js
  *    @requires iroha.fontSizeObserver.js    (optional)
  *    @requires iroha.keyEquiv.js            (optional)
- *    @requires iroha.processingInfo.js      (optional)
+ *    @requires iroha.throbber.js            (optional)
  *    @requires iroha.pseudoDialogContent.js (in content frame page)
  *    @requires iroha.pseudoDialog.css
  */
@@ -171,7 +171,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 		// set key equivalents.
 		if (Iroha.KeyEquiv) {
 			// this is an attitude that "ESC" key is an shortcut key of the close button(s)
-			Iroha.KeyEquiv.addKey('!', function() {
+			Iroha.KeyEquiv.create().addKey('!', function() {
 				if (this.$closeBtn.length) {
 					this.close();
 				}
