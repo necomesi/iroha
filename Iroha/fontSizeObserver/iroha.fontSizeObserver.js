@@ -17,7 +17,7 @@
  * @namespace font size observer.
  * @extends Iroha.Observable
  */
-Iroha.FontSizeObserver = $.extend(new Iroha.Observable,
+Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
 /** @lends Iroha.FontSizeObserver */
 {
 	/**
