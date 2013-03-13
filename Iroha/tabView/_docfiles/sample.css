@@ -1,0 +1,344 @@
+@charset "UTF-8";
+
+/* --------------------------------------------
+ *      sample style for iroha.tabView.js
+ * -------------------------------------------- */
+
+
+/* =========== example block =========== */
+
+div.example {
+	padding: 0;
+	border: none;
+	background: transparent none;
+}
+
+
+
+/* =========== tabView base block =========== */
+
+div.example div.iroha-tabview {
+	margin: 0;
+	padding: 0;
+}
+
+
+
+/* =========== tabs =========== */
+
+div.iroha-tabview ul.iroha-tabview-tabs {
+	position: relative;
+	z-index: 2;
+	top: 1px;
+	margin: 0 0 1em;
+	padding: 0;
+	list-style: none;
+	*zoom: 1;  /* clear float for ~IE7 */
+}
+
+div.iroha-tabview ul.iroha-tabview-tabs:after {
+	clear: both;
+	display: block;
+	content: "";
+}
+
+div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab {
+	float: left;
+	display: block;
+	list-style: none;
+	margin: 0 6px 0 0;
+	padding: 0;
+	border: 1px solid #aeaeae;
+	background: #fdfdf9;
+	line-height: 1;
+}
+
+div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab a {
+	display: block;
+	*display: inline-block;
+	padding: 6px 12px 5px;
+	line-height: 1;
+}
+
+div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab a:hover,
+div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab a:focus {
+	background: #f7f6eb;
+}
+
+/* ----- script enabled ----- */
+
+div.iroha-tabview-enabled ul.iroha-tabview-tabs {
+	margin-bottom: 0;
+	padding-left: 12px;
+}
+
+div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab-selected {
+	border-bottom: 1px solid #f7f6eb;
+	background-color: #f7f6eb;
+}
+
+div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab a {
+	color: black;
+	text-decoration: none;
+}
+
+div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab-selected a {
+	cursor: default;
+}
+
+
+/* =========== panes =========== */
+
+div.iroha-tabview div.iroha-tabview-pane {
+	margin: 0 0 1em;
+	padding: 10px;     /* must be in 'px' unit */
+	border-width: 1px; /* must be in 'px' unit */
+	border-style: solid;
+	border-color: #aeaeae;
+	background: #f7f6eb;
+}
+
+
+/* ----- pane contents ----- */
+
+div.iroha-tabview div.iroha-tabview-pane h4 {
+	margin: 1em 0;
+}
+
+div.iroha-tabview div.iroha-tabview-pane p {
+	margin: 0.5em 0 0;
+	line-height: 1.4;
+}
+
+div.iroha-tabview div.iroha-tabview-pane p em {
+	color: black;
+	font-size: 150%;
+	font-weight: normal;
+}
+
+div.iroha-tabview div.iroha-tabview-pane p cite {
+	display: block;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+	font-style: italic;
+}
+
+div.iroha-tabview div.iroha-tabview-pane p cite em {
+	font-size: 100%;
+	font-weight: bold;
+	font-style: italic;
+	color: blue;
+}
+
+/* ----- script enabled ----- */
+
+div.iroha-tabview-enabled div.iroha-tabview-pane {
+}
+
+div.iroha-tabview-enabled div.iroha-tabview-pane h4 {
+	display: none;
+}
+
+
+
+/* =========== tabView example #1 =========== */
+
+/* ----- base block ----- */
+
+#example1 div.iroha-tabview {
+}
+
+
+/* ----- tabs ----- */
+
+#example1 div.iroha-tabview ul.iroha-tabview-tabs {
+}
+
+#example1 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab {
+}
+
+/* script enabled */
+
+#example1 div.iroha-tabview-enabled ul.iroha-tabview-tabs {
+}
+
+#example1 div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab {
+}
+
+#example1 div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab-selected {
+}
+
+/* ----- panes ----- */
+
+#example1 div.iroha-tabview div.iroha-tabview-pane {
+}
+
+/* pane contents */
+
+#example1 div.iroha-tabview #pane1-1 p,
+#example1 div.iroha-tabview #pane1-2 p,
+#example1 div.iroha-tabview #pane1-3 p,
+#example1 div.iroha-tabview #pane1-1 p em,
+#example1 div.iroha-tabview #pane1-2 p em,
+#example1 div.iroha-tabview #pane1-3 p em {
+	font-style: italic;
+	font-family: "Times", serif;
+}
+
+#example1 div.iroha-tabview #pane1-4,
+#example1 div.iroha-tabview #pane1-5 {
+	font-size: 83%;
+}
+
+#example1 div.iroha-tabview #pane1-4 h4,
+#example1 div.iroha-tabview #pane1-5 h4 {
+	margin: 1em 0;
+	padding: 0;
+	font-size: 100%;
+}
+
+#example1 div.iroha-tabview #pane1-4 p em,
+#example1 div.iroha-tabview #pane1-5 p em {
+	font-weight: bold;
+	font-size: 100%;
+}
+
+/* script enabled */
+
+#example1 div.iroha-tabview-enabled div.iroha-tabview-pane {
+}
+
+#example1 div.iroha-tabview-enabled div.iroha-tabview-pane-selected {
+}
+
+#example1 div.iroha-tabview-enabled #pane1-4 h4,
+#example1 div.iroha-tabview-enabled #pane1-5 h4 {
+	display: block;
+}
+
+
+/* =========== iroha-tabview example #2 =========== */
+
+/* ----- base block ----- */
+
+#example2 div.iroha-tabview {
+}
+
+
+/* ----- tabs ----- */
+
+#example2 div.iroha-tabview ul.iroha-tabview-tabs {
+	/* display: none; */
+}
+
+#example2 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab {
+	border: none;
+	border-bottom: 1px solid #aeaeae;
+}
+
+#example2 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab a {
+	padding: 0;
+	background: transparent;
+}
+
+#example2 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab a img {
+	vertical-align: top;
+}
+
+/* script enabled */
+
+#example2 div.iroha-tabview-enabled ul.tabView-tabs {
+	display: block;
+}
+
+#example2 div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab {
+}
+
+#example2 div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab-selected {
+	border-bottom: 1px solid #f7f6eb;
+}
+
+/* ----- panes ----- */
+
+#example2 div.iroha-tabview div.iroha-tabview-pane {
+}
+
+/* pane contents */
+
+#example2 div.iroha-tabview #pane2-1 p,
+#example2 div.iroha-tabview #pane2-2 p,
+#example2 div.iroha-tabview #pane2-3 p,
+#example2 div.iroha-tabview #pane2-1 p em,
+#example2 div.iroha-tabview #pane2-2 p em,
+#example2 div.iroha-tabview #pane2-3 p em {
+	font-style: italic;
+	font-family: "Times", serif;
+}
+
+/* script enabled */
+
+#example2 div.iroha-tabview-enabled div.iroha-tabview-pane {
+}
+
+#example2 div.iroha-tabview-enabled div.iroha-tabview-pane-selected {
+}
+
+
+
+/* =========== iroha-tabview example #3 =========== */
+
+/* ----- base block ----- */
+
+#example3 div.iroha-tabview {
+}
+
+
+/* ----- tabs ----- */
+
+#example3 div.iroha-tabview ul.iroha-tabview-tabs {
+	padding-left: 24px;
+}
+
+#example3 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab {
+	border-radius: 1em 1em 0 0;
+	-moz-border-radius: 1em 1em 0 0;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-top-right-radius: 1em;
+}
+
+#example3 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab {
+	background-color: #f0f0f0;
+}
+
+#example3 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab a,
+#example3 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab a:hover,
+#example3 div.iroha-tabview ul.iroha-tabview-tabs li.iroha-tabview-tab a:focus {
+	color: gray;
+	background: transparent;
+}
+
+/* script enabled */
+
+#example3 div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab-selected {
+	background: white;
+	border-bottom: 1px solid white;
+}
+	
+#example3 div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab-selected a,
+#example3 div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab-selected a:hover,
+#example3 div.iroha-tabview-enabled ul.iroha-tabview-tabs li.iroha-tabview-tab-selected a:focus {
+	color: black;
+}
+
+/* ----- panes ----- */
+
+#example3 div.iroha-tabview div.iroha-tabview-pane {
+	border-radius: 1em;
+	-moz-border-radius: 1em;
+	-webkit-border-radius: 1em;
+	background: white;
+}
+
+
+
