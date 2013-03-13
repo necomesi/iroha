@@ -4,7 +4,7 @@
  *       text field observer.
  *       (charset : "UTF-8")
  *
- *    @version 3.01.20121111
+ *    @version 3.01.20130312
  *    @requires jquery.js
  *    @requires iroha.js
  */
@@ -74,6 +74,8 @@ $.extend(Iroha.TextObserver,
 {
 	/**
 	 * 頻出の class 名（HTML の class 属性値）
+	 *   - 'target' : 監視対象の要素ノードであることを示す
+	 *   - 'error'  : 監視対象の要素ノードのテキストがバリデーションチェックでひっかかったことを示す
 	 * @type Object
 	 * @cnonsant
 	 */

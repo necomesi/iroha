@@ -3,7 +3,7 @@
  *    @fileoverview
  *       observe changing font size.
  *
- *    @version 3.0.20120428
+ *    @version 3.00.20130313
  *    @requires jquery.js
  *    @requires iroha.js
  */
@@ -12,10 +12,9 @@
 
 
 
-/* -------------------- Class : Iroha.FontSizeObserver -------------------- */
+/* -------------------- Static class : Iroha.FontSizeObserver -------------------- */
 /**
- * observe changing font size (please use this as a singleton).
- * @class font size observer
+ * @namespace font size observer.
  * @extends Iroha.Observable
  */
 Iroha.FontSizeObserver = $.extend(new Iroha.Observable,

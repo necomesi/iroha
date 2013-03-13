@@ -4,7 +4,7 @@
  *       いわゆるカルーセル
  *       (charset : "UTF-8")
  *
- *    @version 3.12.20130224
+ *    @version 3.13.20130312
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.scroller.js
@@ -118,6 +118,7 @@ $.extend(Iroha.Carousel,
 {
 	/**
 	 * 頻出の class 名（HTML の class 属性値）
+	 *   - 'baseNode'  : Carousel の基底要素ノードであることを示す
 	 *   - 'enabled'   : Carousel が適用されたことを示す
 	 *   - 'discarded' : Carousel が適用されたが適用する意味がなかったことを示す
 	 *   - 'scrolling' : Carousel がスクロール動作している瞬間であることを示す
@@ -126,7 +127,8 @@ $.extend(Iroha.Carousel,
 	 * @cnonsant
 	 */
 	CLASSNAME : {
-		  'enabled'   : 'iroha-carousel-enabled'
+		  'baseNode'  : 'iroha-carousel'
+		, 'enabled'   : 'iroha-carousel-enabled'
 		, 'discarded' : 'iroha-carousel-discarded'
 		, 'scrolling' : 'iroha-carousel-scrolling'
 		, 'selected'  : 'iroha-carousel-selected'
@@ -140,7 +142,7 @@ $.extend(Iroha.Carousel.prototype,
 {
 	/**
 	 * initialize
-	 * @param {Element|jQuery|String}    node         base element node for the instance
+	 * @param {Element|jQuery|String}  node         base element node for the instance
 	 * @param {Iroha.Carousel.Setting} [setting]    setting object for the instance
 	 * @reutn this instance
 	 * @type Iroha.Carousel
@@ -149,7 +151,7 @@ $.extend(Iroha.Carousel.prototype,
 	init : function(node, setting) {
 		var cname     = this.constructor.CLASSNAME;
 		var setting   = this.setting   = $.extend(Iroha.Carousel.Setting.create(), setting);
-		var $node     = this.$node     = $(node).eq(0);
+		var $node     = this.$node     = $(node).first().addClass(cname.baseNode);
 		var $viewport = this.$viewport = $node    .find(setting.viewport).first();
 		var $group    = this.$group    = $viewport.find(setting.group   ).first();
 		var $units    = this.$units    = $group   .find(setting.units   );

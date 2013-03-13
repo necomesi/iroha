@@ -4,7 +4,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.14.20130224
+ *    @version 3.14.20130312
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -680,7 +680,7 @@ Iroha.PageScroller.Setting = function() {
 
 /**
  * create an instance and return.
- * @type Iroha.Crossfader.Setting
+ * @type Iroha.PageScroller.Setting
  */
 Iroha.PageScroller.Setting.create = function() {
 	return new this;

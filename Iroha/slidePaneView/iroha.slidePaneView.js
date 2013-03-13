@@ -4,7 +4,7 @@
  *       Side-by-side Slidable Pane View
  *       (charset : "UTF-8")
  *
- *    @version 3.26.20130108
+ *    @version 3.26.20130312
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.touchable.js
@@ -86,6 +86,10 @@ $.extend(Iroha.SlidePaneView,
 {
 	/**
 	 * 頻出の class 名（HTML の class 属性値）
+	 *   - 'baseNode'     : 基底要素ノードであることを示す
+	 *   - 'mainPane'     : 本文ペインの要素ノードであることを示す
+	 *   - 'subPane'      : サブペインの要素ノードであることを示す
+	 *   - 'selectedPane' : 選択（表示）状態にあるペインの要素ノードであることを示す
 	 * @type Object
 	 * @cnonsant
 	 */

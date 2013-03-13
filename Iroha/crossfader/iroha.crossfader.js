@@ -4,7 +4,7 @@
  *       クロスフェードなトランジション
  *       (charset : "UTF-8")
  *
- *    @version 3.02.20121111
+ *    @version 3.03.20130312
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.fontSizeObserver.js  (optional)
@@ -125,15 +125,17 @@ $.extend(Iroha.Crossfader,
 {
 	/**
 	 * 頻出の class 名（HTML の class 属性値）
+	 *   - 'baseNode'  : CrossFader の基底要素ノードであることを示す。
 	 *   - 'enabled'   : CrossFader が適用されたことを示す（基底要素ノード）
 	 *   - 'discarded' : CrossFader が適用されたが適用する意味がなかったことを示す（基底要素ノード）
-	 *   - 'selected'  : 選択状態を示す
-	 *   - 'disabled'  : 選択不可状態を示す
+	 *   - 'selected'  : 選択状態を示す（選択ボタンの要素ノード）
+	 *   - 'disabled'  : 選択不可状態を示す（選択ボタンの要素ノード）
 	 * @type Object
 	 * @cnonsant
 	 */
 	CLASSNAME : {
-		  'enabled'   : 'iroha-crossfader-enabled'
+		  'baseNode'  : 'iroha-crossfader'
+		, 'enabled'   : 'iroha-crossfader-enabled'
 		, 'discarded' : 'iroha-crossfader-discarded'
 		, 'selected'  : 'iroha-crossfader-selected'
 		, 'disabled'  : 'iroha-crossfader-disabled'
@@ -167,15 +169,15 @@ $.extend(Iroha.Crossfader.prototype,
 		
 		var cname = this.constructor.CLASSNAME;
 		
-		switch (this.$units.size()) {
+		switch (this.$units.length) {
 			case 0 :
 				break;
 			case 1 :
 				this.index = 0;
-				this.$node.addClass(cname.enabled).addClass(cname.discarded);
+				this.$node.addClass([ cname.baseNode, cname.enabled, cname.discarded ].join(' '));
 				break;
 			default :
-				this.$node.addClass(cname.enabled)
+				this.$node.addClass([ cname.baseNode, cname.enabled ].join(' '));
 				
 				// hide blocks to prepare fade-in effect.
 				this.$units.hide();

@@ -3,7 +3,7 @@
  *    @fileoverview
  *       create text-input with prompt text.
  *
- *    @version 3.0.20120521
+ *    @version 3.00.20130312
  *    @requires jquery.js
  *    @requires iroha.js
  */
@@ -73,13 +73,16 @@ $.extend(Iroha.InputPrompt,
 {
 	/**
 	 * 頻出の class 名（HTML の class 属性値）
+	 *   - 'baseNode' : 基底要素ノードであることを示す
+	 *   - 'changed'  : 入力内容が初期状態から変化していることを示す
+	 *   - 'focused'  : 入力欄にフォーカスしていることを示す
 	 * @type Object
 	 * @cnonsant
 	 */
 	CLASSNAME : {
-		  'applied' : 'iroha-inputprompt'
-		, 'changed' : 'iroha-inputprompt-changed'
-		, 'focused' : 'iroha-inputprompt-focus'
+		  'baseNode' : 'iroha-inputprompt'
+		, 'changed'  : 'iroha-inputprompt-changed'
+		, 'focused'  : 'iroha-inputprompt-focus'
 	},
 
 	/**
@@ -128,7 +131,7 @@ $.extend(Iroha.InputPrompt.prototype,
 		
 		setting = $.extend(Iroha.InputPrompt.Setting.create(), setting);
 		
-		this.$node   = $(node).eq(0).addClass(this.constructor.CLASSNAME.applied);
+		this.$node   = $(node).eq(0).addClass(this.constructor.CLASSNAME.baseNode);
 		this.prompt  = this.$node.attr(setting.fromAttr) || setting.prompt;
 
 		// 従来とおなじ互換動作にするかを判定
