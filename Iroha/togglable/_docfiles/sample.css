@@ -59,6 +59,11 @@ div.example > di ul li {
 
 /* ----- toggle controller button ----- */
 
+div.example > button {
+	margin: 0.5em 1em;
+	cursor: pointer;
+}
+
 div.example > p {
 	margin: 0;
 	padding: 0;
@@ -70,7 +75,7 @@ div.example > p:last-child {
 
 div.example > p a,
 div.example > p label {
-	display: block;
+	display: inline-block;
 	margin: 0;
 	padding: 10px 10px 10px 28px;
 	background-position: 10px 50%;
@@ -109,3 +114,4 @@ div.example > p a.iroha-togglable-closed span.open-button,
 div.example > p a.iroha-togglable-opened span.close-button {
 	display: inline;
 }
+

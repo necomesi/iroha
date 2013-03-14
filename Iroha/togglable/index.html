@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="../../_css/base.css">
 <link rel="stylesheet" href="_docfiles/sample.css">
 <script src="../_libs/jquery.js"></script>
-<script src="../_libs/jquery.easing.js"></script>
 <script src="../iroha/iroha.js"></script>
 <script src="iroha.togglable.js"></script>
 <script src="_docfiles/sample.js"></script>
@@ -38,37 +37,92 @@
 <pre>&lt;head&gt;
     :
     &lt;script src=&quot;path/to/<em>jquery.js</em>&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;path/to/<em>jquery.easing.js</em>&quot;&gt;&lt;/script&gt;
     &lt;script src=&quot;path/to/<em>iroha.js</em>&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;path/to/<em>iroha.toggable.js</em>&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;path/to/<em>iroha.togglable.js</em>&quot;&gt;&lt;/script&gt;
     :
 &lt;/head&gt;</pre>
 
-<ul>
-	<li>実際の案件で使えるレベルにするには、その案件でのビジュアルデザインに沿ってスタイルを作り込む必要があります。（例：<a href="_docfiles/sample.css">sample.css</a>）</li>
-</ul>
+<p>実際の案件で使えるレベルにするには、その案件でのビジュアルデザインに沿ってスタイルを作り込む必要があります。（例：<a href="_docfiles/sample.css">sample.css</a>）</p>
 
 <h2 id="examples">動作例</h2>
 
-<h3>ページ内リンクによる紐づけ（一対一対応）</h3>
+<h3>基本的な使い方</h3>
 
-<pre>:
-&lt;p&gt;&lt;a href=&quot;<em><strong>#target-id</strong></em>&quot;&gt;開閉ボタン&lt;/a&gt;&lt;/p&gt;
-:
-&lt;div id=&quot;<em><strong>target-id</strong></em>&quot; class=&quot;<em>iroha-togglable</em>&quot;&gt;
-    &lt;p&gt;中身&lt;/p&gt;
+<pre>
+&lt;div id=&quot;<em>example</em>&quot;&gt;
+    <em>&lt;button&gt;</em>開閉ボタン<em>&lt;/button&gt;</em>
+    <em>&lt;div&gt;</em>開閉される部分<em>&lt;/div&gt;</em>
 &lt;/div&gt;
-:</pre>
+</pre>
+
+<pre>
+// Iroha ライブラリの標準的な方法
+var $button   = $('<em>#example button</em>');
+var $target   = $('<em>#example div</em>'   );
+var togglable = Iroha.Togglable.create($target, $button);
+
+// または jQuery っぽさ優先で
+$('<em>#example div</em>').Iroha_Togglable('<em>#example button</em>');
+</pre>
+
+<p>参考：<a href="_docfiles/sample.js">sample.js</a></p>
 
 <h4>初期状態で開いているパターン</h4>
 
-<div class="example" id="example1">
-<p><a href="#example1-body">
+<div class="example" id="example1_1">
+<button>開閉ボタン</button>
+<div>
+<ul>
+<li>中身</li>
+<li>中身</li>
+<li>中身</li>
+</ul>
+</div>
+<!-- /example --></div>
+
+<h4>初期状態で閉じているパターン</h4>
+
+<p>単に <code>&lt;div <em>style=&quot;display:none&quot;</em>&gt;</code> と書いただけ。外部 CSS を使ってこの div が <code>display:none</code> となるようにしてあるのでも良い。</p>
+
+<div class="example" id="example1_2">
+<button>開閉ボタン</button>
+<div style="display:none">
+<ul>
+<li>中身</li>
+<li>中身</li>
+<li>中身</li>
+</ul>
+</div>
+<!-- /example --></div>
+
+<h3>ページ内リンクによる自動的紐づけ</h3>
+
+<p><code>Iroha.Togglable.autoSetup()</code> を実行すると、以下の構造の HTML が自動的に探され、開閉機能が自動設定されます。</p>
+<p>この自動探索と自動設定は、該当のリンク部分をクリックしたときに初めて実行されます。</p>
+
+<pre>
+:
+&lt;p&gt;&lt;a href=&quot;<em>#<strong>target-id</strong></em>&quot;&gt;開閉ボタン&lt;/a&gt;&lt;/p&gt;
+:
+&lt;div id=&quot;<em><strong>target-id</strong></em>&quot; class=&quot;<em>iroha-togglable</em>&quot;&gt;開閉される部分&lt;/div&gt;
+:
+</pre>
+
+<pre>
+Iroha.Togglable.autoSetup();
+</pre>
+
+<p>参考：<a href="_docfiles/sample.js">sample.js</a></p>
+
+<h4>初期状態で開いているパターン</h4>
+
+<div class="example" id="example2_1">
+<p><a href="#example2_1-body">
 <span class="open-button">開く</span>
 <span class="close-button">閉じる</span>
 </a></p>
 
-<div class="iroha-togglable" id="example1-body">
+<div class="iroha-togglable" id="example2_1-body">
 <ul>
 <li>中身</li>
 <li>中身</li>
@@ -79,13 +133,13 @@
 
 <h4>初期状態で閉じているパターン</h4>
 
-<div class="example" id="example2">
-<p><a href="#example2-body" class="iroha-togglable-closed">
+<div class="example" id="example2_2">
+<p><a href="#example2_2-body" class="iroha-togglable-closed">
 <span class="open-button">開く</span>
 <span class="close-button">閉じる</span>
 </a></p>
 
-<div class="iroha-togglable iroha-togglable-closed" id="example2-body">
+<div class="iroha-togglable iroha-togglable-closed" id="example2_2-body">
 <ul>
 <li>中身</li>
 <li>中身</li>
@@ -94,70 +148,107 @@
 <!-- /iroha-togglable --></div>
 <!-- /example --></div>
 
-<h3>class 属性による連携（多対多）</h3>
 
-<pre>:
-&lt;p&gt;&lt;a href=&quot;#&quot; class=&quot;<em><strong>iroha-togglable-001</strong>-related</em>&quot;&gt;開閉ボタン&lt;/a&gt;&lt;/p&gt;
-:
-&lt;div class=&quot;<em>iroha-togglable <strong>iroha-togglable-001</strong></em>&quot;&gt;
-    &lt;p&gt;中身1&lt;/p&gt;
+<h3>多対多連携の例</h3>
+
+<pre>
+&lt;div id=&quot;<em>example</em>&quot;&gt;
+    &lt;p&gt;<em>&lt;a href=&quot;#&quot;&gt;</em>開閉ボタン<em>&lt;/a&gt;</em>&lt;p&gt;
+    :
+    <em>&lt;div&gt;</em>開閉される部分<em>&lt;/div&gt;</em>
+    :
+    &lt;div&gt;無関係&lt;/div&gt;
+    :
+    <em>&lt;div&gt;</em>開閉される部分<em>&lt;/div&gt;</em>
+    :
+    &lt;p&gt;<em>&lt;a href=&quot;#&quot;&gt;</em>開閉ボタン<em>&lt;/a&gt;</em>&lt;p&gt;
 &lt;/div&gt;
-:
-&lt;div class=&quot;<em>iroha-togglable <strong>iroha-togglable-001</strong></em>&quot;&gt;
-    &lt;p&gt;中身2&lt;/p&gt;
-&lt;/div&gt;
-:
-&lt;p&gt;&lt;a href=&quot;#&quot; class=&quot;<em><strong>iroha-togglable-001</strong>-related</em>&quot;&gt;開閉ボタン&lt;/a&gt;&lt;/p&gt;
-:</pre>
+</pre>
+
+<pre>
+var $buttons  = $('<em>#example3 &gt; p &gt; a</em>');
+var $targets  = $('<em>#example3 &gt; div:nth-of-type(odd)</em>');
+var togglable = Iroha.Togglable.create($targets, $buttons);
+</pre>
+<p>参考：<a href="_docfiles/sample.js">sample.js</a></p>
 
 <div class="example" id="example3">
-<p><a href="#" class="iroha-togglable-001-related">
+<p><a href="#">
 <span class="open-button">開く</span>
 <span class="close-button">閉じる</span>
 </a></p>
 
-<div class="iroha-togglable iroha-togglable-001">
-<ul>
-<li>中身</li>
-<li>中身</li>
-<li>中身</li>
-</ul>
-<!-- /iroha-togglable --></div>
-
-<div class="sandwiched">
-<p>この段落は開閉ブロックに挟まれている。</p>
-<!-- /sandwiched --></div>
-
-<div class="iroha-togglable iroha-togglable-001">
-<ul>
-<li>中身</li>
-<li>中身</li>
-<li>中身</li>
-</ul>
-<!-- /iroha-togglable --></div>
-
-<p><a href="#" class="iroha-togglable-001-related">
-<span class="open-button">開く</span>
-<span class="close-button">閉じる</span>
-</a></p>
-<!-- /example --></div>
-
-
-<h3>チェックボックスとの連携</h3>
-
-<p>この例は AutoSetup (bajl.togglePanel.js を読み込ませただけで自動適用される形）ではない。<a href="_docfiles/sample.js">sample.js</a> を参考。</p>
-
-<div class="example" id="example4">
-<p>
-<label><input type="checkbox">チェックボックス</label>
-</p>
 <div>
 <ul>
 <li>中身</li>
 <li>中身</li>
 <li>中身</li>
 </ul>
-<!-- /iroha-togglable --></div>
+</div>
+
+<div class="sandwiched">
+<p>この段落は開閉されるブロックに挟まれているが、無関係。</p>
+<!-- /sandwiched --></div>
+
+<div>
+<ul>
+<li>中身</li>
+<li>中身</li>
+<li>中身</li>
+</ul>
+</div>
+
+<p><a href="#">
+<span class="open-button">開く</span>
+<span class="close-button">閉じる</span>
+</a></p>
+<!-- /example --></div>
+
+
+<h3>チェックボックス連携の例</h3>
+
+<p>参考：<a href="_docfiles/sample.js">sample.js</a></p>
+
+<div class="example" id="example4">
+<p>
+<label><input type="checkbox">チェックボックス</label>
+</p>
+
+<div>
+<ul>
+<li>中身</li>
+<li>中身</li>
+<li>中身</li>
+</ul>
+</div>
+<!-- /example --></div>
+
+
+<h3>ラジオボタン連携の例</h3>
+
+<p>参考：<a href="_docfiles/sample.js">sample.js</a></p>
+
+<div class="example" id="example5">
+<p>
+<label><input type="radio" name="example5" value="0">ラジオボタン1</label>
+<label><input type="radio" name="example5" value="1">ラジオボタン2</label>
+</p>
+
+<div>
+<ul>
+<li>中身1</li>
+<li>中身1</li>
+<li>中身1</li>
+</ul>
+</div>
+
+<div>
+<ul>
+<li>中身2</li>
+<li>中身2</li>
+<li>中身2</li>
+</ul>
+</div>
 <!-- /example --></div>
 
 
@@ -165,8 +256,7 @@
 
 <p>(fixme)</p>
 
-
-<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2013-03-13</address>
+<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2013-03-14</address>
 
 </body>
 </html>

@@ -4,9 +4,8 @@
  *       任意のブロックを閉じたり開いたりする UI
  *       (charset : "UTF-8")
  *
- *    @version 3.03.20130314
+ *    @version 3.04.20130314
  *    @requires jquery.js
- *    @requires jquery.easing.js
  *    @requires iroha.js
  */
 /* -------------------------------------------------------------------------- */
@@ -83,20 +82,18 @@ $.extend(Iroha.Togglable,
 {
 	/**
 	 * 頻出の class 名（HTML の class 属性値）
-	 *   - 'target'   : 開閉される対象ブロックの要素ノードであることを示す
-	 *   - 'button'   : 開閉を操作するボタンの要素ノードである事を示す
-	 *   - 'opened'   : 開閉されるブロック、操作ボタンともに、ブロックが開かれている事を示す。
-	 *   - 'closed'   : 開閉されるブロック、操作ボタンともに、ブロックが閉じられている事を示す。
-	 *   - 'relation' : class 属性値の命名規則により操作ボタンを開閉対象を結びつけるための正規表現。"iroha-togglable-xxx-related" のついたボタンは class 属性値 "iroha-togglable-xxx" を持つブロックと結びつけられる。
+	 *   - 'target' : 開閉される対象ブロックの要素ノードであることを示す
+	 *   - 'button' : 開閉を操作するボタンの要素ノードである事を示す
+	 *   - 'opened' : 開閉されるブロック、操作ボタンともに、ブロックが開かれている事を示す。
+	 *   - 'closed' : 開閉されるブロック、操作ボタンともに、ブロックが閉じられている事を示す。
 	 * @type Object
 	 * @cnonsant
 	 */
 	CLASSNAME : {
-		  'target'   : 'iroha-togglable'
-		, 'button'   : 'iroha-togglable-button'
-		, 'opened'   : 'iroha-togglable-opened'
-		, 'closed'   : 'iroha-togglable-closed'
-		, 'relation' : /^(iroha-togglable-.*)-related$/
+		  'target' : 'iroha-togglable'
+		, 'button' : 'iroha-togglable-button'
+		, 'opened' : 'iroha-togglable-opened'
+		, 'closed' : 'iroha-togglable-closed'
 	},
 	
 	/**
@@ -122,36 +119,6 @@ $.extend(Iroha.Togglable,
 		instance.$buttons.data(key, value);
 		return instance;
 	},
-
-	/**
-	 * ボタンに付与されている「関連づけ用クラス名」を元に、そのボタンが開閉対象とするべきブロック（1つ以上）を取得する
-	 * @param {Element|jQuery|String} button    開閉ボタンの要素ノード
-	 * @return 見つかった要素ノード（群）からなる jQuery オブジェクト
-	 * @type jQuery
-	 */
-	getTargetsByRelation : function(button) {
-		var $button = $(button).first();
-		var cnames  = ($button.attr('class') || '').split(' ');
-		var regex   = this.CLASSNAME.relation;
-		return (cnames.some(function(cname) { return regex.test(cname) }))
-			? $('.' + RegExp.$1)
-			: $();
-	},
-
-	/**
-	 * 自分を含め、同じブロックを開閉対象とする同族なボタン（1つ以上）を取得する
-	 * @param {Element|jQuery|String} button    開閉ボタンの要素ノード
-	 * @return 見つかった要素ノード（群）からなる jQuery オブジェクト
-	 * @type jQuery
-	 */
-	getButtonsByRelation : function(button) {
-		var $button = $(button).first();
-		var cnames  = ($button.attr('class') || '').split(' ');
-		var regex   = this.CLASSNAME.relation;
-		return (cnames.some(function(cname) { return regex.test(cname) }))
-			? $('.' + RegExp.lastMatch)
-			: $();
-	},
 	
 	/**
 	 * 開閉ボタンの押下をトリガーにしてインスタンスを自動生成させるようにする。
@@ -160,35 +127,31 @@ $.extend(Iroha.Togglable,
 	 * @type Function
 	 */
 	autoSetup : function(selector) {
-		var selector = selector || 'a, area';
+		if (Iroha.alreadyApplied(arguments.callee)) return this;
 		
-		$(document).on('click', selector, $.proxy(function(e) {
-			var togglable = this.getInstance(e.currentTarget);
+		$(document).on('click', selector || 'a, area', $.proxy(function(e) {
+			var cname     = this.CLASSNAME;
+			var $button   = $(e.currentTarget);
+			var togglable = this.getInstance($button);
+			
+			// 開閉対象のブロックが見つかったら、インスタンスを生成し、最初の開閉を行う。
+			// 以後の開閉はインスタンス内部のイベントハンドラが行うのでこの1回のみで良い。
 			if (!togglable) {
-				var $button = $(e.currentTarget);
-				var $target = $button.Iroha_getLinkTarget();
-				
-				// ページ内リンクによる関連づけが無いなら、関連づけ用のクラス名を手ががかりに
-				// 開閉対象のブロックと、同じブロックに関連づけられている開閉ボタンを探す。
-				if (!$target.length) {
-					$target = this.getTargetsByRelation($button);
-					$button = this.getButtonsByRelation($button);
-				}
-				
-				// 開閉対象のブロックが見つかり、インスタンス生成し、最初の開閉を行う。
-				// 以後の開閉はインスタンス内部のイベントハンドラが行うのでこの1回のみで良い。
+				var $target = $button.Iroha_getLinkTarget().filter('.' + cname.target);
 				if ($target.length && !this.getInstance($target)) {
 					togglable = this.create($target, $button).toggle();
 				}
 			}
 			
-			// インスタンスが用意できたなら、DOM 的デフォルトアクション、Iroha.PageScroller のスクロールアニメ発動を抑止
+			// インスタンスを生成できているなら、DOM 的デフォルトアクション、Iroha.PageScroller のスクロールアニメ発動を抑止する。
 			// （ボタンはページ内リンクだからこれらの対策は必要）
 			if (togglable) {
 				e.preventDefault();
 				Iroha.PageScroller && Iroha.PageScroller.abort();
 			}
 		}, this));
+		
+		return this;
 	}
 });
 
