@@ -1,0 +1,111 @@
+@charset "UTF-8";
+
+/* --------------------------------------------
+ *      sample style for iroha.toggable.js
+ * -------------------------------------------- */
+
+
+/* =========== examples =========== */
+
+div.example {
+	padding: 0;
+	border: 1px solid #cccccc;
+	background: #f0f0f0;
+	zoom: 1;
+}
+
+div.example div.sandwiched {
+	margin: 0;
+	padding: 10px;
+	border-top: 1px solid #cccccc;
+	background: transparent;
+}
+
+div.example div.sandwiched p {
+	margin: 0;
+	padding: 0;
+}
+
+
+
+/* ----- togglable block ----- */
+
+div.example > div {
+	margin: 0;
+	padding: 0;
+	border-top: 1px solid #cccccc;
+	background: #ffffff;
+}
+
+div.example > div.iroha-togglable-closed {
+	display: none;
+}
+
+div.example > div ul {
+	display: block;
+	list-style: none;
+	margin: 0;
+	padding: 10px;
+}
+
+div.example > di ul li {
+	display: block;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	line-height: 2;
+}
+
+
+/* ----- toggle controller button ----- */
+
+div.example > p {
+	margin: 0;
+	padding: 0;
+}
+
+div.example > p:last-child {
+	border-top: 1px solid #cccccc;
+}
+
+div.example > p a,
+div.example > p label {
+	display: block;
+	margin: 0;
+	padding: 10px 10px 10px 28px;
+	background-position: 10px 50%;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.example > p label {
+	padding-left: 10px;
+}
+
+div.example > p a:link,
+div.example > p a:visited,
+div.example > p a:hover,
+div.example > p a:active {
+	color: inherit;
+	text-decoration: none;
+}
+
+div.example > p a,
+div.example > p a.iroha-togglable-opened {
+	background-image: url(icon_opened.png);
+}
+
+div.example > p a.iroha-togglable-closed {
+	background-image: url(icon_closed.png);
+}
+
+div.example > p a                        span.open-button,
+div.example > p a.iroha-togglable-opened span.open-button,
+div.example > p a.iroha-togglable-closed span.close-button {
+	display: none;
+}
+
+div.example > p a.iroha-togglable-closed span.open-button,
+div.example > p a.iroha-togglable-opened span.close-button {
+	display: inline;
+}
