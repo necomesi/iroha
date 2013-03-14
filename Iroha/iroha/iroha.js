@@ -4,7 +4,7 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.31.20130310
+ *    @version 3.31.20130314
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -603,7 +603,7 @@ $.extend(Iroha.ViewClass.prototype,
 	 * instance.init() で最低限必要な処理は、第1引数として与えられる「基底要素ノード」を instance.$node に格納することである。
 	 *
 	 * @param {Arguments} [args]      instance.init() に渡される引数（群）。
-	 * @return 与えられたインスタンス
+	 * @return 生成したインスタンス
 	 * @type Object
 	 */
 	add : function(args) {
