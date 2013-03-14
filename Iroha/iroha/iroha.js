@@ -15,14 +15,6 @@
 // supplements 'undefined'
 window.undefined = window.undefined;
 
-// set default easing method
-$.fx.off     = false;
-$.easing.def = 'easeOutCubic';
-
-
-
-
-
 
 
 /* =============== create Iroha global object and prepartions =============== */
