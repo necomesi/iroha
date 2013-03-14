@@ -260,8 +260,10 @@ if (typeof window.console != 'object') {
 		Iroha.env.isDOMReady = true;
 		
 		// add classname which indicates "Iroha is enabled".
-		// the delay is workaround for IE to avoid speed down.
-		Iroha.delay(1).done(function() { $(document.body).addClass('iroha-enabled') });
+//		// onload で即座に実行すると古い IE でスピードダウンする現象を軽減するために delay しつつ適用
+//		// …するのはヤメた！
+//		Iroha.delay(1).done(function() { $(document.body).addClass(cnames.join(' ')) });
+		$(document.body).addClass('iroha-enabled');
 	});
 })();
 
