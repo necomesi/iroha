@@ -4,16 +4,13 @@
  *       Iroha : Necomeshi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.30.20130305
+ *    @version 3.31.20130310
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, window, document) {
 
 
-
-// speed-up reference to 'window' object
-var window = this;
 
 // supplements 'undefined'
 window.undefined = window.undefined;
@@ -34,7 +31,7 @@ $.easing.def = 'easeOutCubic';
  * @name Iroha
  * @namespace Iroha global object
  */
-window.Iroha = $.extend(window.Iroha, new (function() {
+var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	var d  = document;
 	var de = d.documentElement;
 	var di = d.implementation;
@@ -72,12 +69,18 @@ window.Iroha = $.extend(window.Iroha, new (function() {
 	})();
 
 	/**
-	 * @namespace stored jQuery object, considering conflict.
+	 * @namespace stored jQuery (or Zepto) object, considering conflict.
+	 * @name Iroha.$
+	 * @constant
+	 */
+	this.$ = $;
+	
+	/**
+	 * @deprecated use {@link Iroha.$}
 	 * @name Iroha.jQuery
 	 * @constant
 	 */
 	this.jQuery = $;
-//	this.jQuery = $.noConflict();
 	
 	/**
 	 * default setting values of Iroha function/classes
@@ -2987,4 +2990,4 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 
 
 
-})(jQuery);
+})(jQuery, window, document);
