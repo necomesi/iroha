@@ -1,4 +1,4 @@
-@charset "Shift_JIS";
+@charset "UTF-8";
 
 /* =========== base structure =========== */
 
@@ -18,8 +18,8 @@ body {
 	*font-size: 75%;
 	text-align: left;
 	
-	font-family: "Tahoma", "ƒqƒ‰ƒMƒmŠpƒS Pro W3", "Osaka", "‚l‚r ‚oƒSƒVƒbƒN", sans-serif;
-	_font-family: "‚l‚r ‚oƒSƒVƒbƒN", sans-serif; /* ~WinIE6 */
+	font-family: "Tahoma", "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif;
+	_font-family: "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", sans-serif; /* ~WinIE6 */
 }
 
 address {
@@ -316,7 +316,7 @@ pre span.optional {
 }
 pre span.optional:after {
 	margin: 0 0 0 0.5em;
-	content: "<!-- •K—v‚Èê‡ -->"
+	content: "<!-- å¿…è¦ãªå ´åˆ -->"
 }
 
 
