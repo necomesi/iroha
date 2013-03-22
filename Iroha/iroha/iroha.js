@@ -1,10 +1,10 @@
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       Iroha : Necomeshi JS Library - base script.
+ *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.31.20130314
+ *    @version 3.32.20130323
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -538,12 +538,15 @@ $.extend(Iroha.ViewClass.prototype,
 	
 	/**
 	 * クラスから作られた既存インスタンスを得る。
-	 * @param {Number|jQuery|Element|String} arg    インデックス番号、またはインスタンス生成時に指定した「基底要素ノード」。
-	 * @return 該当のインスタンス。存在しなければ undefined が返る。
+	 * @param {Number|jQuery|Element|String} [arg]    インデックス番号、またはインスタンス生成時に指定した「基底要素ノード」。
+	 *                                                引数無指定時は全ての既存インスタンスからなる配列が返る。
+	 * @return 該当のインスタンス。存在しなければ undefined が返る。引数無指定時は全ての既存インスタンスからなる配列が返る。
 	 * @type Object
 	 */
 	getInstance : function(arg) {
-		if ($.type(arg) == 'number') {
+		if (arguments.length == 0) {
+			return $.merge([], this.instances);  // オブジェクト参照切断済の配列として返す。
+		} if ($.type(arg) == 'number') {
 			return this.instances[arg];
 		} else if (arg && (arg.nodeType == Node.ELEMENT_NODE || $.type(arg.jquery) == 'string' || $.type(arg) == 'string')) {
 			return this.instances[$(arg).data(this.key + '.index')];
@@ -551,7 +554,7 @@ $.extend(Iroha.ViewClass.prototype,
 			return undefined;
 		}
 	},
-
+	
 	/**
 	 * クラスから作られた既存インスタンスを破棄する。
 	 * @param {Object} instance    破棄対象のインスタンス
