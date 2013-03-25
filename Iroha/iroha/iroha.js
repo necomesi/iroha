@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.32.20130323
+ *    @version 3.33.20130326
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -1390,32 +1390,32 @@ $.extend(Iroha.Observable.prototype,
 /** @lends Iroha.Observable.prototype */
 {
 	/**
-	 * 初期化
+	 * 初期化（なにもしない）
 	 * @return このインスタンス自身
 	 * @type Iroha.Observable
 	 */
 	init : function() {
 		return this;
 	},
-
+	
 	/**
 	 * process callback functions.
-	 * @param {String} name      callback name (preferred to start with 'on')
+	 * @param {String} name      callback name
 	 * @param {Object} [args]    arguments for callback function
 	 * @return result value of last one of the callback functions chain.
 	 * @type Object
 	 */
 	doCallback : function(name, /* arg1, arg2, ... */ args) {
-		var chains = this.callbackChains;
-		var ignore = this.callbackIgnoreLevel || {};
+		var chains = this.callbackChains      || {};  // 内容を参照するだけだし、インスタンスに紐づかない空オブジェクトでもOK
+		var ignore = this.callbackIgnoreLevel || {};  // 同上
 		
-		if (!chains || !chains[name]) {
+		if (!chains[name]) {
 			return undefined;
 		
 		} else {
 			var ret;
 			var args = Array.prototype.slice.call(arguments, 1);
-	
+			
 			chains[name]
 				.filter(function(delegate) {
 					var level = ignore[name] || 'none';
@@ -1430,7 +1430,7 @@ $.extend(Iroha.Observable.prototype,
 				.forEach(function(delegate) {
 					ret = delegate.apply(null, args);
 				});
-	
+			
 			this.removeDisposableCallback(name);
 			return ret;
 		}
@@ -1438,7 +1438,7 @@ $.extend(Iroha.Observable.prototype,
 	
 	/**
 	 * add callback function.
-	 * @param {String}   name             callback name (preferred to start with 'on')
+	 * @param {String}   name             callback name
 	 * @param {Function} func             callback function/method
 	 * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
 	 * @param {String}   [disposable]     if 'disposable' specified, the callback function is treated as 'disposable'.
@@ -1453,11 +1453,21 @@ $.extend(Iroha.Observable.prototype,
 			throw new TypeError('Iroha.Observable#addCallback: argument \'func\' must be a Function object.');
 		
 		} else {
-			if (!this.callbackChains      ) this.callbackChains       = {};
-			if (!this.callbackChains[name]) this.callbackChains[name] = [];
-	
-			var delegate = $.proxy(func, aThisObject);
-			delegate.isDisposable = (disposable == 'disposable');
+			// 以下、ここではじめて定義する必要がある。
+			// コンストラクタ関数内で定義してしまうと、Iroha.Observable を継承した子クラスの prototype に
+			// これらへの参照が含まれてしまって、関係ないインスタンス同士でこれらの内容が共有されてしまうため。
+			// このインスタンスの init() でこれを行ったとしても、Iroha.Observable を継承した子クラスは
+			// init() を上書きすることがほとんどのため、そのやりかたもうまくない。
+			this.callbackChains            || (this.callbackChains            = {}    );
+			this.callbackChains[name]      || (this.callbackChains[name]      = []    );
+			this.callbackIgnoreLevel       || (this.callbackIgnoreLevel       = {}    );
+			this.callbackIgnoreLevel[name] || (this.callbackIgnoreLevel[name] = 'none');
+			
+			var delegate = $.extend($.proxy(func, aThisObject), {
+				  originalFunc :func
+				, aThisObject  : aThisObject || window
+				, isDisposable : (disposable == 'disposable')
+			});
 			this.callbackChains[name].push(delegate);
 		}
 		return this;
@@ -1465,25 +1475,28 @@ $.extend(Iroha.Observable.prototype,
 	
 	/**
 	 * remove callback function.
-	 * @param {String}   name             callback name (preferred to start with 'on')
+	 * @param {String}   name             callback name
 	 * @param {Function} [func]           callback function/method to remove, if no funcs given, all callback funcs will be removed.
 	 * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
 	 * @return this instance
 	 * @type Iroha.Observable
 	 */
 	removeCallback : function(name, func, aThisObject) {
-		var chains = this.callbackChains;
+		var chains = this.callbackChains      || {};  // 内容を削除するだけだし、インスタンスに紐づかない空オブジェクトでもOK
+		var ignore = this.callbackIgnoreLevel || {};  // 同上
+		
 		if (typeof name != 'string' || name == '') {
-			throw new TypeError('Iroha.Observable.removeCallback: argument \'name\' must be a string as callback name.');
+			throw new TypeError('Iroha.Observable#removeCallback: argument \'name\' must be a string as callback name.');
 			
-		} else if (chains && chains[name]) {
-			if (typeof func != 'function') {
+		} else if (chains[name]) {
+			chains[name] = !$.isFunction(func)
+				? []
+				: chains[name].filter(function(delegate) {
+				  	return delegate.originalFunc !== func || delegate.aThisObject !== (aThisObject || window);
+				  });
+			if (chains[name].length == 0) {
 				delete chains[name];
-			} else {
-				var obj = (typeof aThisObject == 'object' && aThisObject) ? aThisObject : window;
-				chains[name] = chains[name].filter(function(delegate) {
-					return (delegate.func !== func || delegate.aThisObject !== obj);
-				});
+				delete ignore[name];
 			}
 		}
 		return this;
@@ -1491,7 +1504,7 @@ $.extend(Iroha.Observable.prototype,
 	
 	/**
 	 * remove 'disposable' callback function.
-	 * @param {String} name    callback name (preferred to start with 'on')
+	 * @param {String} name    callback name
 	 * @return this instance
 	 * @type Iroha.Observable
 	 */
@@ -1505,19 +1518,24 @@ $.extend(Iroha.Observable.prototype,
 	
 	/**
 	 * set callback ignoring level.
-	 * @param {String} name             callback name (preferred to start with 'on')
+	 * @param {String} name             callback name
 	 * @param {String} [level="all"]    ignoring level - 'all', 'preserved', 'disposable', 'none'
 	 * @return this instance
 	 * @type Iroha.Observable
 	 */
 	ignoreCallback : function(name, level) {
-		var chains = this.callbackChains;
-		if (typeof name != 'string' || name == '') {
-			throw new TypeError('Iroha.Observable.ignoreCallback: argument \'name\' must be a string as callback name.');
+		var chains = this.callbackChains      || {};  // 参照するだけだから、インスタンスに紐づかない空オブジェクトでもOK
+		var ignore = this.callbackIgnoreLevel || {};  // 空オブジェクトが取得されるのは、chains[name] が無いときだからOK
 		
-		} else if (chains && chains[name]) {
+		if (typeof name != 'string' || name == '') {
+			throw new TypeError('Iroha.Observable#ignoreCallback: argument \'name\' must be a string as callback name.');
+		
+		} else if (!chains[name]) {
+			throw new RangeError('Iroha.Observable#ignoreCallback: callback name "' + name + '" does not exist. try addCallback() first.');
+		
+		} else {
 			var levels = ['all', 'preserved', 'disposable', 'none'];
-			this.callbackIgnoreLevel[name] = (levels.indexOf(level) != -1) ? level : 'all';
+			ignore[name] = (levels.indexOf(level) != -1) ? level : 'all';
 		}
 		return this;
 	}
