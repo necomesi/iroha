@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.33.20130326
+ *    @version 3.34.20130326
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -2829,13 +2829,15 @@ Iroha.injectWeinre = function(ident, host, port) {
 			, ident    : ident || 'anonymous'
 			, host     : host  || location.hostname
 			, port     : port  || '8080'
-		}
-		$(function() {
-			$(document.createElement('script'))
-				.prop('src', Iroha.String(url).format(param).get())
-				.addClass('iroha-inject-weinre')
-				.appendTo('head');
-		});
+		};
+		var src = Iroha.String(url).format(param).get();
+		
+		!Iroha.env.isDOMReady
+			? document.write('<script src="' + src + '"></script>')
+			: (function(node) {
+				node.setAttribute('src', src);
+				document.body.appendChild(node);
+			})(document.createElement('script'));
 	}
 	return this;
 };
