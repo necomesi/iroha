@@ -4,7 +4,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.14.20130312
+ *    @version 3.16.20130330
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -20,64 +20,95 @@
  * provide smooth scroll behavior to the scrollable block elements.
  * @class smooth scroller
  * @extends Iroha.Observable
+ * @expample new Iroha.Scroller       (args) -> new instance
+ *               Iroha.Scroller       (args) -> new instance
+ *               Iroha.Scroller.create(args) -> new instance
  */
 Iroha.Scroller = function() {
-	/** element node to apply behavior
-	    @type jQuery
-	    @private */
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
+	/**
+	 * element node to apply behavior
+	 * @type jQuery
+	 */
 	this.$node = $();
 	
-	/** element node as "CSS Transform translate()" target.
-	    @type jQuery
-	    @private */
+	/**
+	 * element node as "CSS Transform translate()" target.
+	 * @type jQuery
+	 * @private
+	 */
 	this.$stage = $();
 	
-	/** X-distance from original destination of scrolling (px)
-	    @type Number
-	    @private */
+	/** 
+	 * X-distance from original destination of scrolling (px)
+	 * @type Number
+	 * @private
+	 */
 	this.offsetX = 0;
 	
-	/** Y-distance from original destination of scrolling (px)
-	    @type Number
-	    @private */
+	/** 
+	 * Y-distance from original destination of scrolling (px)
+	 * @type Number
+	 * @private
+	 */
 	this.offsetY = 0;
 	
-	/** animation duration time (ms).
-	    @type Number
-	    @private */
+	/** 
+	 * animation duration time (ms).
+	 * @type Number
+	 * @private
+	 */
 	this.duration = 1000;
 	
-	/** easing function name existing in jQuery.easing
-	    @type String
-	    @private */
+	/** 
+	 * easing function name existing in jQuery.easing
+	 * @type String
+	 * @private
+	 */
 	this.easing = 'swing';
 	
-	/** an associative array { left, top } of last designated destination of scrolling.
-	    @type Object
-	    @private */
+	/** 
+	 * an associative array { left, top } of last designated destination of scrolling.
+	 * @type Object
+	 * @private
+	 */
 	this.destination = { left : 0, top : 0 };
 	
-	/** avaliability of "smart abort" feature; it can abort scrolling on mouse click, mouse wheel events.
-	    @type Boolean */
+	/** 
+	 * avaliability of "smart abort" feature; it can abort scrolling on mouse click, mouse wheel events.
+	 * @type Boolean
+	 */
 	this.useSmartAbort = false;
 	
-	/** [experimental] スクロール処理を CSS Transform の translate() で実現するモードかどうか
-	    @type Object
-	    @private */
+	/** 
+	 * [experimental] スクロール処理を CSS Transform の translate() で実現するモードかどうか
+	 * @type Object
+	 * @private
+	 */
 	this.cssTranslateMode = false;
 	
-	/** [experimental] スクロール処理を CSS Transform の translate() で実現するモードで、スクロール完了後の実スクロール位置を調整しないモードかどうか
-	    @type Object
-	    @private */
+	/** 
+	 * [experimental] スクロール処理を CSS Transform の translate() で実現するモードで、スクロール完了後の実スクロール位置を調整しないモードかどうか
+	 * @type Object
+	 * @private
+	 */
 	this.cssTranslateNoRevise = false;
 	
-	/** interval timer which handles scrolling animation (for page scrolling on mobile devices).
-	    @type Iroha.Interval
-	    @private */
+	/** 
+	 * interval timer which handles scrolling animation (for page scrolling on mobile devices).
+	 * @type Iroha.Interval
+	 * @private
+	 */
 	this.animeTimer = new Iroha.Interval;
 	
-	/** true if the scroller is currently running.
-	    @type Boolean */
+	/** 
+	 * true if the scroller is currently running.
+	 * @type Boolean
+	 */
 	this.busy = false;
 };
 
@@ -140,8 +171,9 @@ $.extend(Iroha.Scroller.prototype,
 			
 			var $node = this.$node.is('body') ? $(document.documentElement) : this.$node;
 			var zoom  = 1;  // temporary, correct zoom ratio is needed for IE7...
-			var maxX  = Math.max(0, $node.prop('scrollWidth' ) - $node.prop('clientWidth' ));
-			var maxY  = Math.max(0, $node.prop('scrollHeight') - $node.prop('clientHeight'));
+			var trans = this.$stage.data('Iroha.Scroller.Translate.pos') || { left : 0, top : 0 };  // CSS Translate で動かしている場合、scrollWidth/scrollHeight が動かした分だけ減少するのを補う必要がある。
+			var maxX  = Math.max(0, $node.prop('scrollWidth' ) - $node.prop('clientWidth' ) - trans.left);
+			var maxY  = Math.max(0, $node.prop('scrollHeight') - $node.prop('clientHeight') - trans.top );
 			duration  = (Number(duration) >= 0) ? Number(duration) : this.duration;
 			
 			var start = this.scrollPos();
@@ -323,7 +355,8 @@ $.extend(Iroha.Scroller.prototype,
 			$stage.addClass(cnpfx + '-target' );
 			
 			// transform, transition 等のプロパティ初期値をあらかじめセットしておくことで、スクロール開始時のチラツキを抑える。
-			this.translate(0, 0, 0, $stage);
+			// …と思ったけど translate3d の悪影響がイキナリ発生するのが辛さしかないのでコメントアウト。
+//			this.translate(0, 0, 0, $stage);
 		}, this);
 
 		// CSS Translate と CSS Transition が両方使えるものを適合ブラウザとする。
@@ -528,7 +561,8 @@ $.extend(Iroha.Scroller.prototype,
 		// つじつまを合わせる。
 		if (this.cssTranslateMode && !this.cssTranslateNoRevise) {
 			var pos = this.scrollPos();
-			this.translate(0, 0, 0);
+//			this.translate(0, 0, 0);          // translate3d が残る事の悪影響がすごくある感じなので
+			this.$stage.removeAttr('style');  // いろいろついた style 属性ごとキレイにしてしまう。
 			this.$node.prop({ scrollLeft : pos.left, scrollTop : pos.top });
 		}
 		
@@ -570,15 +604,28 @@ $.extend(Iroha.Scroller.prototype,
 
 /* ============================== Static class : Iroha.PageScroller ============================== */
 /**
- * page scroller; an instance of {@link Iroha.Scroller}.
+ * ページスクローラー。古式ゆかしい、ページ内リンクのクリックでびよーんとスクロールするアレ、ほぼ専用。
+ * {@link #create} あるいは {@link #init} で得られるのは、設定初期値をページスクロール専用に調整し、
+ * コールバックに若干の拡張を施した状態の、 {@link Iroha.Scroller} を継承したシングルインスタンス。
  * @namespace page scroller
  * @type Iroha.Scroller
  */
 Iroha.PageScroller = {
 	/**
-	 * initialize
-	 * @param {Iroha.PageScroller.Setting} [setting]    setting object
-	 * @return this object
+	 * ページスクローラーを生成（初期化）して返す。
+	 * このメソッドは {@link #init} のエイリアス。
+	 * @param {Iroha.PageScroller.Setting} [setting]    設定用オブジェクト
+	 * @return ページスクローラー
+	 * @type Iroha.PageScroller
+	 */
+	create : function() {
+		return this.init.apply(this, arguments);
+	},
+	
+	/**
+	 * ページスクローラーを生成（初期化）して返す。
+	 * @param {Iroha.PageScroller.Setting} [setting]    設定用オブジェクト
+	 * @return ページスクローラー
 	 * @type Iroha.PageScroller
 	 */
 	init : function(setting) {
@@ -623,8 +670,9 @@ Iroha.PageScroller = {
 		scroller.addCallback('onDone'    , callback(settings.onDone    , true ));
 		
 		// replace Iroha.PageScroller with Iroha.Scroller instance.
-		scroller.init = function() { return scroller };
-		scroller.stop = function() { new Iroha.Timeout(scroller.abort, 1, scroller); return scroller };
+		scroller.create = function() { return scroller };
+		scroller.init   = function() { return scroller };
+		scroller.stop   = function() { new Iroha.Timeout(scroller.abort, 1, scroller); return scroller };
 		return (Iroha.PageScroller = scroller);
 	}
 };
@@ -637,45 +685,77 @@ Iroha.PageScroller = {
  * @class setting data object for {@link Iroha.PageScroller}
  */
 Iroha.PageScroller.Setting = function() {
-	/** X-distance from original destination of scrolling (px)
-	    @type Number */
-	this.offsetX     = 0;
-	/** Y-distance from original destination of scrolling (px)
-	    @type Number */
-	this.offsetY     = 0;
-	/** animation duration (ms)
-	    @type Number */
-	this.duration    = 1000;
-	/** easing function name existing in jQuery.easing
-	    @name String */
-	this.easing      = 'easeInOutCubic';
-	/** avaliability of "smart abort" feature.
-	    @type Boolean */
-	this.smartAbort  = true;
-	/** a jQuery object, an element node, a node list of elements, an array of element nodes, or an expression,
-	    to specify an clicked element which doesn't start scrolling.
-	    @type jQuery|Element|Element[]|NodeList|String */
-	this.ignore      = '.iroha-pagescroller-ignore';
-	/** a callback for when scrolling starts
-	    @type Function */
-	this.onStart     = function(x, y, lastAnchor) { };
-	/** a callback for during scrolling continues
-	    @type Function */
-	this.onScroll    = function(x, y, lastAnchor) { };
-	/** a callback for when scrolling is aborted
-	    @type Function */
-	this.onAbort     = function(x, y, lastAnchor) { };
-	/** a callback for when scrolling is completed
-	    @type Function */
-	this.onComplete  = function(x, y, lastAnchor) {
+	/** 
+	 * X-distance from original destination of scrolling (px)
+	 * @type Number
+	 */
+	this.offsetX = 0;
+	
+	/** 
+	 * Y-distance from original destination of scrolling (px)
+	 * @type Number
+	 */
+	this.offsetY = 0;
+	
+	/** 
+	 * animation duration (ms)
+	 * @type Number
+	 */
+	this.duration = 1000;
+	
+	/** 
+	 * easing function name existing in jQuery.easing
+	 * @name String
+	 */
+	this.easing = 'easeInOutCubic';
+	
+	/** 
+	 * avaliability of "smart abort" feature.
+	 * @type Boolean
+	 */
+	this.smartAbort = true;
+	
+	/** 
+	 * a jQuery object, an element node, a node list of elements, an array of element nodes, or an expression,
+	 * to specify an clicked element which doesn't start scrolling.
+	 * @type jQuery|Element|Element[]|NodeList|String
+	 */
+	this.ignore = '.iroha-pagescroller-ignore';
+	
+	/** 
+	 * a callback for when scrolling starts
+	 * @type Function
+	 */
+	this.onStart = function(x, y, lastAnchor) { };
+	
+	/** 
+	 * a callback for during scrolling continues
+	 * @type Function
+	 */
+	this.onScroll = function(x, y, lastAnchor) { };
+	
+	/** 
+	 * a callback for when scrolling is aborted
+	 * @type Function
+	 */
+	this.onAbort = function(x, y, lastAnchor) { };
+	
+	/** 
+	 * a callback for when scrolling is completed
+	 * @type Function
+	 */
+	this.onComplete = function(x, y, lastAnchor) {
 		var ua = Iroha.ua;
 		if (lastAnchor && !ua.isMobile && (ua.isGecko || ua.isIE || (ua.isWebKit && ua.version > 522))) {
 			location.href = lastAnchor.href;
 		}
 	};
-	/** a callback for when scrolling is completed, or aborted
-	    @type Function */
-	this.onDone      = function(x, y, lastAnchor) { };
+	
+	/** 
+	 * a callback for when scrolling is completed, or aborted
+	 * @type Function
+	 */
+	this.onDone = function(x, y, lastAnchor) { };
 };
 
 /**
@@ -727,6 +807,15 @@ Iroha.PageScroller.Setting.create = function() {
  * @function
  * @param {Number} curX     current scroll position (X-coordinate) (px)
  * @param {Number} curY     current scroll position (Y-coordinate) (px)
+ * @param {Number} destX    last designated destination (X-coordinate) (px)
+ * @param {Number} destY    last designated destination (Y-coordinate) (px)
+ */
+/**
+ * a callback for when scrolling is completed or aborted
+ * @name Iroha.Scroller.callback.onDone
+ * @function
+ * @param {Number}  curX    current scroll position (X-coordinate) (px)
+ * @param {Number}  curY    current scroll position (Y-coordinate) (px)
  * @param {Number} destX    last designated destination (X-coordinate) (px)
  * @param {Number} destY    last designated destination (Y-coordinate) (px)
  */
