@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.35.20130330
+ *    @version 3.36.20130330
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -2061,8 +2061,9 @@ Iroha.getValue = function(expr, obj) {
 	if (typeof expr != 'string' || !expr) {
 		throw new TypeError('Iroha.getValue: first argument type must be string (expr).');
 	} else {
-		var obj = $.type(obj) != 'object' ? window : obj;
-		var get = new Function('try { return this.' + expr + ' }catch(e){}');
+		var expr = ('this.' + expr).replace(/\b\.?(\d+)\b/g, '[$1]').replace(/\[\[/g, '[').replace(/\]\]/g, ']');
+		var obj  = $.type(obj) != 'object' ? window : obj;
+		var get  = new Function('try { return ' + expr + ' }catch(e){}');
 		return get.call(obj);
 	}
 };
