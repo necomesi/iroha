@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.34.20130326
+ *    @version 3.35.20130330
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -128,6 +128,9 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 *
 	 * @property {Boolean} isQuirksMode        true if the browser runs under 'quirks mode'
 	 * @property {Number}  documentMode        number of documentMode; this avaiable on IE, the value is 0 on other browsers.
+	 *
+	 * @property {Boolean} isTouchable         true if the browser supports touch evnets
+	 *
 	 * @property {Boolean} isDOMReady          true if the browser had DOM feature.
 	 */
 	this.ua              = {};
@@ -159,6 +162,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	                     : d.documentMode        ? d.documentMode
 	                     : !this.ua.isQuirksMode ? this.ua.version
 	                     : 5;
+	this.ua.isTouchable  = ('ontouchstart' in document)
 	this.ua.isDOMReady   = (di) ? di.hasFeature('HTML', '1.0') : (this.ua.isIE && de);
 	
 	// isSafari と判別されていたとしても、iOS, Mac, Windows でないものや、Chrome の場合は false に戻す。
@@ -2989,6 +2993,63 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 		}
 	}
 	return this;
+};
+
+
+
+/* -------------------- jQuery.fn : Iroha_quickClickTrigger -------------------- */
+/**
+ * タッチイベント利用可能なブラウザはクリックイベントが意図的に遅延させられているが
+ * タッチイベントを検出することでクリックイベントよりも早いタイミングで "click" イベントハンドラを呼び出す。
+ * これを適用後、 "touchend" と "click" の 2 度のハンドラ呼び出しが発生するため、後者を適宜無視する条件分岐が必要。
+ * 
+ * @example
+ *     $(element)
+ *         .on('click', function(event, quickClickTriggered) {
+ *             if (quickClickTriggered || !Iroha.ua.isTouchable) {
+ *                 // ... click イベントでやりたいこと ...
+ *             }
+ *         })
+ *         .Iroha_quickClickTrigger(threshold);
+ * 
+ * @param {Number|Function} [threshold=15]    タッチ操作が移動成分を含んでいたとき、それでも単発タップとみなすべき距離の閾値。 px 指定。
+ *                                            閾値を返す関数を与えた場合は、( X移動距離, Y移動距離, 移動距離 ) が引数として与えられる。
+ * @return 要素ノード群を内包している jQuery オブジェクト
+ * @type jQuery
+ */
+jQuery.fn.Iroha_quickClickTrigger = function(threshold) {
+	return this.each(function() {
+		if (!Iroha.ua.isTouchable) return false;
+		
+		var touch  = { x1 : 0, x2 : 0, y1 : 0, y2 : 0 };
+		var filter = function(e) {
+			// x2, y2 ともに -1 なら touchmove していないということ。
+			if (touch.x2 == -1 && touch.y2 == -1) {
+				touch.x2 = touch.x1;
+				touch.y2 = touch.y1;
+			}
+			
+			// 移動距離と閾値
+			var dx = touch.x2 - touch.x1;
+			var dy = touch.y2 - touch.y1;
+			var d  = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+			var t  = $.isFunction(threshold) ? threshold(dx, dy, d) : $.isNumeric(threshold) ? threshold : 15;
+			
+			return d < t;
+		};
+		
+		$(this)
+			.on('touchstart', function(e) {
+				touch.x1 = e.originalEvent.touches[0].clientX;
+				touch.y1 = e.originalEvent.touches[0].clientY;
+				touch.x2 = touch.y2 = -1;
+			})
+			.on('touchmove', function(e) {
+				touch.x2 = e.originalEvent.touches[0].clientX;
+				touch.y2 = e.originalEvent.touches[0].clientY;
+			})
+			.on('touchend', function(e) { filter(e) && $(this).trigger('click', 'Iroha.rapidClick.triggered') });
+	});
 };
 
 
