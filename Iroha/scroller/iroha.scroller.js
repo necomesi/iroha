@@ -4,7 +4,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.17.20130401
+ *    @version 3.18.20130402
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -675,7 +675,20 @@ Iroha.PageScroller = {
 		scroller.init   = function() { return scroller };
 		scroller.stop   = function() { new Iroha.Timeout(scroller.abort, 1, scroller); return scroller };
 		return (Iroha.PageScroller = scroller);
-	}
+	},
+	
+	// 以下、Iroha.PageScroller.init() が呼び出されるまでの間、
+	// Iroha.Scroller.prototype の非 private なメソッドがいきなり呼ばれても大丈夫なようにしておく。
+	// 表層上存在しているだけであり本来の返値を返さないから、返値のある前提で処理を続行されると当然エラーになる。
+	// Iroha.PageScroller.init() が呼びだされれた後、Iroha.PageScroller は Iroha.Scroller の
+	// いちインスタンスとなるため、ふつうに本来のあるべきメソッドがあるべき処理内容で備わる事になる。
+	scrollTo        : $.noop,
+	scrollBy        : $.noop,
+	scrollToNode    : $.noop,
+	scrollPos       : $.noop,
+	useCssTranslate : $.noop,
+	abort           : $.noop,
+	smartAbort      : $.noop
 };
 
 
