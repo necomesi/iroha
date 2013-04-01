@@ -4,7 +4,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.16.20130330
+ *    @version 3.17.20130401
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -563,6 +563,7 @@ $.extend(Iroha.Scroller.prototype,
 			var pos = this.scrollPos();
 //			this.translate(0, 0, 0);          // translate3d が残る事の悪影響がすごくある感じなので
 			this.$stage.removeAttr('style');  // いろいろついた style 属性ごとキレイにしてしまう。
+			this.$stage.removeData('Iroha.Scroller.Translate.pos');
 			this.$node.prop({ scrollLeft : pos.left, scrollTop : pos.top });
 		}
 		
