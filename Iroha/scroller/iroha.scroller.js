@@ -355,8 +355,8 @@ $.extend(Iroha.Scroller.prototype,
 			$stage.addClass(cnpfx + '-target' );
 			
 			// transform, transition 等のプロパティ初期値をあらかじめセットしておくことで、スクロール開始時のチラツキを抑える。
-			// …と思ったけど translate3d の悪影響がイキナリ発生するのが辛さしかないのでコメントアウト。
-//			this.translate(0, 0, 0, $stage);
+			// ただしこれ、 translate3d の悪影響がイキナリ発生するので、norevise のときだけに限定。ひとまず。
+			norevise && this.translate(0, 0, 0, $stage);
 		}, this);
 
 		// CSS Translate と CSS Transition が両方使えるものを適合ブラウザとする。
