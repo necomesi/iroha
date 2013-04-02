@@ -448,8 +448,8 @@ $.extend(Iroha.Scroller.prototype,
 		})(this.easing);
 		
 		var $node      = node ? $(node).first() : this.$stage;
-		var transform  = /* x == 0 && y == 0 ? '' : */ 'translate3d(${x}px, ${y}px, 0px)';
-		var transition = /* d == 0           ? '' : */ '${pfx}transform ${d}s ${f} 0s';
+		var transform  = 'translate3d(${x}px, ${y}px, 0px)';
+		var transition = '${pfx}transform ${d}s ${f} 0s';
 		var params     = { x : x, y : y, d : d / 1000, f : f };
 		var origin     = $node.offset();
 		
@@ -460,10 +460,12 @@ $.extend(Iroha.Scroller.prototype,
 		// 疑似スクロールアニメーション発動開始
 		prefix.forEach(function(pfx) {
 			$.extend(params, { pfx : pfx });
-			$node
-				.css(pfx + 'transition', Iroha.String(transition).format(params).get())
-				.css(pfx + 'transform' , Iroha.String(transform ).format(params).get())
-				.css(pfx + 'backface-visibility', 'hidden');
+			$node.css({
+				  'transition'          : Iroha.String(transition).format(params).get()
+				, 'transform'           : Iroha.String(transform ).format(params).get()
+				, 'backface-visibility' : 'hidden'
+				, 'perspective'         : 1000
+			});
 		});
 		
 		// 所要時間 0 の指定なら即座に完了をコールバック
@@ -561,10 +563,19 @@ $.extend(Iroha.Scroller.prototype,
 		// つじつまを合わせる。
 		if (this.cssTranslateMode && !this.cssTranslateNoRevise) {
 			var pos = this.scrollPos();
-//			this.translate(0, 0, 0);          // translate3d が残る事の悪影響がすごくある感じなので
-			this.$stage.removeAttr('style');  // いろいろついた style 属性ごとキレイにしてしまう。
-			this.$stage.removeData('Iroha.Scroller.Translate.pos');
-			this.$node.prop({ scrollLeft : pos.left, scrollTop : pos.top });
+			this.$stage
+				.removeData('Iroha.Scroller.Translate.pos')
+				.css({
+					  'transition'          : ''
+					, 'transform'           : ''
+					, 'backface-visibility' : ''
+					, 'perspective'         : ''
+				});
+			this.$node
+				.prop({
+					  'scrollLeft' : pos.left
+					, 'scrollTop'  : pos.top
+				});
 		}
 		
 		this.doCallbackByName('onDone');
