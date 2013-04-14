@@ -4,7 +4,7 @@
  *       いわゆるカルーセル
  *       (charset : "UTF-8")
  *
- *    @version 3.13.20130312
+ *    @version 3.14.20130414
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.scroller.js
@@ -160,7 +160,7 @@ $.extend(Iroha.Carousel.prototype,
 		// init scroll field.
 		this.scroller = Iroha.Scroller.create(
 			  /* node       */ $viewport
-			, /* offsetX    */ (Iroha.ua.isSafari) ? -4 : 0
+			, /* offsetX    */ 0
 			, /* offsetY    */ 0
 			, /* duration   */ setting.duration
 			, /* easing     */ setting.easing
