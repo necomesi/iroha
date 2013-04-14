@@ -424,7 +424,6 @@ $.extend(Iroha.Carousel.prototype,
 			var size   = this.$units.size();
 			var left   = getPos('left');
 			var top    = getPos('top' );
-			var revise = Iroha.ua.isWebkit ? 4 : 0;
 			
 			if (step < 0) {
 				while ($unit.prevAll(units).size() < Math.min(size - 1, Math.abs(step))) {
@@ -436,7 +435,7 @@ $.extend(Iroha.Carousel.prototype,
 					$unit.siblings(units).first().appendTo($unit.parent());
 				}
 			}
-			this.scroller.scrollBy(getPos('left') - left + revise, getPos('top') - top, 0);
+			this.scroller.scrollBy(getPos('left') - left, getPos('top') - top, 0);
 		}
 		return this;
 		
