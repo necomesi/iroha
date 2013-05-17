@@ -1,0 +1,21 @@
+@charset "UTF-8";
+
+/* --------------------------------------------
+ *   sample styles for iroha.pseudoMenu.js
+ * -------------------------------------------- */
+
+div.example {
+	position: relative;
+}
+
+div.example dl {
+	margin-left: 0;
+}
+
+div.example dt:before {
+	display: none;
+}
+
+div.example .iroha-pseudomenu ul {
+	margin-left: 0;
+}
