@@ -285,7 +285,6 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @event
 	 */
 	onItemMouseEnter : function(e) {
-		console.log(this.$items.get().indexOf(e.currentTarget));
 		this.highlightItem(this.$items.get().indexOf(e.currentTarget));
 	},
 	
