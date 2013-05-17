@@ -3,7 +3,7 @@
  *    @fileoverview
  *       create text-input with prompt text.
  *
- *    @version 3.00.20130312
+ *    @version 3.00.20130430
  *    @requires jquery.js
  *    @requires iroha.js
  */
@@ -140,7 +140,8 @@ $.extend(Iroha.InputPrompt.prototype,
 		this.compatMode = setting.fromAttr != 'placeholder' ||
 		                  setting.forceCompat               ||
 //		                  !ua.isMobile                      ||
-		                  (ua.isWebKit && vers < 533)       ||  /* Safari 5.0, Chrome 5.0 より以前 */
+		                  (ua.isSafari && vers < 533)       ||  /* Safari 5.0, Chrome 5.0 より以前 */
+		                  (ua.isChrome && vers < 5)         ||  /* Safari 5.0, Chrome 5.0 より以前 */
 		                  (ua.isGecko  && vers < 4  )       ||  /* Mozilla Firefox 4.0    より以前 */
 		                  (ua.isIE     && vers < 10  )      ||  /* Internet Explorer 10.0 より以前 */
 		                  (ua.isOpera  && vers < 9  )       ||  /* Opera 9.0              より以前 */
