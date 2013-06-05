@@ -730,7 +730,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 		e.preventDefault();
 		e.stopPropagation();
 		this.isActive() ? this.hideMenu() : this.showMenu();
-		this.focus(); // workaround for Safari
+//		this.focus(); // workaround for Safari
 	},
 	
 	/**
