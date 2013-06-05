@@ -4,7 +4,7 @@
  *       Pseudo Menu.
  *       (charset : "UTF-8")
  *
- *    @version 3.00.2013517
+ *    @version 3.01.20130605
  *    @requires jquery.js
  *    @requires jquery.mousewheel.js
  *    @requires iroha.js
@@ -116,6 +116,14 @@ $.extend(Iroha.PseudoMenu.prototype,
 		
 		// add mouse events
 		$(document).on('click', $.proxy(this.onDocumentMouseClick, this));
+		
+		// prevent scrolling of ancestor element
+		this.$node.mousewheel(function(e, d) {
+			var $node  = $(this);
+			var height = $node.prop('scrollHeight') - $node.height();
+			var scrTop = $node.scrollTop();
+			(d < 0 && scrTop == height || d > 0 && scrTop == 0) && e.preventDefault();
+		});
 		
 		// set key equivalents.
 		if (Iroha.KeyEquiv) {
@@ -285,8 +293,7 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @event
 	 */
 	onItemMouseEnter : function(e) {
-		console.log(this.$items.get().indexOf(e.currentTarget));
-		this.highlightItem(this.$items.get().indexOf(e.currentTarget));
+//		this.highlightItem(this.$items.get().indexOf(e.currentTarget));
 	},
 	
 	/**
@@ -694,6 +701,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 */
 	onMenuBtnKeyDown : function(e) {
 		if (!Iroha.KeyEquiv) return;
+		if (this.disabled()) return;
 		
 		var key = Iroha.KeyEquiv.create().getKeyAlias(e.keyCode);
 		if (this.isActive() && [ '{', '<', '}', '>' ].indexOf(key) != -1) {
