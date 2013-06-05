@@ -293,7 +293,7 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @event
 	 */
 	onItemMouseEnter : function(e) {
-//		this.highlightItem(this.$items.get().indexOf(e.currentTarget));
+		this.highlightItem(this.$items.get().indexOf(e.currentTarget));
 	},
 	
 	/**
