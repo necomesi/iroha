@@ -4,7 +4,7 @@
  *       Pseudo Menu.
  *       (charset : "UTF-8")
  *
- *    @version 3.01.20130605
+ *    @version 3.02.20130605
  *    @requires jquery.js
  *    @requires jquery.mousewheel.js
  *    @requires iroha.js
@@ -340,16 +340,16 @@ $.extend(Iroha.PseudoMenu.prototype,
  */
 Iroha.PseudoSelectMenu = function() {
 	/**
-	 * 基底要素ノード
+	 * このインスタンスが内部利用するホンモノの select 要素ノード
 	 * @type jQuery
 	 */
 	this.$node = $();
 	
 	/**
-	 * このインスタンスが内部利用するホンモノの select 要素ノード
+	 * 疑似セレクトメニュー構造の外殻たる要素ノード
 	 * @type jQuery
 	 */
-	this.$select = $();
+	this.$structure = $();
 	
 	/**
 	 * メニューを出すボタンの要素ノード。
@@ -402,13 +402,13 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 {
 	/**
 	 * 初期化
-	 * @param {jQuery|Element|Element}         select     このインスタンスが内包・管理 select 要素ノード
+	 * @param {jQuery|Element|Element}         select     このインスタンスが内包・管理する select 要素ノード
 	 * @param {Iroha.PseudoSelectMenu.Setting} setting    設定オブジェクト
 	 * @return このインスタンス自身
 	 * @type Iroha.PseudoSelectMenu
 	 */
 	init : function(select, setting) {
-		var $select = this.$select = $(select).first();
+		var $select = this.$node   = $(select).first();
 		var setting = this.setting = $.extend(Iroha.PseudoSelectMenu.Setting.create(), setting);
 		
 		if (!$select.is('select')) {
@@ -460,8 +460,8 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 * このインスタンスを破棄する
 	 */
 	dispose : function() {
-		this.$node      && this.$node.remove();
-		this.$select    && this.$select.show();
+		this.$structure && this.$structure.remove();
+		this.$node      && this.$node.show();
 		this.pseudoMenu && this.pseudoMenu.dispose();
 		
 		this.constructor.disposeInstance(this);
@@ -499,8 +499,8 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 				.keydown($.proxy(this.onMenuBtnKeyDown, this));
 			
 			// post process
-			this.$select.after($structure).hide();
-			this.$node = $structure;
+			this.$node.after($structure).hide();
+			this.$structure = $structure;
 		}
 		
 		return this;
@@ -513,7 +513,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 * @private
 	 */
 	adjustMenuWidth : function() {
-		var $base = this.$node.css('width', '100%');  // workaround to IE7 and older
+		var $base = this.$structure.css('width', '100%');  // workaround to IE7 and older
 		var width = this.pseudoMenu.getGeometry().width;
 		this.pseudoMenu.resizeTo(width, undefined);
 		$base.css('width', 'auto');                   // workaround to IE7 and older
@@ -535,7 +535,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 			var $btn = this.$menuButton;
 			var pos  = $btn.position();
 			this.pseudoMenu.show(pos.left, pos.top + $btn.outerHeight());
-			this.$node.addClass(this.constructor.CLASSNAME.opened);
+			this.$structure.addClass(this.constructor.CLASSNAME.opened);
 		}
 		return this;
 	},
@@ -549,7 +549,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	hideMenu : function() {
 		if (this.hideAllowed) {
 			this.pseudoMenu.hide();
-			this.$node.removeClass(this.constructor.CLASSNAME.opened);
+			this.$structure.removeClass(this.constructor.CLASSNAME.opened);
 		}
 		return this;
 	},
@@ -572,7 +572,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 * @private
 	 */
 	updateMenuBtn : function() {
-		var text = this.$select.find('option:selected').eq(0).text();
+		var text = this.$node.find('option:selected').eq(0).text();
 		this.$menuButton.empty().append(text);
 		return this;
 	},
@@ -587,7 +587,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 		this.pseudoMenu.removeItems();
 	
 		var tmpl = this.setting.template.menuItem;
-		this.$select.find('option').get().forEach(function(option) {
+		this.$node.find('option').get().forEach(function(option) {
 			this.pseudoMenu.addItem(Iroha.String(tmpl).format(option.text).get());
 		}, this);
 		
@@ -612,10 +612,10 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 */
 	selectedIndex : function(index) {
 		if ($.isNumeric(index) && index >= 0) {
-			this.$select.prop('selectedIndex', index);
+			this.$node.prop('selectedIndex', index);
 			return this;
 		} else {
-			return this.$select.prop('selectedIndex');
+			return this.$node.prop('selectedIndex');
 		}
 	},
 	
@@ -627,10 +627,10 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 */
 	disabled : function(disabled) {
 		if ($.type(disabled) == 'boolean') {
-			this.$select.prop('disabled', disabled);
+			this.$node.prop('disabled', disabled);
 			return this;
 		} else {
-			return this.$select.prop('disabled');
+			return this.$node.prop('disabled');
 		}
 	},
 	
@@ -662,7 +662,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 */
 	enable : function() {
 		this.disabled(false);
-		this.$node.removeClass(this.constructor.CLASSNAME.disabled);
+		this.$structure.removeClass(this.constructor.CLASSNAME.disabled);
 		return this;
 	},
 	
@@ -673,7 +673,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 */
 	disable : function() {
 		this.disabled(true);
-		this.$node.addClass(this.constructor.CLASSNAME.disabled);
+		this.$structure.addClass(this.constructor.CLASSNAME.disabled);
 		this.isActive() && this.hideMenu();
 		return this;
 	},
@@ -689,7 +689,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 		this.updateMenuBtn();
 		this.isActive() && this.$menuButton.focus();
 		if (oldIndex != index) {
-			this.$select.trigger('change');
+			this.$node.trigger('change');
 			this.doCallback('onChange', index);
 		}
 	},
