@@ -3,7 +3,7 @@
  *    @fileoverview
  *       throbber balloon.
  *
- *    @version 3.00.20120419
+ *    @version 3.00.20120517
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.balloon.js
@@ -39,7 +39,7 @@ Iroha.Throbber = function() {
 Iroha.ViewClass(Iroha.Throbber).extend(Iroha.Balloon);
 
 $.extend(Iroha.Throbber,
-/** @lends Iroha.Balloon */
+/** @lends Iroha.Throbber */
 {
 	/**
 	 * すべてのインスタンスの基底要素ノードに付与される className
@@ -71,10 +71,9 @@ $.extend(Iroha.Throbber.prototype,
 	
 	/**
 	 * initialize this throbber balloon
-	 * @param {Iroha.Throbber.setting} setting    throbber balloon setting object
+	 * @param {Iroha.Throbber.Setting} setting    throbber balloon setting object
 	 * @return this instance
 	 * @type Iroha.Throbber
-	 * @private
 	 */
 	init : function(setting) {
 		var setting = $.extend(Iroha.Throbber.Setting.create(), setting);
@@ -121,6 +120,7 @@ $.extend(Iroha.Throbber.prototype,
 		return this;
 	}
 });
+
 
 
 /* -------------------- Class : Iroha.Throbber.Setting -------------------- */
