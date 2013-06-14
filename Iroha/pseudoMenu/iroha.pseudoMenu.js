@@ -4,7 +4,7 @@
  *       Pseudo Menu.
  *       (charset : "UTF-8")
  *
- *    @version 3.02.20130605
+ *    @version 3.04.20130615
  *    @requires jquery.js
  *    @requires jquery.mousewheel.js
  *    @requires iroha.js
@@ -79,8 +79,9 @@ $.extend(Iroha.PseudoMenu,
 	 * @cnonsant
 	 */
 	CLASSNAME : {
-		  'baseNode'     : 'iroha-balloon iroha-pseudomenu'
-		, 'selectedItem' : 'iroha-pseudomenu-selected-item'
+		  'baseNode'        : 'iroha-balloon iroha-pseudomenu'
+		, 'highlightedItem' : 'iroha-pseudomenu-highlighted-item'
+		, 'selectedItem'    : 'iroha-pseudomenu-selected-item'
 	},
 	
 	/**
@@ -101,9 +102,6 @@ $.extend(Iroha.PseudoMenu.prototype,
 	/** @private */
 	showSuper : Iroha.Balloon.prototype.show,
 	
-	/** @private */
-	hideSuper : Iroha.Balloon.prototype.hide,
-	
 	/**
 	 * 初期化
 	 * @param {Iroha.PseudoMenu.Setting} setting    設定オブジェクト
@@ -114,9 +112,6 @@ $.extend(Iroha.PseudoMenu.prototype,
 		var setting = $.extend(Iroha.PseudoMenu.Setting.create(), setting);
 		this.initSuper(setting);
 		
-		// add mouse events
-		$(document).on('click', $.proxy(this.onDocumentMouseClick, this));
-		
 		// prevent scrolling of ancestor element
 		this.$node.mousewheel(function(e, d) {
 			var $node  = $(this);
@@ -125,13 +120,8 @@ $.extend(Iroha.PseudoMenu.prototype,
 			(d < 0 && scrTop == height || d > 0 && scrTop == 0) && e.preventDefault();
 		});
 		
-		// set key equivalents.
-		if (Iroha.KeyEquiv) {
-			var keyEquiv = Iroha.KeyEquiv.create();
-			['!', '{', '}', '<', '>', '#'].forEach(function(key) {
-				keyEquiv.addKey(key, this.onKeyDown, this);
-			}, this);
-		}
+		// prepare to create key equivalents.
+		this.$node.keydown($.proxy(this.onKeyDown, this));
 		
 		return this;
 	},
@@ -153,8 +143,9 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 */
 	addItem : function(item) {
 		var $item = $(item).first()
+			.attr('tabindex', '0')
 			.mouseenter($.proxy(this.onItemMouseEnter, this))
-			.click     ($.proxy(this.onItemMouseClick, this));
+			.click     ($.proxy(this.onItemClick     , this));
 		this.addContent($item);
 		this.$items = this.$items.add($item);
 		this.doCallbackByName('onContentChange');
@@ -207,8 +198,15 @@ $.extend(Iroha.PseudoMenu.prototype,
 			throw new RangeError('Iroha.PseudoMenu#select: 不正なインデックス番号を指定しています。');
 		
 		} else {
-			this.highlightItem(index);
-			index >= 0 && this.doCallback('onSelect', index, $item);
+			this.highlight(index);
+			
+			var cname = this.constructor.CLASSNAME.selectedItem;
+			this.$items.removeClass(cname);
+			if (index >= 0) {
+				this.$items.eq(index).addClass(cname).focus();
+				this.doCallback('onSelect', index, $item);
+			}
+			
 			this.selectedIndex = index;
 			return this;
 		}
@@ -221,9 +219,9 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @type Iroha.PseudoMenu
 	 * @private
 	 */
-	highlightItem : function(index) {
+	highlight : function(index) {
 		if (index >= -1) {
-			var cname = this.constructor.CLASSNAME.selectedItem;
+			var cname = this.constructor.CLASSNAME.highlightedItem;
 			this.$items.removeClass(cname);
 			index >= 0 && this.$items.eq(index).addClass(cname);
 			this.highlightedIndex = index;
@@ -238,7 +236,7 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @type Iroha.PseudoMenu
 	 */
 	selectAbove : function() {
-		var index = this.highlightedIndex;
+		var index = this.selectedIndex;
 		index == -1 && (index = this.$items.length);
 		index >   0 && this.select(index - 1);
 		return this;
@@ -250,7 +248,7 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @type Iroha.PseudoMenu
 	 */
 	selectBelow : function() {
-		var index = this.highlightedIndex;
+		var index = this.selectedIndex;
 		index < this.$items.length - 1 && this.select(index + 1);
 		return this;
 	},
@@ -266,24 +264,17 @@ $.extend(Iroha.PseudoMenu.prototype,
 	},
 	
 	/**
-	 * このメニュー（フローティングバルーン）を非表示にする
+	 * このメニュー（フローティングバルーン）を表示する
+	 * @param {Arguments} args    {@link Iroha.Balloon#show} を参照のこと。
 	 * @return このインスタンス自身
 	 * @type Iroha.PseudoMenu
 	 */
-	hide : function() {
-		this.hideSuper();
-		this.highlightItem(this.selectedIndex);
+	show : function(args) {
+		this.showSuper.apply(this, arguments);
+		this.highlight(this.selectedIndex);
+		this.$node.slideUp(0).slideDown(100);
+		
 		return this;
-	},
-	
-	/**
-	 * event hander for 'click' on the document.
-	 * @param {Event} e    event object
-	 * @private
-	 * @event
-	 */
-	onDocumentMouseClick : function(e) {
-		this.isActive() && this.hide();
 	},
 	
 	/**
@@ -293,7 +284,7 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @event
 	 */
 	onItemMouseEnter : function(e) {
-		this.highlightItem(this.$items.get().indexOf(e.currentTarget));
+		this.highlight(this.$items.get().indexOf(e.currentTarget));
 	},
 	
 	/**
@@ -302,9 +293,8 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @private
 	 * @event
 	 */
-	onItemMouseClick : function(e) {
+	onItemClick : function(e) {
 		e.preventDefault();
-		e.stopPropagation();
 		var index = this.$items.get().indexOf(e.currentTarget);
 		index > -1 && this.select(index);
 		this.hide();
@@ -316,18 +306,19 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 * @param {String} key    key combination defining string
 	 * @private
 	 */
-	onKeyDown : function(e, key) {
-		if (this.isActive()) {
-			e.preventDefault();
-			switch (key) {
-				case '!' : this.select(this.selectedIndex   ); this.hide(); break;
-				case '#' : this.select(this.highlightedIndex); this.hide(); break;
-				case '{' : this.selectAbove(); break;
-				case '<' : this.selectAbove(); break;
-				case '}' : this.selectBelow(); break;
-				case '>' : this.selectBelow(); break;
-				default  : break;
-			}
+	onKeyDown : function(e) {
+		if (!Iroha.KeyEquiv ) return;
+		if (!this.isActive()) return;
+
+		var key = Iroha.KeyEquiv.getKeyAlias(e.keyCode);
+		switch (key) {
+			case '!' /* ESC   */ : e.preventDefault(); this.hide(); break;
+			case '#' /* Enter */ : e.preventDefault(); this.hide(); break;
+			case '{' /* Up    */ : e.preventDefault(); this.selectAbove(); break;
+			case '<' /* Left  */ : e.preventDefault(); this.selectAbove(); break;
+			case '}' /* Down  */ : e.preventDefault(); this.selectBelow(); break;
+			case '>' /* Right */ : e.preventDefault(); this.selectBelow(); break;
+			default : break;
 		}
 	}
 });
@@ -348,6 +339,7 @@ Iroha.PseudoSelectMenu = function() {
 	/**
 	 * 疑似セレクトメニュー構造の外殻たる要素ノード
 	 * @type jQuery
+	 * @private
 	 */
 	this.$structure = $();
 	
@@ -369,13 +361,6 @@ Iroha.PseudoSelectMenu = function() {
 	 * @private
 	 */
 	this.pseudoMenu = undefined;
-	
-	/**
-	 * メニューの非表示化を許容するかどうか。
-	 * @type Boolean
-	 * @private
-	 */
-	this.hideAllowed = true;
 };
 
 Iroha.ViewClass(Iroha.PseudoSelectMenu).extend(Iroha.Observable);
@@ -431,22 +416,22 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 			
 			// add callbacks to the pseudo menu
 			this.pseudoMenu.addCallback('onSelect', this.onMenuSelect, this);
+			this.pseudoMenu.addCallback('onHide'  , this.onMenuHide  , this);
 			
-			// add mouse events, to prevent to hide the menu when focus is blured from the menu button
-			this.$menuBody
-				.mousedown($.proxy(function() { this.hideAllowed = false }, this))
-				.mouseup  ($.proxy(function() { this.hideAllowed = true  }, this));
+			// add mouse events, to hide menu when document clicked
+			$(document).on('click', $.proxy(this.onDocumentClick, this));
 			
 			// revising menu position when font size is changed.
 			if (Iroha.FontSizeObserver) {
 				Iroha.FontSizeObserver.addCallback('onChange', this.onFontSizeChanged, this);
 			}
 			
-			// make linkage with label element
+			// label 要素のクリックで疑似セレクトメニューの開閉ボタンにフォーカスをあてる
 			var id     = $select.attr('id');
 			var $label = id ? $('label[for="' + id + '"]') : $select.closest('label');
-			$label.click($.proxy(function() {
-				Iroha.delay(1, this).done(function() { this.focus() });
+			$label.click($.proxy(function(e) {
+				// 疑似セレクトメニュー内部の click は無視する
+				this.$structure.has(e.target).length || this.focus();
 			}, this));
 			
 			// disable menu when original select element is disabled initially
@@ -495,7 +480,6 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 			// add event listener
 			this.$menuButton
 				.click  ($.proxy(this.onMenuBtnClick  , this))
-				.blur   ($.proxy(this.onMenuBtnBlur   , this))
 				.keydown($.proxy(this.onMenuBtnKeyDown, this));
 			
 			// post process
@@ -546,11 +530,21 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 * @type Iroha.PseudoSelectMenu
 	 * @private
 	 */
-	hideMenu : function() {
-		if (this.hideAllowed) {
-			this.pseudoMenu.hide();
-			this.$structure.removeClass(this.constructor.CLASSNAME.opened);
-		}
+	hideMenu : function(withFocus) {
+		withFocus === false || this._denyFocus_ || this.focus();
+		
+		// 選択メニューをクリックやキー操作で選択操作したときは、メニュー開閉ボタンにフォーカスをあてたい。
+		// 対して、ドキュメント余白クリックしたときは、フォーカスを当てたくない。
+		// ドキュメントクリック時はこのメソッドが連続2度呼ばれる。
+		//（1度目は document.onclick イベント、2度目はこのメソッド内で pseudoMenu.hide() によるコールバック）
+		// withFocus 引数は、1度目の呼び出し時は明確に true/false を指定できるが、2度目はそのシチュエーション的に引数を決定できない。
+		// そのため、呼び出し1度目の withFocus 引数の値を採用してフォーカスを当てるか判定、2度目の呼び出し時は無視する。
+		this._denyFocus_ = true;
+		Iroha.delay(16, this).done(function() { delete this._denyFocus_ });
+		
+		this.pseudoMenu.isActive() && this.pseudoMenu.hide();
+		this.$structure.removeClass(this.constructor.CLASSNAME.opened);
+		
 		return this;
 	},
 	
@@ -674,7 +668,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	disable : function() {
 		this.disabled(true);
 		this.$structure.addClass(this.constructor.CLASSNAME.disabled);
-		this.isActive() && this.hideMenu();
+		this.isActive() && this.hideMenu(false);
 		return this;
 	},
 	
@@ -687,11 +681,18 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 		var oldIndex = this.selectedIndex();
 		this.selectedIndex(index);
 		this.updateMenuBtn();
-		this.isActive() && this.$menuButton.focus();
 		if (oldIndex != index) {
 			this.$node.trigger('change');
 			this.doCallback('onChange', index);
 		}
+	},
+	
+	/**
+	 * 選択メニューのフローティングバルーンが非表示になったとき呼び出される処理。
+	 * @private
+	 */
+	onMenuHide : function() {
+		this.hideMenu();
 	},
 	
 	/**
@@ -700,25 +701,28 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 * @private
 	 */
 	onMenuBtnKeyDown : function(e) {
-		if (!Iroha.KeyEquiv) return;
-		if (this.disabled()) return;
+		if (!Iroha.KeyEquiv ) return;
+		if ( this.disabled()) return;
 		
-		var key = Iroha.KeyEquiv.create().getKeyAlias(e.keyCode);
-		if (this.isActive() && [ '{', '<', '}', '>' ].indexOf(key) != -1) {
-			// prevent to hide the menu when the arrow keys down.
-			this.hideAllowed = false;
-			Iroha.delay(1, this).done(function() { this.hideAllowed = true });
-			
-		} else {
-			switch (key) {
-				case '#' : e.preventDefault(); break;
-				case '{' : e.preventDefault(); this.pseudoMenu.selectAbove(); break;
-				case '<' : e.preventDefault(); this.pseudoMenu.selectAbove(); break;
-				case '}' : e.preventDefault(); this.pseudoMenu.selectBelow(); break;
-				case '>' : e.preventDefault(); this.pseudoMenu.selectBelow(); break;
-				default  : break;
-			}
+		var key = Iroha.KeyEquiv.getKeyAlias(e.keyCode);
+		switch (key) {
+			case '#' /* Enter */ : e.preventDefault(); this.showMenu(); break;
+			case '{' /* Up    */ : e.preventDefault(); this.pseudoMenu.selectAbove(); break;
+			case '<' /* Left  */ : e.preventDefault(); this.pseudoMenu.selectAbove(); break;
+			case '}' /* Down  */ : e.preventDefault(); this.pseudoMenu.selectBelow(); break;
+			case '>' /* Right */ : e.preventDefault(); this.pseudoMenu.selectBelow(); break;
+			default : break;
 		}
+	},
+	
+	/**
+	 * event hander for 'click' on the document.
+	 * @param {Event} e    event object
+	 * @private
+	 * @event
+	 */
+	onDocumentClick : function(e) {
+		!this.$structure.has(e.target).length && this.isActive() && this.hideMenu(false);
 	},
 	
 	/**
@@ -728,18 +732,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 */
 	onMenuBtnClick : function(e) {
 		e.preventDefault();
-		e.stopPropagation();
 		this.isActive() ? this.hideMenu() : this.showMenu();
-//		this.focus(); // workaround for Safari
-	},
-	
-	/**
-	 * event hander for menu button blur.
-	 * @param {Event} e    event object
-	 * @private
-	 */
-	onMenuBtnBlur : function(e) {
-		this.hideMenu();
 	},
 	
 	/**
