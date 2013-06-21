@@ -4,7 +4,7 @@
  *       Pseudo Menu.
  *       (charset : "UTF-8")
  *
- *    @version 3.04.20130615
+ *    @version 3.08.20130621
  *    @requires jquery.js
  *    @requires jquery.mousewheel.js
  *    @requires iroha.js
@@ -102,6 +102,9 @@ $.extend(Iroha.PseudoMenu.prototype,
 	/** @private */
 	showSuper : Iroha.Balloon.prototype.show,
 	
+	/** @private */
+	hideSuper : Iroha.Balloon.prototype.hide,
+	
 	/**
 	 * 初期化
 	 * @param {Iroha.PseudoMenu.Setting} setting    設定オブジェクト
@@ -112,20 +115,15 @@ $.extend(Iroha.PseudoMenu.prototype,
 		var setting = $.extend(Iroha.PseudoMenu.Setting.create(), setting);
 		this.initSuper(setting);
 		
-		// prevent scrolling of ancestor element
-		this.$node.mousewheel(function(e, d) {
-			var $node  = $(this);
-			var height = $node.prop('scrollHeight') - $node.height();
-			var scrTop = $node.scrollTop();
-			(d < 0 && scrTop == height || d > 0 && scrTop == 0) && e.preventDefault();
-		});
-		
-		// prepare to create key equivalents.
-		this.$node.keydown($.proxy(this.onKeyDown, this));
+		this.$node
+			.on('click'     , $.proxy(this.onMouseClick, this))
+			.on('mouseover' , $.proxy(this.onMouseOver , this))
+			.on('mousewheel', $.proxy(this.onMouseWheel, this))
+			.on('keydown'   , $.proxy(this.onKeyDown   , this));
 		
 		return this;
 	},
-
+	
 	/**
 	 * メニュー項目の要素ノード群を得る
 	 * @return メニュー項目の要素ノード群を内容した jQuery オブジェクト
@@ -137,15 +135,12 @@ $.extend(Iroha.PseudoMenu.prototype,
 	
 	/**
 	 * メニュー項目を追加する。
-	 * @param {jQuery|Element|String} item    追加するメニュー項目の要素ノード
+	 * @param {jQuery|Element|Element[]|NodeList|String} item    追加するメニュー項目の要素ノード(群)
 	 * @return このインスタンス自身
 	 * @type Iroha.PseudoMenu
 	 */
 	addItem : function(item) {
-		var $item = $(item).first()
-			.attr('tabindex', '0')
-			.mouseenter($.proxy(this.onItemMouseEnter, this))
-			.click     ($.proxy(this.onItemClick     , this));
+		var $item = $(item);
 		this.addContent($item);
 		this.$items = this.$items.add($item);
 		this.doCallbackByName('onContentChange');
@@ -196,20 +191,22 @@ $.extend(Iroha.PseudoMenu.prototype,
 		
 		if (!$item.length && index < -1) {
 			throw new RangeError('Iroha.PseudoMenu#select: 不正なインデックス番号を指定しています。');
+		}
 		
-		} else {
-			this.highlight(index);
+		this.highlight(index);
+		
+		var cname = this.constructor.CLASSNAME.selectedItem;
+		this.$items.removeClass(cname);
+		
+		if (index >= 0) {
+			this.$items.eq(index).addClass(cname).attr('tabindex', 0).focus();
 			
-			var cname = this.constructor.CLASSNAME.selectedItem;
-			this.$items.removeClass(cname);
-			if (index >= 0) {
-				this.$items.eq(index).addClass(cname).focus();
+			if (this.selectedIndex != index) {
+				this.selectedIndex = index;
 				this.doCallback('onSelect', index, $item);
 			}
-			
-			this.selectedIndex = index;
-			return this;
 		}
+		return this;
 	},
 	
 	/**
@@ -271,33 +268,66 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 */
 	show : function(args) {
 		this.showSuper.apply(this, arguments);
-		this.highlight(this.selectedIndex);
 		this.$node.slideUp(0).slideDown(100);
-		
+		Iroha.delay(16, this).done(function() { this.select(this.selectedIndex) });  // フォーカスがうまく当たらない IE 対策で僅かにディレイ
 		return this;
 	},
 	
 	/**
-	 * event hander for 'mouseenter' to the menu item.
-	 * @param {Event} e    event object
-	 * @private
-	 * @event
+	 * このメニュー（フローティングバルーン）を閉じる
+	 * @param {Arguments} args    {@link Iroha.Balloon#hide} を参照のこと。
+	 * @return このインスタンス自身
+	 * @type Iroha.PseudoMenu
 	 */
-	onItemMouseEnter : function(e) {
-		this.highlight(this.$items.get().indexOf(e.currentTarget));
+	hide : function(args) {
+		var args = arguments;
+		this.$node.slideUp(100, $.proxy(function() { this.hideSuper.apply(this, args) }, this));
+		return this;
 	},
 	
 	/**
-	 * event hander for 'click' on the menu item.
+	 * event hander for 'click' on this menu
 	 * @param {Event} e    event object
 	 * @private
 	 * @event
 	 */
-	onItemClick : function(e) {
+	onMouseClick : function(e) {
 		e.preventDefault();
-		var index = this.$items.get().indexOf(e.currentTarget);
+		var target = e.target;
+		var $items = this.$items;
+		var item   = $items.filter(target).get(0) || $items.has(target).get(0);
+		var index  = $items.get().indexOf(item);
 		index > -1 && this.select(index);
 		this.hide();
+	},
+	
+	/**
+	 * event hander for 'mouseover' on this menu
+	 * @param {Event} e    event object
+	 * @private
+	 * @event
+	 */
+	onMouseOver : function(e) {
+		var target = e.target;
+		var $items = this.$items;
+		var item   = $items.filter(target).get(0) || $items.has(target).get(0);
+		var index  = $items.get().indexOf(item);
+		this.highlight(index);
+	},
+	
+	/**
+	 * event hander for 'mousewheel' on this menu.
+	 * メニュー内のホイールスクロールをなるべく祖先要素へ伝達させないようにがんばる。
+	 * @param {Event}  e    event object
+	 * @param {Number} d    wheelDelta
+	 * @private
+	 * @event
+	 */
+	onMouseWheel : function(e, d) {
+		var $node  = this.$body;
+		var height = $node.prop('scrollHeight') - $node.height();
+		var scrTop = $node.scrollTop();
+		(d < 0 && scrTop == height || d > 0 && scrTop == 0) && e.preventDefault();
 	},
 	
 	/**
@@ -361,6 +391,13 @@ Iroha.PseudoSelectMenu = function() {
 	 * @private
 	 */
 	this.pseudoMenu = undefined;
+	
+	/**
+	 * 監視タイマー。ホンモノの select 要素ノードの checked, disabled 状態を監視。
+	 * @type Iroha.Interval
+	 * @private
+	 */
+	this.watcher = undefined;
 };
 
 Iroha.ViewClass(Iroha.PseudoSelectMenu).extend(Iroha.Observable);
@@ -414,9 +451,14 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 			this.pseudoMenu.appendTo(this.$menuBody).hide(); // "hide()" is a workaround for WinIE7 and older.
 			this.adjustMenuWidth();
 			
+			// ホンモノの select を外部から直接 change がトリガーされたら、それを拾う。
+			$select.on('change', $.proxy(function(e){
+				this.lock || this.select(this.selectedIndex());
+			},this))
+			
 			// add callbacks to the pseudo menu
-			this.pseudoMenu.addCallback('onSelect', this.onMenuSelect, this);
-			this.pseudoMenu.addCallback('onHide'  , this.onMenuHide  , this);
+			this.pseudoMenu.addCallback('onSelect', this.selectedIndex, this);
+			this.pseudoMenu.addCallback('onHide'  , this.hideMenu     , this);
 			
 			// add mouse events, to hide menu when document clicked
 			$(document).on('click', $.proxy(this.onDocumentClick, this));
@@ -437,6 +479,9 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 			// disable menu when original select element is disabled initially
 			this.disabled() && this.disable();
 			
+			// ウオッチ開始
+			this.watch();
+			
 			return this;
 		}
 	},
@@ -445,11 +490,45 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 * このインスタンスを破棄する
 	 */
 	dispose : function() {
+		this.watcher    && this.watcher.clear();
 		this.$structure && this.$structure.remove();
 		this.$node      && this.$node.show();
 		this.pseudoMenu && this.pseudoMenu.dispose();
 		
 		this.constructor.disposeInstance(this);
+	},
+	
+	/**
+	 * ホンモノの select 要素ノードの selected, disabled 状態変化の監視を開始する
+	 * @param {Number} [interval=500]    監視間隔。ミリ秒指定。
+	 * @return このインスタンス自身
+	 * @type Iroha.PseudoSelectMenu
+	 */
+	watch : function(interval) {
+		if (!this.watcher) {
+			var interval = Math.max(interval, 100) || 100;
+			var node     = this.$node.get(0);
+			var selIndex = node.selectedIndex;
+			var disabled = node.disabled;
+			
+			this.watcher = Iroha.Interval.create(function() {
+				selIndex != node.selectedIndex  && this.select  (selIndex = node.selectedIndex);
+				disabled != node.disabled       && this.disabled(disabled = node.disabled     );
+			}, interval, this);
+		}
+		
+		return this;
+	},
+	
+	/**
+	 * ホンモノの select 要素ノードの selected, disabled 状態変化の監視を停止する
+	 * @return このインスタンス自身
+	 * @type Iroha.PseudoSelectMenu
+	 */
+	unwatch : function() {
+		this.watcher && this.watcher.clear();
+		this.watcher = undefined;
+		return this;
 	},
 	
 	/**
@@ -497,13 +576,16 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 * @private
 	 */
 	adjustMenuWidth : function() {
-		var $base = this.$structure.css('width', '100%');  // workaround to IE7 and older
-		var width = this.pseudoMenu.getGeometry().width;
-		this.pseudoMenu.resizeTo(width, undefined);
-		$base.css('width', 'auto');                   // workaround to IE7 and older
-		this.$menuButton.width(width);
-		width = 2 * width - this.$menuButton.outerWidth();
-		this.$menuButton.width(width);
+		var $base     = this.$structure .css('width', '100%');  // workaround to IE7 and older
+		var $btn      = this.$menuButton.css('width', 'auto');
+		var menu      = this.pseudoMenu.resizeTo(0, -1);        // width:auto, height:ママ
+		var baseWidth = $base.outerWidth();
+		var menuWidth = menu.getGeometry().width;
+		var btnWidth  = Math.min(menuWidth, baseWidth);
+		
+		$btn.width(btnWidth).width(2 * btnWidth - $btn.outerWidth());  // padding 考慮で幅調整
+		menu.resizeTo(menuWidth, -1);
+		$base.css('width', 'auto');   // workaround to IE7 and older
 		
 		return this;
 	},
@@ -526,6 +608,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	
 	/**
 	 * hide select menu body.
+	 * @param {Boolean} withFocus    無指定または true のとき、メニューを閉じた後開閉ボタンにフォーカスを当てる。 false 指定の場合はフォーカス当てない。
 	 * @return このインスタンス自身
 	 * @type Iroha.PseudoSelectMenu
 	 * @private
@@ -579,11 +662,13 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 */
 	updateMenuItems : function() {
 		this.pseudoMenu.removeItems();
-	
-		var tmpl = this.setting.template.menuItem;
-		this.$node.find('option').get().forEach(function(option) {
-			this.pseudoMenu.addItem(Iroha.String(tmpl).format(option.text).get());
+		
+		var tmpl  = this.setting.template.menuItem;
+		var items = this.$node.find('option').get().map(function(option) {
+			return Iroha.String(tmpl).format(option.text).get()
 		}, this);
+		this.pseudoMenu.addItem(items.join(''));
+		this.adjustMenuWidth();
 		
 		this.select(this.selectedIndex());
 		return this;
@@ -599,6 +684,26 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	},
 	
 	/**
+	 * focus to menu button; without change of menu body' visibility.
+	 * @return このインスタンス自身
+	 * @type Iroha.PseudoSelectMenu
+	 */
+	focus : function() {
+		this.$menuButton.focus();
+		return this;
+	},
+	
+	/**
+	 * インデックス番号指定でメニューの選択項目を変更する。{@link #selectedIndex} へのショートカット。
+	 * @param {Number} index    インデックス番号 (selectedIndex)
+	 * @return このインスタンス自身
+	 * @type Iroha.PseudoSelectMenu
+	 */
+	select : function(index) {
+		return this.selectedIndex(index);
+	},
+	
+	/**
 	 * セレクトメニューの selectedIndex を取得する／変更する
 	 * @param {Number} [index]    selectedIndex を変更する場合に指定。無指定時は getter として動作。
 	 * @return [getter] selectedIndex, [setter] このインスタンス自身
@@ -606,8 +711,20 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 */
 	selectedIndex : function(index) {
 		if ($.isNumeric(index) && index >= 0) {
+			var oldIndex = this.selectedIndex();
 			this.$node.prop('selectedIndex', index);
+			this.pseudoMenu.select(index);
+			this.updateMenuBtn();
+			
+			if (oldIndex != index) {
+				this.lock = true;   // [TEMPORARY] 無限ループ抑止のフラグ
+				this.$node.trigger('change');
+				this.lock = false;  // [TEMPORARY] 無限ループ抑止のフラグ
+				this.doCallback('onChange', index);
+			}
+			
 			return this;
+		
 		} else {
 			return this.$node.prop('selectedIndex');
 		}
@@ -622,77 +739,13 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	disabled : function(disabled) {
 		if ($.type(disabled) == 'boolean') {
 			this.$node.prop('disabled', disabled);
+			this.$structure.toggleClass(this.constructor.CLASSNAME.disabled, disabled);
+			disabled && this.hideMenu(false);
 			return this;
+		
 		} else {
 			return this.$node.prop('disabled');
 		}
-	},
-	
-	/**
-	 * focus to menu button; without change of menu body' visibility.
-	 * @return このインスタンス自身
-	 * @type Iroha.PseudoSelectMenu
-	 */
-	focus : function() {
-		this.$menuButton.focus();
-		return this;
-	},
-	
-	/**
-	 * set index number of selected item.
-	 * @param {Number} index    index number to set.
-	 * @return このインスタンス自身
-	 * @type Iroha.PseudoSelectMenu
-	 */
-	select : function(index) {
-		this.pseudoMenu.select(index);
-		return this;
-	},
-	
-	/**
-	 * enable this select menu
-	 * @return このインスタンス自身
-	 * @type Iroha.PseudoSelectMenu
-	 */
-	enable : function() {
-		this.disabled(false);
-		this.$structure.removeClass(this.constructor.CLASSNAME.disabled);
-		return this;
-	},
-	
-	/**
-	 * disable this select menu
-	 * @return このインスタンス自身
-	 * @type Iroha.PseudoSelectMenu
-	 */
-	disable : function() {
-		this.disabled(true);
-		this.$structure.addClass(this.constructor.CLASSNAME.disabled);
-		this.isActive() && this.hideMenu(false);
-		return this;
-	},
-	
-	/**
-	 * call back function for 'onSelect' of the menu item.
-	 * @param {Number} index    index number of selected item
-	 * @private
-	 */
-	onMenuSelect : function(index) {
-		var oldIndex = this.selectedIndex();
-		this.selectedIndex(index);
-		this.updateMenuBtn();
-		if (oldIndex != index) {
-			this.$node.trigger('change');
-			this.doCallback('onChange', index);
-		}
-	},
-	
-	/**
-	 * 選択メニューのフローティングバルーンが非表示になったとき呼び出される処理。
-	 * @private
-	 */
-	onMenuHide : function() {
-		this.hideMenu();
 	},
 	
 	/**
