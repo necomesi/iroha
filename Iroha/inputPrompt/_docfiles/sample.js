@@ -13,7 +13,7 @@
 //Iroha.setValue('Iroha.settings.InputPrompt.autoSetup.enabled', true);
 
 $(function() {
-	Iroha.InputPrompt.autoSetup('div.example input:text, div.example textarea');
+	Iroha.InputPrompt.autoSetup('div.example [placeholder]');
 });
 
 

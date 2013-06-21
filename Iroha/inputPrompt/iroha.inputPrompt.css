@@ -33,3 +33,13 @@
 }
 
 
+/* ----- 案内テキストを別要素で表示している場合 ----- */
+
+.iroha-inputprompt + .iroha-inputprompt-prompt {
+	position: absolute;
+	display: block;
+	margin: -1.7em 0 0;
+	padding: 2px;
+	color: #999;
+	text-decoration: none;
+}
