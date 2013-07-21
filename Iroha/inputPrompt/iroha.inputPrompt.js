@@ -100,7 +100,7 @@ Iroha.InputPrompt = function() {
 	 * @private
 	 * @constant
 	 */
-	this.EVENT_NS = '.Iroha.InputPrompt.' + Iroha.String.guid().replace(/-/g, '');
+	this.EVENT_NS = '.Iroha.InputPrompt.' + Iroha.String.guid().replace(/-/g, '').get();
 };
 
 Iroha.ViewClass(Iroha.InputPrompt);
