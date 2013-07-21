@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.37.20130402
+ *    @version 3.38.20130614
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -66,14 +66,14 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * @constant
 	 */
 	this.$ = $;
-	
+
 	/**
 	 * @deprecated use {@link Iroha.$}
 	 * @name Iroha.jQuery
 	 * @constant
 	 */
 	this.jQuery = $;
-	
+
 	/**
 	 * default setting values of Iroha function/classes
 	 * @name Iroha.settings
@@ -83,7 +83,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 */
 	this.settings        = {};
 	this.settings.common = { showGeometry : false };
-	
+
 	/**
 	 * identifier urls of frequently used XML-Namespaces.
 	 * @name Iroha.ns
@@ -98,7 +98,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	this.ns.xhtml1    = 'http://www.w3.org/1999/xhtml';
 	this.ns.xhtml2    = 'http://www.w3.org/2002/06/xhtml2';
 	this.ns.iroha     = 'http://necomesi.jp/iroha';
-	
+
 	/**
 	 * browser distinction results.
 	 * @name Iroha.ua
@@ -164,12 +164,12 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	                     : 5;
 	this.ua.isTouchable  = ('ontouchstart' in document)
 	this.ua.isDOMReady   = (di) ? di.hasFeature('HTML', '1.0') : (this.ua.isIE && de);
-	
+
 	// isSafari と判別されていたとしても、iOS, Mac, Windows でないものや、Chrome の場合は false に戻す。
 	this.ua.isSafari = this.ua.isSafari && !this.ua.isChrome && (this.ua.isiOS || this.ua.isMac || this.ua.isWin);
 	// Android 標準ブラウザを判別
 	this.ua.isAndroidBrowser = this.ua.isAndroid && this.ua.isWebKit && !this.ua.isChrome;
-	
+
 	/**
 	 * geometry properties object; the property values are updated when {@link Iroha.getGeometry} is called.
 	 * @name Iroha.geom
@@ -188,7 +188,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * @property {Number} scrollBar    browser's scrollbar width.
 	 */
 	this.geom = {};
-	
+
 	/**
 	 * misc environment values.
 	 * @name Iroha.env
@@ -258,11 +258,11 @@ if (typeof window.console != 'object') {
 (function() {
 	// prevent background image flicker on IE6.
 	if (Iroha.ua.isIE && Iroha.ua.version == 6) try { document.execCommand('BackgroundImageCache', false, true) } catch(err) { }
-	
+
 	$(function() {
 		// indicates that the browser has ability to manipulate DOM tree.
 		Iroha.env.isDOMReady = true;
-		
+
 		// add classname which indicates "Iroha is enabled".
 //		// onload で即座に実行すると古い IE でスピードダウンする現象を軽減するために delay しつつ適用
 //		// …するのはヤメた！
@@ -371,7 +371,7 @@ if (!Array.prototype.map) {
 
 if (!Array.prototype.filter) {
 	/**
-	 * creates a new array with all of the elements of this array for which the provided filtering function returns true. 
+	 * creates a new array with all of the elements of this array for which the provided filtering function returns true.
 	 * (implement emulation of the method defined in JavaScript1.6)
 	 * @param {Array.callback.test} aCallback        the function to test all elements
 	 * @param {Object}              [aThisObject]    the object that will be a global object ('this') in aCallback func.
@@ -486,7 +486,7 @@ $.extend(Iroha.ViewClass,
 			, key       : 'Iroha.ViewClass.' + Iroha.String.guid().replace(/-/g, '')
 		});
 	},
-	
+
 	/**
 	 * 与えられたコンストラクタ（クラス）に汎用クラスプロパティ・メソッド群を与える。
 	 * @param {Function} constructor    対象のコンストラクタ関数
@@ -507,13 +507,13 @@ $.extend(Iroha.ViewClass.prototype,
 	 * @type Object[]
 	 */
 	instances : [],
-	
+
 	/**
 	 * インスタンスのインデックス番号を格納するためのキー。
 	 * @type String
 	 */
 	key : '',
-	
+
 	/**
 	 * コンストラクタの prototype が備えているべき「既定のメソッド」。無ければここから補われる。
 	 * @type Object
@@ -527,7 +527,7 @@ $.extend(Iroha.ViewClass.prototype,
 		, insertBefore : function(target) { this.$node.insertBefore(target.$node || $(target)); return this }
 		, insertAfter  : function(target) { this.$node.insertAfter (target.$node || $(target)); return this }
 	},
-	
+
 	/**
 	 * クラスから生成されたインスタンスを格納する
 	 * @param {Object} instance    生成したインスタンス
@@ -539,7 +539,7 @@ $.extend(Iroha.ViewClass.prototype,
 		$(instance.$node).data(this.key + '.index', this.instances.push(instance) - 1);
 		return instance;
 	},
-	
+
 	/**
 	 * クラスから作られた既存インスタンスを得る。
 	 * @param {Number|jQuery|Element|String} [arg]    インデックス番号、またはインスタンス生成時に指定した「基底要素ノード」。
@@ -558,7 +558,7 @@ $.extend(Iroha.ViewClass.prototype,
 			return undefined;
 		}
 	},
-	
+
 	/**
 	 * クラスから作られた既存インスタンスを破棄する。
 	 * @param {Object} instance    破棄対象のインスタンス
@@ -577,15 +577,15 @@ $.extend(Iroha.ViewClass.prototype,
 			instances.pop();
 		}
 	},
-	
+
 	/**
 	 * 任意の要素ノードを与えて新しくインスタンスを生成するか、同じ要素ノードから生成された既存のインスタンスを得る。
-	 * 
+	 *
 	 * 第1引数には要素ノードを与えなければならない。この要素ノードを、インスタンスが主として取扱う「基底要素ノード」と定義する。
 	 * 生成されたインスタンスに init(), dispose() 等の既定のメソッドが無ければ、最低限度の機能のそれらが付与される。
 	 * 最後に instance.init() が自動的に呼び出される。
 	 * instance.init() で最低限必要な処理は、第1引数として与えられる「基底要素ノード」を instance.$node に格納することである。
-	 * 
+	 *
 	 * @param {jQuery|Element|String} node      インスタンスが主として取扱う「基底要素ノード」。instance.init() の第1引数として渡される。
 	 * @param {Arguments}             [args]    instance.init() に渡される2番目以降の引数。
 	 * @return 生成したインスタンス
@@ -600,10 +600,10 @@ $.extend(Iroha.ViewClass.prototype,
 			return this.getInstance(node) || this.add.apply(this, arguments);
 		}
 	},
-	
+
 	/**
 	 * 新しいインスタンスを生成し、このクラス（コンストラクタ）のインスタンスリストに追加する。
-	 * 
+	 *
 	 * create() の第1引数に要素ノードを（まだ）与えることができない場合に、このメソッドを用いることができる。
 	 * 生成されたインスタンスに init(), dispose() 等の既定のメソッドが無ければ、最低限度の機能のそれらが付与される。
 	 * 最後に instance.init() が自動的に呼び出される。
@@ -616,12 +616,12 @@ $.extend(Iroha.ViewClass.prototype,
 	add : function(args) {
 		// 既定のメソッド群がコンストラクタの prototype になければ、補う。
 		$.each(this.defMethods, $.proxy(function(name, func) { this.prototype[name] || (this.prototype[name] = func) }, this));
-		
+
 		var instance = new this;
 		instance.init.apply(instance, arguments)
 		return this.storeInstance(instance);
 	},
-	
+
 	/**
 	 * 指定したコンストラクタ（クラス）のプロトタイプを現在のコンテキストのコンストラクタ（クラス）へ継承させる。
 	 * @param {Function} constructor    継承元のコンストラクタ（クラス）
@@ -631,7 +631,7 @@ $.extend(Iroha.ViewClass.prototype,
 	extend : function(constructor) {
 		$.isFunction(constructor) || (constructor = new Function);
 		$.extend(this.prototype, new constructor);
-		
+
 		return this;
 	}
 });
@@ -680,7 +680,7 @@ $.extend(Iroha.Number.prototype,
 		this.value = Number(value) || 0;
 		return this;
 	},
-	
+
 	/**
 	 * 現在の数値を文字列として取得する。
 	 * @returns 現在の数値を文字列化したもの
@@ -689,7 +689,7 @@ $.extend(Iroha.Number.prototype,
 	toString : function() {
 		return String(this.value);
 	},
-	
+
 	/**
 	 * 現在の数値を取得する
 	 * @returns 現在の数値
@@ -698,7 +698,7 @@ $.extend(Iroha.Number.prototype,
 	get : function() {
 		return this.value;
 	},
-	
+
 	/**
 	 * 簡易フォーマッタ。現在の数値を指定形式の文字列へ整形する。
 	 * @param {String} format     整形フォーマット
@@ -714,7 +714,7 @@ $.extend(Iroha.Number.prototype,
 	format : function(format) {
 		if (!format || typeof format != 'string') {
 			throw new TypeError('Iroha.Number#format: first argument must be a formatting string.');
-		
+
 		} else {
 			var ret       = [];
 			var num       = parseFloat(this.value) || 0;
@@ -723,7 +723,7 @@ $.extend(Iroha.Number.prototype,
 			var value     = (decFormat) ? Math.abs(num) : Math.round(Math.abs(num));
 			var sign      = (num < 0) ? '-' : '';
 			var intValue  = value.toString().split('.')[0].split('');
-			
+
 			do {
 				var _value  = intValue .pop() || '';
 				var _format = intFormat.pop() || '';
@@ -734,9 +734,9 @@ $.extend(Iroha.Number.prototype,
 					default  : ret.push(_format               ); intValue.push(_value); break;
 				}
 			} while (intValue.length > 0 || intFormat.length > 0);
-			
+
 			ret = ret.reverse().join('').replace(/^\D+/, '');
-			
+
 			if (decFormat) {
 				var scale     = Math.pow(10, decFormat.length);
 				var rounded   = Math.round(value * scale) / scale;
@@ -748,11 +748,11 @@ $.extend(Iroha.Number.prototype,
 					decFormat = decFormat.split('').reverse().join('');
 					ret       = ret + '.' + Iroha.Number(decValue).format(decFormat).split('').reverse().join('');
 			}
-			
+
 			if (Iroha.String(decFormat).startsWith('#') && Iroha.String(ret).endsWith('.0')) {
 				ret = Iroha.String(ret).getBefore('.0');
 			}
-			
+
 			return Iroha.String(sign + ret);
 		}
 	}
@@ -769,14 +769,14 @@ Iroha.String = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * 処理対象となっている文字列
 	 * @type String
 	 * @private
 	 */
 	this.value = '';
-	
+
 	/**
 	 * 処理対象となっている文字列の現在の長さ
 	 * @type Number
@@ -803,7 +803,7 @@ $.extend(Iroha.String,
 		}
 		return new this(ret);
 	},
-	
+
 	/**
 	 * グローバル一意識別子を得る。
 	 * @returns 作成したグローバル一意識別子を保持している Iroha.String インスタンス
@@ -814,7 +814,7 @@ $.extend(Iroha.String,
 		var arr   = [ 8, 4, 4, 4, 12 ].map(function(n) { return this.random(n, chars).get() }, this);
 		return (new this('${0}-${1}-${2}-${3}-${4}')).format(arr);
 	},
-	
+
 	/**
 	 * Iroha.String のインスタンスを作って返す。
 	 * @return Iroha.String の新規インスタンス
@@ -840,25 +840,34 @@ $.extend(Iroha.String.prototype,
 		this.length = this.value.length;
 		return this;
 	},
-	
+
 	/**
 	 * 現在の文字列を取得する。
+	 *
+	 * IE8 で、 toString メソッドをオーバーライドできない様子。
+	 * 正確には、jQuery.extend が悪さをしている可能性がある。
+	 * ともかく Iroha.String#toString を呼び出すと IE8 でエラーになるようになってしまった。
 	 * @returns 現在の文字列を取得
 	 * @type String
 	 */
 	toString : function() {
 		return this.value;
 	},
-	
+
 	/**
 	 * 現在の文字列を取得する。
 	 * @returns 現在の文字列を取得
 	 * @type String
 	 */
 	get : function() {
-		return this.toString.apply(this, arguments);
+		// IE8 で、 toString メソッドをオーバーライドできないようなので。
+		// 正確には、jQuery.extend が悪さをしている可能性がある。
+		// ともかく Iroha.String#toString を呼び出すと IE8 でエラーになるようになってしまった。
+
+		// return this.toString.apply(this, arguments);
+		return this.value;
 	},
-	
+
 	/**
 	 * 簡易フォーマッタ。現在の文字列を指定の形式へ整形する。
 	 * @param {String|String[]|Object}  arg1     文字列、または文字列の入っている配列、または文字列をプロパティ値とする連想配列。
@@ -887,7 +896,7 @@ $.extend(Iroha.String.prototype,
 		})
 		return this;
 	},
-	
+
 	/**
 	 * 指定の文字列より前の部分の文字列を得る。
 	 * @param {String}  str            検索文字列
@@ -906,7 +915,7 @@ $.extend(Iroha.String.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * 指定の文字列より後ろの部分の文字列を得る。
 	 * @param {String}  str            検索文字列
@@ -935,7 +944,7 @@ $.extend(Iroha.String.prototype,
 	startsWith : function(str) {
 		return (this.value.indexOf(str) == 0);
 	},
-	
+
 	/**
 	 * 現在の文字列が指定文字列で終わっていれば true を返す。
 	 * @param {String}  str    検索文字列
@@ -946,7 +955,7 @@ $.extend(Iroha.String.prototype,
 		var idx = this.value.lastIndexOf(str);
 		return (idx > -1 && idx + str.length == this.value.length);
 	},
-	
+
 	/**
 	 * 現在の文字列が指定文字列を含んでいれば true を返す。
 	 * @param {String}  str    検索文字列
@@ -956,7 +965,7 @@ $.extend(Iroha.String.prototype,
 	contains : function(str) {
 		return (this.value.indexOf(str) != -1);
 	},
-	
+
 	/**
 	 * 現在の文字列が指定文字列と完全に一致するなら true を返す。
 	 * @param {String}  str    検索文字列
@@ -966,7 +975,7 @@ $.extend(Iroha.String.prototype,
 	isMatch : function(str) {
 		return (this.value === str);
 	},
-	
+
 	/**
 	 * 相対パス(URL)を絶対パス(URL)へ変換する。
 	 * @param {String} base    相対パス(URL)の起点となる場所を絶対パス(URL)で示したもの
@@ -995,7 +1004,7 @@ $.extend(Iroha.String.prototype,
 		this.length = this.value.length;
 		return this;
 	},
-	
+
 	/**
 	 * 絶対パス(URL)を相対パス(URL)へ変換する。
 	 * @param {String} base    相対パス(URL)の起点となる場所を絶対パス(URL)で示したもの
@@ -1016,7 +1025,7 @@ $.extend(Iroha.String.prototype,
 			this.length = this.value.length;
 		}
 		return this;
-		
+
 		function _compare(base, target) {
 			var b = base  .split('/');
 			var t = target.split('/');
@@ -1030,12 +1039,12 @@ $.extend(Iroha.String.prototype,
 				return arguments.callee(b.slice(1).join('/'), t.slice(1).join('/'));
 			}
 		}
-		
+
 		function _goup(path) {
 			return path.split('/').slice(1).map(function() { return '..' }).join('/') + '/';
 		}
 	},
-	
+
 	/**
 	 * 文字列置換。 String#replace をインスタンス内で実施。
 	 * @param {String|RegExp} find       検索文字列、または正規表現
@@ -1048,7 +1057,7 @@ $.extend(Iroha.String.prototype,
 		this.length = this.value.length;
 		return this;
 	},
-	
+
 	/**
 	 * 文字列を「サニタイズ」する。
 	 * @return このインスタンス自身
@@ -1067,7 +1076,7 @@ $.extend(Iroha.String.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * 文字列を％エスケープに変換する。"encodeURI" か "encodeURIComponent" を使用している。
 	 * @param {Boolean} [bool=false]    true の場合, "encodeURIComponent" で変換。それ以外は "encodeURI" で変換。
@@ -1079,7 +1088,7 @@ $.extend(Iroha.String.prototype,
 		this.length = this.value.length;
 		return this;
 	},
-	
+
 	/**
 	 * ％エスケープされた文字列を元に戻す。"decodeURI" か "decodeURIComponent" を使用している。
 	 * @param {Boolean} [bool=false]    true の場合, "decodeURIComponent" で変換。それ以外は "decodeURI" で変換。
@@ -1137,14 +1146,14 @@ $.extend(Iroha.StyleSheets.prototype,
 	 */
 	init : function(arg) {
 		var sheets = arg;
-		
+
 		if (arguments.length == 0 || $.type(arg) == 'number') {
 			sheets = document.styleSheets;
-			
+
 			if (Iroha.ua.isSafari) {
 				var $cssNode = $('link').filter(function() { return Boolean(this.sheet) });
 				var dataName = 'Iroha.StyleSheets.Sheet.disabled';
-				
+
 				if ($cssNode.length > sheets.length) {
 					$cssNode.each(function() {
 						$(this).data(dataName, ($.inArray(this.sheet, sheets) == -1));
@@ -1156,14 +1165,14 @@ $.extend(Iroha.StyleSheets.prototype,
 					});
 				}
 			}
-			
+
 			// 指定インデックス番号の物のみに絞る
 			($.type(arg) == 'number') && (sheets = sheets[arg]);
 		}
-		
+
 		return this.add(sheets);
 	},
-	
+
 	/**
 	 * このインスタンスが保持しているスタイルシートのコレクションに新たにスタイルシートを追加する。
 	 * @param {StyleSheet|StyleSheet[]} [arg]    追加するスタイルシートオブジェクト(群)
@@ -1176,10 +1185,10 @@ $.extend(Iroha.StyleSheets.prototype,
 				this[this.length++] = sheet;
 			}
 		}, this);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群のうち指定番号に該当する物を取り出し、それを保持した新規インスタンスを得る
 	 * @param {Number} [index]    インデックス番号
@@ -1190,7 +1199,7 @@ $.extend(Iroha.StyleSheets.prototype,
 		var sheet = (typeof index == 'number') ? this[index] : null;
 		return new this.constructor(sheet);
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群のうち1番目のものを取り出し、それを保持した新規インスタンスを得る
 	 * @return new instance that has a styleSheet
@@ -1199,7 +1208,7 @@ $.extend(Iroha.StyleSheets.prototype,
 	first : function() {
 		return new this.constructor(this[0]);
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群のうち最後のものを取り出し、それを保持した新規インスタンスを得る
 	 * @return new instance that has a styleSheet
@@ -1208,7 +1217,7 @@ $.extend(Iroha.StyleSheets.prototype,
 	last : function() {
 		return new this.constructor(this[this.length - 1]);
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群のうち指定番号のもの、あるいはすべてを取り出す。
 	 * @param {Number} [index]    番号指定。
@@ -1218,7 +1227,7 @@ $.extend(Iroha.StyleSheets.prototype,
 	get : function(index) {
 		return (typeof index == 'number') ? this[index] : Array.prototype.slice.call(this);
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群の "ownerNode" を得る。
 	 * @param {Number} [index]    番号指定。
@@ -1232,7 +1241,7 @@ $.extend(Iroha.StyleSheets.prototype,
 			return Array.prototype.map.call(this, function(e, i) { return this.getOwnerNode(i) }, this);
 		}
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシートの個数を得る。
 	 * @return number of styleSheets owned by this instance.
@@ -1241,7 +1250,7 @@ $.extend(Iroha.StyleSheets.prototype,
 	size : function() {
 		return this.length;
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群それぞれに対して処理を実施（イテレーション）。jQuery(selector).each(aCallback) に相似。
 	 * @param {Iroha.StyleSheets.Callback.each} aCallback    実施する処理（コールバック関数）。この関数が false を返したらそこでイテレーションを止める。
@@ -1252,7 +1261,7 @@ $.extend(Iroha.StyleSheets.prototype,
 		$.each(this.get(), aCallback);
 		return this;
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群の絞り込み処理を実施。jQuery(selector).filterh(aCallback) に相似。
 	 * @param {Iroha.StyleSheets.Callback.filter} aCallback    絞り込み処理（コールバック関数）。この関数が true を返したスタイルシートが残る。
@@ -1262,7 +1271,7 @@ $.extend(Iroha.StyleSheets.prototype,
 	filter : function(aCallback) {
 		return new this.constructor(this.get().filter(function(s, i) { return aCallback.call(s, i, s) }));
 	},
-	
+
 	/**
 	 * スタイルルールを追加する。現在保持しているスタイルシート群のうち1番目のものに追加される。
 	 * @param {String} cssText    追加するスタイルルールのテキスト。
@@ -1272,24 +1281,24 @@ $.extend(Iroha.StyleSheets.prototype,
 	insertRule : function(cssText) {
 		var expr  = /([^\{]+)(\{.+\})/;
 		var sheet = this.get(0);
-		
+
 		if (!sheet) {
 			return this;
-		
+
 		} else if (!expr.test(cssText)) {
 			throw new TypeError('Iroha.StyleSheets.Wrapper.insertRule : first argument must be a style rule text.');
-		
+
 		} else {
 			if (!sheet.insertRule && !sheet.addRule) {
 				var style = document.createElement('style');
 				style.type= 'text/css';
 				style.appendChild(document.createTextNode(cssText));
 				document.getElementsByTagName('head')[0].appendChild(style);
-			
+
 			} else if (sheet.insertRule) {  // Std DOM.
 				var pos = sheet.cssRules ? sheet.cssRules.length : 0;  // workaround for Chrome in "file:" protocol.
 				sheet.insertRule(cssText, pos);
-			
+
 			} else if (sheet.addRule) {     // old IE
 				var regex     = expr.exec(cssText);
 				var selector  = $.trim(regex[1]);
@@ -1301,11 +1310,11 @@ $.extend(Iroha.StyleSheets.prototype,
 					sheet.addRule(_selector, predicate);
 				});
 			}
-			
+
 			return this;
 		}
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群のうち最初の物が持つ、スタイルルール群を得る
 	 * @return スタイルルールオブジェクト群
@@ -1315,7 +1324,7 @@ $.extend(Iroha.StyleSheets.prototype,
 		var sheet = this.get(0);
 		return !sheet ? undefined : sheet.cssRules || sheet.rules;
 	},
-	
+
 	/**
 	 * 現在保持しているスタイルシート群のうち最初の物の中の、指定インデックス番号にあるスタイルルールを削除する。
 	 * @param {Number} index    削除対象のスタイルルールインデックス番号。非負整数。
@@ -1364,14 +1373,14 @@ Iroha.Observable = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * callback function chain, pair of key name and function.
 	 * @type Object
 	 * @private
 	 */
 	this.callbackChains = null;
-	
+
 	/**
 	 * callback ignoring level - pairs of callback name and level string; 'all', 'preserved', 'disposable', 'none'.
 	 * @type Object
@@ -1401,7 +1410,7 @@ $.extend(Iroha.Observable.prototype,
 	init : function() {
 		return this;
 	},
-	
+
 	/**
 	 * process callback functions.
 	 * @param {String} name      callback name
@@ -1412,14 +1421,14 @@ $.extend(Iroha.Observable.prototype,
 	doCallback : function(name, /* arg1, arg2, ... */ args) {
 		var chains = this.callbackChains      || {};  // 内容を参照するだけだし、インスタンスに紐づかない空オブジェクトでもOK
 		var ignore = this.callbackIgnoreLevel || {};  // 同上
-		
+
 		if (!chains[name]) {
 			return undefined;
-		
+
 		} else {
 			var ret;
 			var args = Array.prototype.slice.call(arguments, 1);
-			
+
 			chains[name]
 				.filter(function(delegate) {
 					var level = ignore[name] || 'none';
@@ -1434,12 +1443,12 @@ $.extend(Iroha.Observable.prototype,
 				.forEach(function(delegate) {
 					ret = delegate.apply(null, args);
 				});
-			
+
 			this.removeDisposableCallback(name);
 			return ret;
 		}
 	},
-	
+
 	/**
 	 * add callback function.
 	 * @param {String}   name             callback name
@@ -1452,10 +1461,10 @@ $.extend(Iroha.Observable.prototype,
 	addCallback : function(name, func, aThisObject, disposable) {
 		if (typeof name != 'string' || name == '') {
 			throw new TypeError('Iroha.Observable#addCallback: argument \'name\' must be a string as callback name.');
-			
+
 		} else if (typeof func != 'function') {
 			throw new TypeError('Iroha.Observable#addCallback: argument \'func\' must be a Function object.');
-		
+
 		} else {
 			// 以下、ここではじめて定義する必要がある。
 			// コンストラクタ関数内で定義してしまうと、Iroha.Observable を継承した子クラスの prototype に
@@ -1466,7 +1475,7 @@ $.extend(Iroha.Observable.prototype,
 			this.callbackChains[name]      || (this.callbackChains[name]      = []    );
 			this.callbackIgnoreLevel       || (this.callbackIgnoreLevel       = {}    );
 			this.callbackIgnoreLevel[name] || (this.callbackIgnoreLevel[name] = 'none');
-			
+
 			var delegate = $.extend($.proxy(func, aThisObject), {
 				  originalFunc :func
 				, aThisObject  : aThisObject || window
@@ -1476,7 +1485,7 @@ $.extend(Iroha.Observable.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * remove callback function.
 	 * @param {String}   name             callback name
@@ -1488,10 +1497,10 @@ $.extend(Iroha.Observable.prototype,
 	removeCallback : function(name, func, aThisObject) {
 		var chains = this.callbackChains      || {};  // 内容を削除するだけだし、インスタンスに紐づかない空オブジェクトでもOK
 		var ignore = this.callbackIgnoreLevel || {};  // 同上
-		
+
 		if (typeof name != 'string' || name == '') {
 			throw new TypeError('Iroha.Observable#removeCallback: argument \'name\' must be a string as callback name.');
-			
+
 		} else if (chains[name]) {
 			chains[name] = !$.isFunction(func)
 				? []
@@ -1505,7 +1514,7 @@ $.extend(Iroha.Observable.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * remove 'disposable' callback function.
 	 * @param {String} name    callback name
@@ -1519,7 +1528,7 @@ $.extend(Iroha.Observable.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * set callback ignoring level.
 	 * @param {String} name             callback name
@@ -1530,13 +1539,13 @@ $.extend(Iroha.Observable.prototype,
 	ignoreCallback : function(name, level) {
 		var chains = this.callbackChains      || {};  // 参照するだけだから、インスタンスに紐づかない空オブジェクトでもOK
 		var ignore = this.callbackIgnoreLevel || {};  // 空オブジェクトが取得されるのは、chains[name] が無いときだからOK
-		
+
 		if (typeof name != 'string' || name == '') {
 			throw new TypeError('Iroha.Observable#ignoreCallback: argument \'name\' must be a string as callback name.');
-		
+
 		} else if (!chains[name]) {
 			throw new RangeError('Iroha.Observable#ignoreCallback: callback name "' + name + '" does not exist. try addCallback() first.');
-		
+
 		} else {
 			var levels = ['all', 'preserved', 'disposable', 'none'];
 			ignore[name] = (levels.indexOf(level) != -1) ? level : 'all';
@@ -1556,35 +1565,35 @@ Iroha.Iterator = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * iterated elements; an associative array, an array, or an object like those.
 	 * @type Object
 	 * @private
 	 */
 	this.targets = undefined;
-	
+
 	/**
 	 * an array of keys in iterated elements.
 	 * @type String[]
 	 * @private
 	 */
 	this.keys = [];
-	
+
 	/**
 	 * a number of current position of the iterator.
 	 * @type Number
 	 * @private
 	 */
 	this.counter = 0;
-	
+
 	/**
 	 * element getting mode; "key", "value", or "both".
 	 * @type String
 	 * @private
 	 */
 	this.mode = 'value';
-	
+
 	/**
 	 * flag to abort automatic iterating
 	 * @type Boolean
@@ -1615,23 +1624,23 @@ $.extend(Iroha.Iterator.prototype,
 	 */
 	init : function(targets, mode) {
 		var modes = [ 'key', 'value', 'both' ];
-		
+
 		if (!targets || typeof targets != 'object') {
 			throw new TypeError('Iroha.Iterator#init: invalid object type.');
-		
+
 		} else if (mode && modes.indexOf(mode) == -1) {
 			throw new ReferenceError('Iroha.Iterator#init: invalid mode.');
-		
+
 		} else {
 			this.targets = targets;
 			this.keys    = [];
 			this.mode    = mode || 'value';
 			$.each(this.targets, $.proxy(function(key) { this.keys.push(key) }, this));
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * does the iterator has next element?
 	 * @return true if the iterator has next element.
@@ -1640,7 +1649,7 @@ $.extend(Iroha.Iterator.prototype,
 	hasNext : function() {
 		return (this.counter < this.keys.length);
 	},
-	
+
 	/**
 	 * get next element in the iteration; the form of an acquired element depends on "element getting mode"
 	 * @return next element in the iteration
@@ -1649,7 +1658,7 @@ $.extend(Iroha.Iterator.prototype,
 	next : function() {
 		if (!this.hasNext()) {
 			throw new ReferenceError('Iroha.Iterator#next: stopped iteration.');
-		
+
 		} else {
 			var key   = this.keys[this.counter++];
 			var value = this.targets[key];
@@ -1661,7 +1670,7 @@ $.extend(Iroha.Iterator.prototype,
 			}
 		}
 	},
-	
+
 	/*
 	 * start automatic iterating.
 	 * @param {Function} func             callback function
@@ -1673,7 +1682,7 @@ $.extend(Iroha.Iterator.prototype,
 	iterate : function(func, ms, aThisObject) {
 		if (typeof func != 'function') {
 			throw new TypeError('Iroha.Iterator#iterate: first argument must be a function object.');
-		
+
 		} else {
 			var flag = !this.aborted && this.hasNext()
 				? func.apply(aThisObject, $.makeArray(this.next()))
@@ -1686,9 +1695,9 @@ $.extend(Iroha.Iterator.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
-	 * abort automatic iterating 
+	 * abort automatic iterating
 	 * @return this instance
 	 * @type Iroha.Iterator
 	 */
@@ -1709,14 +1718,14 @@ Iroha.Timeout = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * timer ID.
 	 * @type Number
 	 * @private
 	 */
 	this.id = 0;
-	
+
 	/**
 	 * native timer function name.
 	 * @type String
@@ -1763,7 +1772,7 @@ $.extend(Iroha.Timeout.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * clear timer.
 	 * @return this instance
@@ -1774,7 +1783,7 @@ $.extend(Iroha.Timeout.prototype,
 		clearInterval(this.id);
 		return this;
 	},
-	
+
 	/**
 	 * @deprecated use {@link #clear} method instead of this method.
 	 * @return this instance
@@ -1797,14 +1806,14 @@ Iroha.Interval = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * timer ID.
 	 * @type Number
 	 * @private
 	 */
 	this.id = 0;
-	
+
 	/**
 	 * native timer function name.
 	 * @type String
@@ -1855,7 +1864,7 @@ $.extend(Iroha.Timer.prototype,
 	 * @private
 	 */
 	started : undefined,
-	
+
 	/**
 	 * initialize
 	 * @return this instance
@@ -1864,7 +1873,7 @@ $.extend(Iroha.Timer.prototype,
 	init : function() {
 		return this.reset();
 	},
-	
+
 	/**
 	 * reset timer.
 	 * @return this instance
@@ -1874,7 +1883,7 @@ $.extend(Iroha.Timer.prototype,
 		this.started = new Date;
 		return this;
 	},
-	
+
 	/**
 	 * get acquire time progress in milisecond.
 	 * @return acquire time progress in milisecond.
@@ -1883,7 +1892,7 @@ $.extend(Iroha.Timer.prototype,
 	getTime : function() {
 		return (new Date) - this.started;
 	},
-	
+
 	/**
 	 * get acquire time progress in second.
 	 * @return acquire time progress in second.
@@ -1905,19 +1914,19 @@ Iroha.Tag = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * tag name (element name) to create.
 	 * @type String
 	 */
 	this.tagName = '';
-	
+
 	/**
 	 * associative array of attributes { name1 : value1, name2 : value2 ... }
 	 * @type Object
 	 */
 	this.attributes = {};
-	
+
 	/**
 	 * array of {@link Iroha.Tag} instances
 	 * @type Iroha.Tag[]
@@ -1952,11 +1961,11 @@ $.extend(Iroha.Tag.prototype,
 			this.tagName    = tagName;
 			this.attributes = attrs || {};
 			this.childNodes = [];
-			
+
 			return this;
 		}
 	},
-	
+
 	/**
 	 * 属性値を設定する／読み出す
 	 * @param {String} name       対象とする属性の名前
@@ -1973,7 +1982,7 @@ $.extend(Iroha.Tag.prototype,
 			return (this.attributes[name] = String(value));
 		}
 	},
-	
+
 	/**
 	 * append child instance.
 	 * @param {Iroha.Tag|String} arg 　　instance to append
@@ -1991,7 +2000,7 @@ $.extend(Iroha.Tag.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * output instance data as tag string. typically to use document.write().
 	 * @param {Boolean} [debug=false]    debug mode - escaped output
@@ -2240,7 +2249,9 @@ Iroha.getLinkTarget = function(anchor, target) {
 /**
  * 指定要素ノードが内包しているすべてのテキスト中の URL らしき文字列をリンクにする。
  * DOM Range の使えるブラウザでないとエラーになります。
- * IE8 を含むそれより古い IE では <a href="http://code.google.com/p/ierange/">W3C DOM Ranges for IE</a> が必要。
+ * IE8 を含むそれより古い IE では以下のいずれかが必要。（ちなみに、この2つは同居できない）
+ *   - <a href="http://code.google.com/p/ierange/">W3C DOM Ranges for IE</a>
+ *   - <a href="http://code.google.com/p/rangy/">Rangy</a>
  * @param {jQuery|Element|String} node      処理対象（起点）の要素ノード
  * @param {String}                [tmpl]    URL をリンクにするとき雛形とする a 要素の HTML 文字列
  * @return 与えた要素ノード（を内包した jQuery オブジェクト）
@@ -2250,7 +2261,7 @@ Iroha.urlToAnchor = function(node, tmpl) {
 	var range = document.createRange();
 	var tmpl  = tmpl || '<a href="${0}">${0}</a>';
 	var regex = /(h?ttps?:\/\/[^\s]+)/;
-	
+
 	return $(node)
 		.filter(function() { return $(this).closest('a').length == 0 })
 		.each  (function() {
@@ -2269,7 +2280,7 @@ Iroha.urlToAnchor = function(node, tmpl) {
 								range.setEnd  (this, pos + url.length);
 								range.deleteContents();
 								range.insertNode($(Iroha.String(tmpl).format(url).get()).get(0));
-								
+
 								// 現在のテキストノードは分割されたので、同一の親ノードの下にぶら下がった次のテキストノードを探す
 								// 存在していればそれを次の処理対象にする。
 								var next = this.nextSibling;
@@ -2314,14 +2325,15 @@ Iroha.getQuery = function(serialized) {
 /* --------------- Function : Iroha.getGeometry --------------- */
 /**
  * get window geometry and mouse position.
- * @param {Event} e    event object - this param exists when this function is called as an event handler.
+ * @param {Event} e       event object - this param exists when this function is called as an event handler.
+ * @param {Window} win    window object - specify this param to alter window object.
  * @returns an associative array of geometry properties
  * @type Iroha.geom
  */
-Iroha.getGeometry = function(e) {
-	var w = window;
-	var d = document.documentElement;
-	var b = document.body;
+Iroha.getGeometry = function(e, win) {
+	var w = win || window;
+	var d = w.document.documentElement;
+	var b = w.document.body;
 	var g = Iroha.geom;
 	var _ = arguments.callee;
 
@@ -2522,7 +2534,7 @@ Iroha.openWindow = function(url, target, option) {
 	var target   = target || '_blank';
 	var option  = $.type(option) == 'string' ? _this.parse(option) : option;
 		option  = $.extend(null, _this.DEF_OPTIONS, option);
-	
+
 	option.width  || delete option.width ;
 	option.height || delete option.height;
 	var newWin = window.open(url, target, _this.parse(option));
@@ -2540,7 +2552,7 @@ Iroha.openWindow = function(url, target, option) {
 			case 'string'  : _this.autoResize(newWin, option.autoResizeTo); break;
 		}
 	}
-	
+
 	if (window.event) window.event.returnValue = false;
 	return newWin;
 };
@@ -2585,15 +2597,15 @@ $.extend(Iroha.openWindow,
 					obj[key]  = $.isNumeric(value) ? Number(value) : (value == 'yes') ? true : (value == 'no' ) ? false : String(value);
 				});
 				return obj;
-			
-			case 'object' : 
+
+			case 'object' :
 				var ret = [];
 				$.each(option, function(key, value) {
 					value = ($.isNumeric(value) || $.type(value) != 'boolean') ? value : (value) ? 'yes' : 'no';
 					ret.push([ key, value ].join('='));
 				});
 				return ret.join();
-			
+
 			default :
 				return undefined;
 		}
@@ -2612,13 +2624,13 @@ $.extend(Iroha.openWindow,
 		$.each(this.DEF_OPTIONS, function(key, value) {
 			def[key] = ($.type(value) == 'boolean') ? false : value;
 		});
-		
+
 		option = ($.type(option) == 'string') ? this.parse(option) : option;
 		option = $.extend(def, option, { width : screen.availWidth, height : screen.availHeight, moveToOrigin : true });
-		
+
 		return Iroha.openWindow(url, target, option);
 	},
-	
+
 	/**
 	 * 新しいウインドウサイズ（というよりビューポートサイズ）を指定のサイズに合わせる。
 	 * @param {Window}        newWin    新しいウインドウのウインドウオブジェクト
@@ -2634,7 +2646,7 @@ $.extend(Iroha.openWindow,
 				.done(function(Iroha) {
 					var destW;
 					var destH;
-					
+
 					if ($.type(arg1) == 'string') {
 						var $node = Iroha.jQuery(arg1);
 							destW = $node.outerWidth () || 0;
@@ -2678,20 +2690,20 @@ Iroha.addUserAgentCName = function() {
 	var ua      = $.extend(null, this.ua);  // オブジェクト参照切断しつつコピー
 	var mbVers  = String(ua.mbVersion).replace(/\./g, '_');
 	    mbVers += Iroha.String(mbVers).contains('_') ? '' : '_0';
-	
+
 	delete ua.isWebkit;
 	delete ua.isDOMReady;
-	
+
 	$.each(ua, function(key, bool) { bool === true && cnames.push('iroha-ua-' + key) });
 	ua.isIE      && cnames.push('iroha-ua-isIE'      + ua.version);
 	ua.isiOS     && cnames.push('iroha-ua-isiOS'     + mbVers);
 	ua.isAndroid && cnames.push('iroha-ua-isAndroid' + mbVers);
-	
+
 //	// onload で即座に実行すると古い IE でスピードダウンする現象を軽減するために delay しつつ適用
 //  // …するのはヤメた！
 //	Iroha.delay(1).done(function() { $(document.body).addClass(cnames.join(' ')) });
 	$(document.body).addClass(cnames.sort().join(' '));
-	
+
 	return this;
 };
 
@@ -2729,9 +2741,9 @@ Iroha.setTitleFromAlt = function(target, base) {
 	if (!Iroha.ua.isIE || Iroha.ua.documentMode >= 8) {
 		target || (target = 'img, :image, area');
 		base   || (base   = document.body      );
-		
+
 		var dataKey = 'Iroha.setTitleFromAlt.origTitle';
-		
+
 		$(base)
 			.on('mouseenter', target, function(e) {
 				var title = this.getAttribute('title');
@@ -2762,7 +2774,7 @@ Iroha.setTitleFromAlt = function(target, base) {
  */
 Iroha.setTitleFromInnerText = function(target, base) {
 	var dataKey = 'Nisoc.setTitleFromInnerText.origTitle';
-	
+
 	$(base || document.body)
 		.on('mouseenter', target, function(e) {
 			var title = this.getAttribute('title');
@@ -2777,7 +2789,7 @@ Iroha.setTitleFromInnerText = function(target, base) {
 				this.title = title;
 			}
 		});
-	
+
 	return this;
 };
 
@@ -2836,7 +2848,7 @@ Iroha.injectWeinre = function(ident, host, port) {
 			, port     : port  || '8080'
 		};
 		var src = Iroha.String(url).format(param).get();
-		
+
 		!Iroha.env.isDOMReady
 			? document.write('<script src="' + src + '"></script>')
 			: (function(node) {
@@ -2961,7 +2973,7 @@ $.fn.Iroha_getInnerText = function(includeAlt) {
 $.fn.Iroha_assistSelectEvent = function(wait) {
 	wait = Math.max(wait, 0) || 100;
 	return this.filter('select').keyup(trigger).mousewheel(trigger);
-	
+
 	function trigger() {
 		var $node = $(this);
 		var key   = 'Iroha.SelectEventAssist.trigger';
