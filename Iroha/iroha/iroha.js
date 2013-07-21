@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.38.20130614
+ *    @version 3.39.2013072
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -934,7 +934,52 @@ $.extend(Iroha.String.prototype,
 		}
 		return this;
 	},
-	
+
+	/**
+	 * 指定文字数で裁ち落とし処理する。
+	 * @param {Number} [chars=this.length]    トリミング後の目標文字数。
+	 * @param {String} [from="start"]         トリミング方式。目標文字数を先頭末尾どちらから数えるかの指定。 "start":末尾側裁ち落とし, "end": 先頭側裁ち落とし, "both": 中間裁ち落とし。
+	 * @param {String} [ellipsis="\u2026"]    トリミングで文字が断ち切られる際につける省略記号。デフォルトは "…"。
+	 * @return このインスタンス自身
+	 * @type Iroha.String
+	 */
+	trim : function(chars, from, ellipsis) {
+		var str = this.value;
+		var len = this.length;
+
+		if ($.type(chars   ) != 'number') { chars    = len      }  // 引数無指定時のデフォルト値
+		if ($.type(from    ) != 'string') { from     = 'start'  }  // 引数無指定時のデフォルト値
+		if ($.type(ellipsis) != 'string') { ellipsis = '\u2026' }  // 引数無指定時のデフォルト値
+
+		if (chars <= 0  ) { ellipsis =''; chars = 0 }  // 目標文字数が 0 以下なら空文字にしてオシマイにする。
+		if (chars >= len) { ellipsis =''            }  // 目標文字数よりも現在の文字数が短いか同じなら、なにもしなくてよい。
+
+		chars -= ellipsis.length;
+		if (chars < 0) {
+			throw new RangeError('Iroha.String#trim: トリム後の目標文字数 (chars) には、省略記号 (ellipsis) の文字数を下回る値を指定はできません。');
+		}
+
+		switch(from) {
+			case 'start' :
+				str = str.slice(0, chars) + ellipsis;
+				break;
+
+			case 'end' :
+				str = ellipsis + str.slice(Math.max(0, len - chars), len);
+				break;
+
+			case 'both' :
+				str = Iroha.String(str).trim(Math.ceil (chars / 2), 'start', '').get()
+				    + ellipsis
+				    + Iroha.String(str).trim(Math.floor(chars / 2), 'end'  , '').get();
+				break;
+		}
+
+		this.value  = str;
+		this.length = str.length;
+		return this;
+	},
+
 	/**
 	 * 現在の文字列が指定文字列から始まっていれば true を返す。
 	 * @param {String}  str    検索文字列
