@@ -500,7 +500,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	
 	/**
 	 * ホンモノの select 要素ノードの selected, disabled 状態変化の監視を開始する
-	 * @param {Number} [interval=500]    監視間隔。ミリ秒指定。
+	 * @param {Number} [interval=100]    監視間隔。ミリ秒指定。
 	 * @return このインスタンス自身
 	 * @type Iroha.PseudoSelectMenu
 	 */
