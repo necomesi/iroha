@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.39.20130722
+ *    @version 3.39.20130725
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -549,7 +549,8 @@ $.extend(Iroha.ViewClass.prototype,
 	 */
 	getInstance : function(arg) {
 		if (arguments.length == 0) {
-			return $.merge([], this.instances);  // オブジェクト参照切断済の配列として返す。
+			// オブジェクト参照切断済の配列として返す。 dispose() されて undefined になっているものは除外。
+			return $.merge([], this.instances).filter(function(instance) { return Boolean(instance) });
 		} if ($.type(arg) == 'number') {
 			return this.instances[arg];
 		} else if (arg && (arg.nodeType == Node.ELEMENT_NODE || $.type(arg.jquery) == 'string' || $.type(arg) == 'string')) {
