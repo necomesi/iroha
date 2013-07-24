@@ -4,7 +4,7 @@
  *       Pseudo Dialog.
  *       (charset : "UTF-8")
  *
- *    @version 3.05.20130621
+ *    @version 3.06.20130725
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires jquery.mousewheel.js
