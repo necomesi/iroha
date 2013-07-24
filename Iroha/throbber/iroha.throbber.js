@@ -47,7 +47,7 @@ $.extend(Iroha.Throbber,
 	 * @constant
 	 */
 	BASE_CLASSNAME : 'iroha-balloon iroha-throbber',
-	
+
 	/**
 	 * 新しくインスタンスを生成するか、基底要素ノードから既存のインスタンスを得る。
 	 * 基底要素ノードは init() で自動的に作られる。
@@ -62,13 +62,13 @@ $.extend(Iroha.Throbber.prototype,
 {
 	/** @private */
 	initSuper : Iroha.Balloon.prototype.init,
-	
+
 	/** @private */
 	showSuper : Iroha.Balloon.prototype.show,
-	
+
 	/** @private */
 	hideSuper : Iroha.Balloon.prototype.hide,
-	
+
 	/**
 	 * initialize this throbber balloon
 	 * @param {Iroha.Throbber.Setting} setting    throbber balloon setting object
@@ -82,10 +82,10 @@ $.extend(Iroha.Throbber.prototype,
 		this.hideSuper();
 //		this.setPositionFixed();
 		$(window).resize($.proxy(function(e) { this.isActive() && this.moveToCenter() }, this));
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * show this balloon.
 	 * @param {Number} [x]    X-coordinate to popup (px) (if nonspecified, the balloon is centered on X-axis)
@@ -97,13 +97,13 @@ $.extend(Iroha.Throbber.prototype,
 		if (!this.isActive()) {
 			this.showSuper(x, y);
 			this.moveToCenter();
-			
+
 			var duration = this.effect.duration;
 			this.$node.stop().hide().fadeTo(duration, 1);
 		}
 		return this;
 	},
-	
+
 	/**
 	 * hide this balloon.
 	 * @return this instance
@@ -115,7 +115,7 @@ $.extend(Iroha.Throbber.prototype,
 			this.moveTo(-10000, -10000);
 			this.hideSuper();
 		}, this);
-	
+
 		this.$node.stop().fadeTo(duration, 0, callback);
 		return this;
 	}
@@ -134,7 +134,7 @@ Iroha.Throbber.Setting = function() {
 	 * @type String
 	 */
 	this.content = '<img src="/path/to/throbber.gif" alt="" />Please wait...';
-	
+
 	/**
 	 * animation effect setting
 	 * @type Object

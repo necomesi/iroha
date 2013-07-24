@@ -3,11 +3,12 @@
  *    @fileoverview
  *       長い内容を途中で省略し「続きを読む」で伸張できるブロック
  *
- *    @version 3.1.20120801
+ *    @version 3.01.20120801
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires iroha.js
- *    @requires ierange.js (optional, for IE8 and earlier)
+ *    @requires ierange.js    (optional, for IE8 and earlier, use one of them)
+ *    @requires rangy-core.js (optional, for IE8 and earlier, use one of them)
  */
 /* -------------------------------------------------------------------------- */
 (function($) {
@@ -38,22 +39,22 @@ Iroha.TextExpander = function() {
 	 * @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * 基底要素ノードに初期状態で入っていたオリジナルの内容
 	 * @type jQuery
 	 * @private
 	 */
 	this.$content = $();
-	
+
 	/**
 	 * 「続きを読む」ボタンの要素ノード
 	 * @type jQuery
 	 * @private
 	 */
 	this.$button = $();
-	
-	/** 
+
+	/**
 	 * 設定オブジェクト
 	 * @type Iroha.TextExpander.Setting
 	 */
@@ -76,25 +77,25 @@ $.extend(Iroha.TextExpander.prototype,
 		this.setting  = $.extend(Iroha.TextExpander.Setting.create(), setting);
 		this.$node    = $(node).eq(0);
 		this.$content = this.$node.contents();
-		
+
 		var fulltext  = this.$node.Iroha_getInnerText();  // jQuery の .text() だと IE8 以下で改行文字が消失するのでダメ。
 		var threshold = Math.max(0, this.setting.threshold) || fulltext.length;
 		var template  = this.setting.template;
-		
+
 		if (threshold >= fulltext.length) {
 			this.$node
 				.addClass(this.setting.className.discarded);
-		
+
 		} else {
 			var $fragment = this.getFragment(threshold);
 			var $ellipsis = $(template.ellipsis);
-			
+
 			this.$node
 				.empty()
 				.append($fragment)
 				.append($ellipsis)
 				.addClass(this.setting.className.enabled);
-			
+
 			this.$button = $(template.button)
 				.insertAfter(this.$node)
 				.click($.proxy(function(e) {
@@ -104,7 +105,7 @@ $.extend(Iroha.TextExpander.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * 基底要素の内容を、指定文字数になるように分割した断片の要素ノードを得る。
 	 * @param {Number} threshold
@@ -116,7 +117,7 @@ $.extend(Iroha.TextExpander.prototype,
 		var range = document.createRange();
 		var node  = this.$node.get(0);
 		var count = 0;
-		
+
 		range.selectNodeContents(node);
 		(function(_node) {
 			var _callee = arguments.callee;
@@ -135,7 +136,7 @@ $.extend(Iroha.TextExpander.prototype,
 		})(node);
 		return $(range.cloneContents());
 	},
-	
+
 	/**
 	 * テキスト部分を伸張して全文を見せる。
 	 * @return このインスタンス自身
@@ -174,7 +175,7 @@ Iroha.TextExpander.Setting = function() {
 		  'ellipsis' : '<span class="iroha-textexpander-ellipsis">...</span>'
 		, 'button'   : '<p class="iroha-textexpander-button">[<a href="#">続きをみる</a>]</p>'
 	};
-	
+
 	/**
 	 * 各状態における cLassName 。
 	 */
@@ -183,19 +184,19 @@ Iroha.TextExpander.Setting = function() {
 		, 'expanded'  : 'iroha-textexpander-expanded'
 		, 'discarded' : 'iroha-textexpander-discarded'
 	};
-	
+
 	/**
 	 * 初期状態で見せるテキストの文字数（分割点）。非負整数。
 	 * @type Number
 	 */
 	this.threshold = 150;
-	
+
 	/**
 	 * 伸張アニメーションの所要時間（ミリ秒）。非負整数
 	 * @type Number
 	 */
 	this.duration = 500;
-	
+
 	/**
 	 * 伸張アニメで用いるイージング関数の名前
 	 * @type String

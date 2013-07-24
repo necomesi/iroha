@@ -23,7 +23,7 @@ Iroha.KeyEquiv = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * 基底要素ノード（キーイベントを拾う要素）
 	 * @type jQuery
@@ -55,7 +55,7 @@ $.extend(Iroha.KeyEquiv,
 		'>' : { name : '\u2192' , keyCode : 39, DOMName : ''         },  /* right */
 		'}' : { name : '\u2193' , keyCode : 40, DOMName : ''         }   /* down  */
 	},
-	
+
 	/**
 	 * 特殊キーの別名記号をキーコード指定により得る。
 	 * @param {Number} keyCode    特殊キーのキーコード
@@ -74,7 +74,7 @@ $.extend(Iroha.KeyEquiv,
 			return ret;
 		}
 	},
-	
+
 	/**
 	 * 新しくインスタンスを生成するか、既存のインスタンスを得る。
 	 * @param {jQuery|Element|String} [node=document.documentElement]    基底要素ノード（＝キーイベントを拾う要素）。
@@ -97,7 +97,7 @@ $.extend(Iroha.KeyEquiv.prototype,
 		this.$node = $(node).keydown($.proxy(this.onKeyDown, this));
 		return this;
 	},
-	
+
 	/**
 	 * キーコンビネーション押下時に呼び出すコールバックを登録する
 	 * @param {String}                  keys             キーコンビネーション指示子。 "$A" (="Shift+A") など。
@@ -116,7 +116,7 @@ $.extend(Iroha.KeyEquiv.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * 人間にとって読みやすい形式のキー表記文字列からなる配列を得る。
 	 * @param {String} keys    キーコンビネーション指示子。 "$A" (="Shift+A") など。
@@ -133,7 +133,7 @@ $.extend(Iroha.KeyEquiv.prototype,
 			}, this);
 		}
 	},
-	
+
 	/**
 	 * 特殊キーの別名記号をキーコード指定により得る。
 	 * @param {Number} keyCode    特殊キーのキーコード
@@ -143,7 +143,7 @@ $.extend(Iroha.KeyEquiv.prototype,
 	getKeyAlias : function(keyCode) {
 		return this.constructor.getKeyAlias(keyCode);
 	},
-	
+
 	/**
 	 * キーコンビネーション指示子を正規化する。
 	 * @param {String} keys    キーコンビネーション指示子。 "$A" (="Shift+A") など。
@@ -159,7 +159,7 @@ $.extend(Iroha.KeyEquiv.prototype,
 			return arr.filter(function(c, i) { return (c != arr[i + 1]) }).join('');
 		}
 	},
-	
+
 	/**
 	 * "keydown" イベントハンドラ
 	 * @param {Event} e    event object
@@ -189,7 +189,7 @@ $.extend(Iroha.KeyEquiv.prototype,
 			}
 		}
 	},
-	
+
 	/**
 	 * キーコンビネーション指示子を指定して、登録されているコールバックを恣意的に呼び出す。
 	 * @param {String} keys    キーコンビネーション指示子。 "$A" (="Shift+A") など。
@@ -212,12 +212,12 @@ $.extend(Iroha.KeyEquiv.prototype,
 //				/* modifiersList */ ''
 //			);
 //			document.dispatchEvent(e);
-			
+
 			// temporary...
 			var keys = this.normalizeKey(keys);
 			var e    = {};
 			this.doCallback(keys, e, keys, this.getKeyName(keys));
-			
+
 			return this;
 		}
 	}

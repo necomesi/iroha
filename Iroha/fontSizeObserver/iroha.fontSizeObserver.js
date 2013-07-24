@@ -26,14 +26,14 @@ Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
 	 * @private
 	 */
 	$node : $(),
-	
+
 	/**
 	 *current height of the observed node.
 	 * @type Number
 	 * @private
 	 */
 	currentSize : 0,
-	
+
 	/**
 	 *interval timer to observe changing font size.
 	 * @type Iroha.Interval
@@ -69,7 +69,7 @@ Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
 			, 'lineHeight'     : '1'
 			, 'textDecoration' : 'none'
 		};
-		
+
 		this.$node = $('#' + id);
 		if (this.$node.length == 0) {
 			this.$node = $(document.createElement('ins'))
@@ -78,11 +78,11 @@ Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
 							 .text('M')
 							 .appendTo(document.body);
 		}
-		
+
 		this.startObserve();
 		return this;
 	},
-	
+
 	/**
 	 * get observed node's height.
 	 * @return observed node's height in px unit, it's nearly 'current font size'
@@ -91,7 +91,7 @@ Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
 	getSize : function() {
 		return this.$node.height();
 	},
-	
+
 	/**
 	 * start observing.
 	 * @return this object
@@ -104,7 +104,7 @@ Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
 		}
 		return this;
 	},
-	
+
 	/**
 	 * stop observing.
 	 * @return this object
@@ -117,14 +117,14 @@ Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
 		}
 		return this;
 	},
-	
+
 	/**
 	 * observe font size changing.
 	 * @private
 	 */
 	observe : function() {
 		var size = this.getSize();
-		var diff = size - this.currentSize; 
+		var diff = size - this.currentSize;
 		if (diff != 0) {
 			this.doCallback('onChange', size, diff);
 		}
