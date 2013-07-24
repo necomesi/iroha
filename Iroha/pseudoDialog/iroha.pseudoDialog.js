@@ -28,7 +28,7 @@
 //$(function() {
 //	$('a, area').live('click', function(e) {
 //		var $opener = $(this).filter(autoSetup.anchorExpr);
-//		
+//
 //		if ($opener.size()) {
 //			e.preventDefault();
 //
@@ -65,7 +65,7 @@
  * @extends Iroha.Balloon
  * */
 Iroha.PseudoDialog = function() {
-	/** 
+	/**
 	 * 設定オブジェクト
 	 * @type Iroha.PseudoDialog.Setting
 	 * @private
@@ -107,7 +107,7 @@ $.extend(Iroha.PseudoDialog,
 	 * @constant
 	 */
 	BASE_CLASSNAME : 'iroha-pdialog',
-	
+
 	/**
 	 * 新しくインスタンスを生成するか、基底要素ノードから既存のインスタンスを得る。
 	 * 基底要素ノードは init() で自動的に作られる。
@@ -131,7 +131,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 	 */
 	init : function(setting) {
 		var setting = this.setting = $.extend(Iroha.PseudoDialog.Setting.create(), setting);
-		
+
 		// replacing iframe's src attribute value to "initial URL"
 		if (/(<iframe[^>]*>.*?<\/iframe>)/.test(setting.template)) {
 			var iframe  = RegExp.$1;
@@ -140,11 +140,11 @@ $.extend(Iroha.PseudoDialog.prototype,
 			$iframe.attr('src', setting.contentFrame.initial || 'about:blank');
 			setting.template = setting.template.replace(iframe, $tmp.html());
 		}
-	
+
 		// initialize.
 		this.initSuper(setting);
 		this.moveTo(-10000, -10000);
-	
+
 		// set events.
 		$(window)
 			.resize($.proxy(function() { if (this.active) this.moveToCenter() }, this));
@@ -161,13 +161,13 @@ $.extend(Iroha.PseudoDialog.prototype,
 					this.close();
 				}
 			}, this));
-		
+
 		// prepare content frame.
 		this.contentFrame = Iroha.PDContentFrame.create();
 		this.contentFrame.addCallback('onLoadTimeout'   , function() { this.allowClose(); this.close(    ); }, this);
 		this.contentFrame.addCallback('onConfirmed'     , function() { this.allowClose(); this.close(true); }, this);
 		this.contentFrame.addCallback('onCloseRequested', function() { this.allowClose(); this.close(    ); }, this);
-	
+
 		// set key equivalents.
 		if (Iroha.KeyEquiv) {
 			// this is an attitude that "ESC" key is an shortcut key of the close button(s)
@@ -177,12 +177,12 @@ $.extend(Iroha.PseudoDialog.prototype,
 				}
 			}, this);
 		}
-	
+
 		// create throbber
 		if (Iroha.Throbber && setting.throbber && !$.isEmptyObject(setting.throbber)) {
 			this.throbber = Iroha.Throbber.create(setting.throbber);
 		}
-	
+
 		// observe font size changing.
 		if (Iroha.FontSizeObserver) {
 			Iroha.FontSizeObserver.addCallback('onChange', function() {
@@ -192,12 +192,12 @@ $.extend(Iroha.PseudoDialog.prototype,
 				this.adjustSize();
 			}, this);
 		};
-	
+
 		// register shields.
 		if (setting.useShield.click ) this.shields.click  = Iroha.ClickShield   .create(setting.clickShield);
 		if (setting.useShield.focus ) this.shields.focus  = Iroha.TabFocusShield.create(this.$node);
 		if (setting.useShield.scroll) this.shields.scroll = Iroha.ScrollShield  .create(this.$node);
-	
+
 		// event handling of the shields.
 		if (this.shields.click) {
 			this.addCallback('onResize', this.shields.click.adjustSize, this.shields.click);
@@ -210,7 +210,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 		}
 		if (this.shields.scroll) {
 		}
-		
+
 		// z-index 制御。
 		// この疑似ダイアログとそのクリックシールドが、既存の疑似ダイアログとそのクリックシールドの上に乗るように。
 		var zIndex = this.constructor.instances
@@ -219,10 +219,10 @@ $.extend(Iroha.PseudoDialog.prototype,
 		             	[0] || this.zIndex() - 2;
 		this.zIndex(zIndex + 2);
 		this.shields.click && this.shields.click.zIndex(zIndex + 1);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * このインスタンスを破棄する
 	 */
@@ -233,7 +233,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 		try { this.shields.scroll.dispose() } catch(err) {}
 		this.constructor.disposeInstance(this);
 	},
-	
+
 	/**
 	 * update dialog content.
 	 * @param {NodeList|Element|Element[]|jQuery|String} content    content for dialog content.
@@ -243,7 +243,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 	update : function(content) {
 		return this.setContent(content).adjustSize();
 	},
-	
+
 	/**
 	 * open the dialog.
 	 * @return this instance itself
@@ -256,10 +256,10 @@ $.extend(Iroha.PseudoDialog.prototype,
 			var cname  = this.setting.srcKindCName;
 			var imgPtn = /\.(jpe?g|gif|png)$/i;
 			this.addClass(imgPtn.test(url) ? cname.externalImage : url ? cname.externalPage : cname.fragment);
-	
+
 			// hide processing info display.
 			this.throbber && this.throbber.hide();
-	
+
 			// pre process for open dialog
 			this.disallowClose().show().moveToCenter();
 			this.$node.stop().hide();
@@ -277,7 +277,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 			this.enableShield();
 		}
 		return this;
-	
+
 		// show dialog with slideDown effect
 		function _show() {
 			var duration = this.setting.effect.duration;
@@ -289,12 +289,12 @@ $.extend(Iroha.PseudoDialog.prototype,
 				.css    ({ marginTop : -20, opacity : 0 })
 				.animate({ marginTop :   0, opacity : 1 }, duration, $.easing.def, callback);
 		}
-	
+
 		function _postProcess() {
 			this.allowClose().setDefaultFocus().doCallbackByName('onOpen');
 		}
 	},
-	
+
 	/**
 	 * open specified url in the dialog.
 	 * @param {String} url    url to load
@@ -308,20 +308,20 @@ $.extend(Iroha.PseudoDialog.prototype,
 			this.disallowClose();
 			this.enableShield();
 			this.throbber && this.throbber.show();
-			
+
 			this.contentFrame.addCallback('onLoaded', function() {
 				this.allowClose();
 				this.update();
 				this.open();
 			}, this, 'disposable');
-			
+
 			var loading = this.setting.loading;
 			new Iroha.Timeout(function() { this.contentFrame.load(url, loading.timeout) }, loading.startDelay, this);
-			
+
 			return this;
 		}
 	},
-	
+
 	/**
 	 * close the dialog.
 	 * @param {Boolean} confirmed    close with confirming or not
@@ -333,9 +333,9 @@ $.extend(Iroha.PseudoDialog.prototype,
 			// close() 処理中に再び close() が呼び出されると都合が悪いことがある。
 			// (onClose でこのインスタンスを dispose() する場合など）
 			this.disallowClose();
-			
+
 			this.throbber && this.throbber.hide();
-			
+
 			if (!this.active) {   // in the case of loading timeout of pseudo dialog content
 //				this.disableShield();
 				_hide.call(this);
@@ -348,7 +348,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 			}
 		}
 		return this;
-		
+
 		function _hide() {
 			this.hide();
 			this.moveTo(-10000, -10000);
@@ -361,14 +361,14 @@ $.extend(Iroha.PseudoDialog.prototype,
 			}
 			this.disableShield();
 		}
-		
+
 		function _postProcess() {
 			$.each(this.setting.srcKindCName, $.proxy(function(i, cn) { this.removeClass(cn) }, this));
-			
+
 			// close() が呼び出されたら一時的に disallowClose() していたので。
 			// ここまで処理が到達したということは元々 close は allowed だったわけであり。
 			this.allowClose();
-			
+
 			if (confirmed) {
 				this.doCallbackByName('onConfirmed');
 			} else {
@@ -377,7 +377,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 			this.doCallbackByName('onClose');
 		}
 	},
-	
+
 	/**
 	 * set callback function for 'onClose' as disposable callback.
 	 * @param {Function} func             callback function/method
@@ -391,7 +391,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 		this.addCallback('onClose', func, aThisObject, 'disposable');
 		return this;
 	},
-	
+
 	/**
 	 * enable close function
 	 * @return this instance itself
@@ -402,7 +402,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 		this.$node.removeClass(this.setting.closeDisallowedCName);
 		return this;
 	},
-	
+
 	/**
 	 * disable close function.
 	 * @return this instance itself
@@ -413,7 +413,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 		this.$node.addClass(this.setting.closeDisallowedCName);
 		return this;
 	},
-	
+
 	/**
 	 * enable all shields.
 	 * @return this instance itself
@@ -422,17 +422,17 @@ $.extend(Iroha.PseudoDialog.prototype,
 	 */
 	enableShield : function() {
 		var shields = this.shields;
-		
+
 		if (shields.scroll) shields.scroll.enable();
 		if (shields.click ) shields.click .enable();
 		if (shields.focus ) {
 			shields.focus.enable();
 			Iroha.TabFocusShield.disableAll(shields.focus);  // 他のタブシールドインスタンスを一時的に無効にする
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * disalbe all shields.
 	 * @return this instance itself
@@ -441,7 +441,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 	 */
 	disableShield : function() {
 		var shields = this.shields;
-		
+
 		if (shields.click) {
 			if (shields.scroll) {
 				shields.click.addCallback('onDisabled', function() { shields.scroll.disable() }, this, 'disposable');
@@ -450,15 +450,15 @@ $.extend(Iroha.PseudoDialog.prototype,
 		} else if (shields.scroll) {
 			shields.scroll.disable();
 		}
-		
+
 		if (shields.focus) {
 			shields.focus.disable();
 			Iroha.TabFocusShield.blessRecent();  // 他のタブシールドインスタンスの動作を復帰させる
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * adjust dialog size.
 	 * @return this instance itself
@@ -480,10 +480,10 @@ $.extend(Iroha.PseudoDialog.prototype,
 //		}
 		// @@@@@@@@@@@@@ temporary @@@@@@@@@@@@@@@@@@
 		this.moveToCenter();
-	
+
 		return this;
 	},
-	
+
 	/**
 	 * set default focus into dialog.
 	 * @return this instance itself
@@ -579,16 +579,16 @@ $.extend(Iroha.PDContentFrame.prototype,
 		var setting    = $.extend(Iroha.PDContentFrame.Setting.create(), setting);
 		this.$node     = $('iframe[name="' + setting.name + '"]'); // Iroha.PseudoDialog は今や複数インスタンスが同時に存在する可能性があるから、こんなずさんなのではいけない。
 		this.frame     = window.frames[setting.name];              // 同上。
-		this.url       = 
+		this.url       =
 		this.initial   = setting.initial || 'about:blank';
 		this.maxWidth  = setting.maxWidth;
 		this.maxHeight = setting.maxHeight;
-	
+
 		this.unload();
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * show the iframe
 	 */
@@ -596,7 +596,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 		this.$node.css({ position : 'static', top : '0px', left : '0px' });
 		this.adjustSize();
 	},
-	
+
 	/**
 	 * hide the iframe
 	 */
@@ -604,7 +604,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 		this.$node.css({ position : 'absolute', top : '-10000px', left : '-10000px' });
 		this.adjustSize(1, 1);
 	},
-	
+
 	/**
 	 * load specified url in the iframe.
 	 * @param {String} [url=this.initial]    url to load; if unspecified, load "initial URL".
@@ -612,29 +612,29 @@ $.extend(Iroha.PDContentFrame.prototype,
 	 */
 	load : function(url, timeout) {
 		this.clearTimer();
-	
+
 		if (!url || typeof url != 'string') {
 			url = this.initial;
 		}
 		if (!this.frame) {
 //			this.doCallbackByName('onCloseRequested');
-			
+
 			// これ（↑）何の為に書いたのか不明。とりあえず、 <iframe> なしのテンプレートを使っている場合に
 			// ここの影響でダイアログクローズ時に無限ループになる。
 			// PseudoDialog.close() -> this.unload() -> this.load() -> callback -> PseudoDialog.close() -> ...
-			
+
 		} else if (this.url != url ) {
 			this.url = url;
-	
+
 			// load iframe content (both an image and an external html page).
 			// 'this.setContent()' will be called from 'pseudoDialogContent.js'.
 			this.frame.location.replace(this.url);
-	
+
 			// set timeout callback.
 			if (timeout > 0) {
 				this.timer = new Iroha.Timeout(function() { this.doCallbackByName('onLoadTimeout') }, timeout, this);
 			}
-	
+
 			// when an external image is to be loaded.
 			if (/\.(jpe?g|gif|png)$/i.test(this.url)) {
 				var img = new Image();
@@ -647,7 +647,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 			}
 		}
 	},
-	
+
 	/**
 	 * unload page in the iframe.
 	 */
@@ -656,7 +656,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 		this.load();
 		this.content = null;
 	},
-	
+
 	/**
 	 * process for iframe loaded;
 	 * this method is only called from below;
@@ -671,22 +671,22 @@ $.extend(Iroha.PDContentFrame.prototype,
 			// preparations.
 			this.clearTimer();
 			this.content = content;
-	
+
 			// add callbacks to dialog content object.
 			if (this.content.addCallback) {
 				this.content.addCallback('onConfirmed'      , function() { this.doCallbackByName('onConfirmed'     ) }, this);
 				this.content.addCallback('onCloseRequested' , function() { this.doCallbackByName('onCloseRequested') }, this);
 			}
-	
+
 			// show the iframe.
 			this.show();
-			
+
 			new Iroha.Timeout(function() {
 				this.doCallbackByName('onLoaded');
 			}, 100, this);
 		}
 	},
-	
+
 	/**
 	 * does the iframe have the content? (the content is loaded)?
 	 * @return true if the iframe has the content (the content is loaded).
@@ -695,7 +695,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 	hasContent : function() {
 		return Boolean(this.content);
 	},
-	
+
 	/**
 	 * clear timeout timer.
 	 * @private
@@ -706,7 +706,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 		}
 		this.timer = null;
 	},
-	
+
 	/**
 	 * set size of the iframe (MacIE / Safari 1.x / Old Opera not work).
 	 * both width and height not given, iframe size is set to 'fit' as content page automatically.
@@ -730,7 +730,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 		this.$node.width (width );
 		this.$node.height(height);
 	},
-	
+
 	/**
 	 * set focus to default button node in the iframe.
 	 */
@@ -739,7 +739,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 			this.content.setDefaultFocus();
 		}
 	},
-	
+
 	/**
 	 * process callback.
 	 * @param {String} name    callback name (preferred to start with 'on')
@@ -779,7 +779,7 @@ $.extend(Iroha.ClickShield,
 	 * @constant
 	 */
 	BASE_CLASSNAME : 'iroha-clickshield',
-	
+
 	/**
 	 * 新しくインスタンスを生成するか、基底要素ノードから既存のインスタンスを得る。
 	 * 基底要素ノードは init() で自動的に作られる。
@@ -792,10 +792,10 @@ $.extend(Iroha.ClickShield,
 $.extend(Iroha.ClickShield.prototype,
 /** @lends Iroha.ClickShield.prototype */
 	{
-	
+
 	/** @private */
 	initSuper : Iroha.Balloon.prototype.init,
-	
+
 	/**
 	 * 初期化
 	 * @return このインスタンス自身
@@ -804,20 +804,20 @@ $.extend(Iroha.ClickShield.prototype,
 	init : function(setting) {
 		var setting = $.extend(Iroha.ClickShield.Setting.create(), setting);
 		this.effect = setting.effect;
-		
+
 		this.initSuper(setting);
 		this.moveTo(0, 0);
 		this.hide();
 		this.$node.click ($.proxy(this.eventPreventer, this));
 		$(window) .resize($.proxy(this.adjustSize    , this));
-	
+
 		if (Iroha.FontSizeObserver) {
 			Iroha.FontSizeObserver.addCallback('onChange', this.adjustSize, this);
 		};
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * preventer body (event handler).
 	 * @type {Event} e    event object
@@ -828,7 +828,7 @@ $.extend(Iroha.ClickShield.prototype,
 			this.doCallback('onPrevented');
 		}
 	},
-	
+
 	/**
 	 * adjust shield size.
 	 */
@@ -840,7 +840,7 @@ $.extend(Iroha.ClickShield.prototype,
 			this.resizeTo(width, height);
 		}
 	},
-	
+
 	/**
 	 * enable (visible) the shield.
 	 */
@@ -854,12 +854,12 @@ $.extend(Iroha.ClickShield.prototype,
 				, $.proxy(_postProcess, this)
 			);
 		}
-	
+
 		function _postProcess() {
 			this.doCallback('onEnabled');
 		}
 	},
-	
+
 	/**
 	 * disable (hide) the shield.
 	 */
@@ -870,7 +870,7 @@ $.extend(Iroha.ClickShield.prototype,
 				, $.proxy(_postProcess, this)
 			);
 		}
-	
+
 		function _postProcess() {
 			this.hide();
 			(Iroha.ua.isIE && Iroha.ua.version <= 6) && this.resizeTo(0, 0);
@@ -892,21 +892,21 @@ Iroha.TabFocusShield = function() {
 	 * @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * このシールドの有効状態
 	 * @type Boolean
 	 *  @private
 	 */
 	this.active = false;
-	
+
 	/**
 	 * インスタンスごとに一意な ID 文字列。
 	 * @type String
 	 * @private
 	 */
 	this.guid = '';
-	
+
 	/**
 	  * 弾幕的呼び出し抑制済みイベントハンドラ
 	  * @type Function
@@ -926,8 +926,8 @@ $.extend(Iroha.TabFocusShield,
 	 * @private
 	 */
 	recents : [],
-	
-	/** 
+
+	/**
 	 * すべてのインスタンスを一時的に停止（無効化）
 	 * @param {Iroha.TabFocusShield} except    一時停止から除外するインスタンス。
 	 * @return 一時停止になったインンスタンス群
@@ -940,8 +940,8 @@ $.extend(Iroha.TabFocusShield,
 		});
 		return this.recents;
 	},
-	
-	/** 
+
+	/**
 	 * 直前に enable だったインスタンスを再開（有効化）
 	 * @return 再開されたインスタンス
 	 * @type Iroha.TabFocusShield
@@ -968,7 +968,7 @@ $.extend(Iroha.TabFocusShield.prototype,
 		this.$node         = $(node);
 		this.guid          = Iroha.String.guid().get();
 		this.barrageShield = Iroha.barrageShield(this.eventPreventer, 10, this);
-		
+
 		$(document)
 			.on('focus.Iroha.TabFocusShield.' + this.guid, '*', $.proxy(function(e) {
 				if ($(e.target).closest(this.$node).length == 0) {
@@ -978,7 +978,7 @@ $.extend(Iroha.TabFocusShield.prototype,
 
 		return this;
 	},
-	
+
 	/**
 	 * このインスタンスを破棄する
 	 */
@@ -987,7 +987,7 @@ $.extend(Iroha.TabFocusShield.prototype,
 		$(document).off('focus.Iroha.TabFocusShield.' + this.guid, '*');
 		this.constructor.disposeInstance(this);
 	},
-	
+
 	/**
 	 * preventer body.
 	 * @return this instance
@@ -1000,7 +1000,7 @@ $.extend(Iroha.TabFocusShield.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * enable the shield.
 	 * @return this instance
@@ -1010,7 +1010,7 @@ $.extend(Iroha.TabFocusShield.prototype,
 		this.active = true;
 		return this;
 	},
-	
+
 	/**
 	 * disable the shield.
 	 * @return this instance
@@ -1035,28 +1035,28 @@ Iroha.ScrollShield = function() {
 	 * @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * このシールドの有効状態
 	 * @type Boolean
 	 *  @private
 	 */
 	this.active      = false;
-	
+
 	/**
 	 * インスタンスごとに一意な ID 文字列。
 	 * @type String
 	 * @private
 	 */
 	this.guid = '';
-	
+
 	/**
 	 * このシールドを有効にした瞬間のスクロール位置。連想配列 { X:number, Y:number }
 	 *  @type Object
 	 *  @private
 	 */
 	this.scrollPos   = { X : 0, Y : 0 };
-	
+
 	/**
 	 * オリジナルのスタイルを格納。
 	 * @type Array
@@ -1070,7 +1070,7 @@ Iroha.ViewClass(Iroha.ScrollShield).extend(Iroha.Observable);
 $.extend(Iroha.ScrollShield.prototype,
 /** @lends Iroha.ScrollShield.prototype */
 {
-	
+
 	/**
 	 * initialize, setup event handler.
 	 * @param {jQuery|Element|String} node    スクロールを許可する範囲を示す要素ノード
@@ -1081,28 +1081,28 @@ $.extend(Iroha.ScrollShield.prototype,
 	init : function(node) {
 		this.$node = $(node);  // この要素ノードをスクロールロックの対象外にする処理はまだやっていない！！
 		this.guid  = Iroha.String.guid().get();
-		
+
 		var suffix = '.Iroha.ScrollShield.' + this.guid;
-		
+
 		this.$node.bind(    'scroll' + suffix, function(e) { e.stopPropagation() });
 		this.$node.bind('mousewheel' + suffix, function(e) { e.stopPropagation() });
-		
+
 //		$(window  ).bind(    'scroll' + suffix, $.proxy(this.eventPreventer, this));
 //		$(document).bind('mousewheel' + suffix, $.proxy(this.eventPreventer, this));
 	},
-	
+
 	/**
 	 * このインスタンスを破棄する
 	 */
 	dispose : function() {
 		var suffix = '.Iroha.ScrollShield.' + this.guid;
-		
+
 		try { this.disable() } catch(err) {}
 		$(window  ).unbind(    'scroll' + suffix);
 		$(document).unbind('mousewheel' + suffix);
 		this.constructor.disposeInstance(this);
 	},
-	
+
 	/**
 	 * preventer body (event handler).
 	 * @type {Event} e    event object
@@ -1116,7 +1116,7 @@ $.extend(Iroha.ScrollShield.prototype,
 					window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 					this.doCallback('onPrevented');
 					break;
-				case 'mouswheel' : 
+				case 'mouswheel' :
 					e.preventDefault();
 					this.doCallback('onPrevented');
 					break;
@@ -1125,17 +1125,17 @@ $.extend(Iroha.ScrollShield.prototype,
 			}
 		}
 	},
-	
+
 	/**
 	 * enable the shield.
 	 */
 	enable : function() {
 		if (!this.active) {
 			this.active = true;
-	
+
 			var geom = Iroha.getGeometry();
 			var node;
-	
+
 			// style for 'body' (or 'html' in Safari)
 			node = (!Iroha.ua.isSafari) ? document.body : document.documentElement;
 			this.storedStyle.push({
@@ -1146,11 +1146,11 @@ $.extend(Iroha.ScrollShield.prototype,
 					  , borderRightColor : $(node).css('borderRightColor')
 				}
 			});
-	
+
 			if (geom.windowH < geom.pageH || Iroha.ua.isIE) {
 				$(node).css('borderRight', geom.scrollBar + 'px solid white');
 			}
-	
+
 			// style for 'html'
 			node = document.documentElement;
 			this.storedStyle.push({
@@ -1162,12 +1162,12 @@ $.extend(Iroha.ScrollShield.prototype,
 				}
 			});
 			$(node).css({ 'overflow' : 'hidden', 'overflowX' : 'hidden', 'overflowY' : 'hidden' });
-	
+
 			this.scrollPos = { X : geom.scrollX, Y : geom.scrollY };
 			window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 		}
 	},
-	
+
 	/**
 	 * disable the shield.
 	 */
@@ -1175,14 +1175,14 @@ $.extend(Iroha.ScrollShield.prototype,
 		if (this.active) {
 			this.active = false;
 			this.storedStyle.forEach(function(stored) { $(stored.node).css(stored.style) });
-	
+
 			if (Iroha.ua.isSafari) {
 				var geom = Iroha.getGeometry();
 				var node = document.documentElement;
 				if (geom.windowW < geom.pageW && $(node).css('overflowX') == 'visible') $(node).css('overflowX', 'scroll');
 				if (geom.windowH < geom.pageH && $(node).css('overflowY') == 'visible') $(node).css('overflowY', 'scroll');
 			}
-	
+
 			window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 		}
 	}
@@ -1349,7 +1349,7 @@ Iroha.ClickShield.Setting.create = function() {
  * @namespace callback functions for {@link Iroha.PDContentFrame}
  */
 /**
- * a callback for when the iframe completed loading content 
+ * a callback for when the iframe completed loading content
  * @name Iroha.PDContentFrame.callback.onLoaded
  * @function
  * @param {String} url    url of the page currently loaded in the iframe
