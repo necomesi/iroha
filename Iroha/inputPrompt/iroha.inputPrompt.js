@@ -21,10 +21,11 @@
  * @returns jQuery
  * @type jQuery
  */
-$.fn.Iroha_InputPrompt = function(setting) { 
+$.fn.Iroha_InputPrompt = function(setting) {
 	return this
 		.filter(function() { return Iroha.InputPrompt.isValidNode(this)     })
-		.each  (function() {        Iroha.InputPrompt.create(this, setting) });
+		.each  (function() {        Iroha.InputPrompt.create(this, setting) })
+		.end();
 };
 
 
@@ -41,59 +42,59 @@ Iroha.InputPrompt = function() {
 	 * @private
 	 */
 	this.setting = Iroha.InputPrompt.Setting.create();
-	
+
 	/**
 	 * 基底要素ノード。テキスト入力欄。 (input[type="text"], input[type="password"], textarea)
 	 * @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * このテキスト入力欄を内包しているフォーム要素ノード
 	 * @type jQuery
 	 * @private
 	 */
 	this.$form = $();
-	
+
 	/**
 	 * テキスト入力欄の type。 "text", "password", "textarea"。
 	 * @type String
 	 * @private
 	 */
 	this.type = '';
-	
+
 	/**
 	 * ガイダンステキスト。薄色のテキストとして表現される、いわゆるプレースホルダ文字列。
 	 * @type String
 	 *  @private
 	 */
 	this.prompt = '';
-	
+
 	/**
 	 * 案内テキストを表示している状態かどうか
 	 * @type Boolean
 	 */
 	this.prompted = false;
-	
+
 	/**
 	 * 基底要素ノード（テキスト入力欄）にフォーカスがあたっているかどうか
 	 * @type Boolean
 	 */
 	this.focused = false;
-	
+
 	/**
 	 * 従来とおなじ挙動の互換動作をしているかどうか
 	 * @type Boolean
 	 */
 	this.compatMode = true;
-	
+
 	/**
 	 * 監視タイマー。入力内容の変化を監視。
 	 * @type Iroha.Interval
 	 * @private
 	 */
 	this.watcher = undefined;
-	
+
 	/**
 	 * DOM イベント名前空間。このインスタンスだけの物であることを示す。
 	 * @type String
@@ -121,7 +122,7 @@ $.extend(Iroha.InputPrompt,
 		, 'changed'  : 'iroha-inputprompt-changed'
 		, 'focused'  : 'iroha-inputprompt-focus'
 	},
-	
+
 	/**
 	 * 適合検証。与えた要素ノードがこのクラスの適用対象としてふさわしいか確認。
 	 * @param {jQuery|Element|String} node    検証対象の要素ノード
@@ -131,7 +132,7 @@ $.extend(Iroha.InputPrompt,
 	isValidNode : function(node) {
 		return $(node).eq(0).is('input[type="text"], input[type="password"], textarea');
 	},
-	
+
 	/**
 	 * 指定のセレクタで見つかる要素ノードに自動適用する。
 	 * 今はまだ見つからない（存在しない）対象も、見つかった（存在することがわかった）時に自動適用する。
@@ -144,7 +145,7 @@ $.extend(Iroha.InputPrompt,
 		if ($.type(selector) == 'string' && selector) {
 			// 現在見つかる対象に適用
 			$(selector).Iroha_InputPrompt(setting);
-			
+
 			// 今はまだ存在しない対象はオンデマンドで適用
 //			$(document).on('focus', selector, function() { $(this).Iroha_InputPrompt(setting) });
 		}
@@ -165,13 +166,13 @@ $.extend(Iroha.InputPrompt.prototype,
 		if (!this.constructor.isValidNode(node)) {
 			throw new TypeError('Iroha.InputPrompt.init: processing target element is not acceptable.');
 		}
-		
+
 		this.setting = setting = $.extend(this.setting, setting);
 		this.$node   = $(node).eq(0).addClass(this.constructor.CLASSNAME.baseNode);
 		this.$form   = this.$node.closest('form');
 		this.type    = this.$node.prop('type');
 		this.prompt  = this.$node.attr(setting.fromAttr) || setting.prompt;
-		
+
 		// 従来とおなじ互換動作にするかを判定
 		var ua   = Iroha.ua;
 		var vers = ua.isIE ? Iroha.ua.documentMode : Iroha.ua.version;
@@ -184,25 +185,25 @@ $.extend(Iroha.InputPrompt.prototype,
 		                  (ua.isIE     && vers < 10  )      ||  /* Internet Explorer 10.0 より以前 */
 		                  (ua.isOpera  && vers < 9  )       ||  /* Opera 9.0              より以前 */
 		                  false;
-		
+
 		if (!this.compatMode) {
 			this.setText(this.$node.val());
-		
+
 		} else {
 			this.$node.attr(setting.fromAttr, '');
 			this.setText(this.$node.val());
 			this.watch();
 		}
-		
+
 		// add event listeners
 		this.$node
 			.bind('focus' + this.EVENT_NS, $.proxy(this.onFocus, this))
 			.bind('blur'  + this.EVENT_NS, $.proxy(this.onBlur , this))
-			
+
 		this.$form
 			// form が submit される時、送信パラメータに案内テキストが含まれないようにする。
 			.bind('submit' + this.EVENT_NS, $.proxy(this.clearPrompt, this))
-			
+
 			// form の submit が DOM0 的に呼び出された時，上記ハンドラがトリガーされないことに対処。
 			// each はコンテキスト限定のためのシンタックスシュガー。
 			.each(function() {
@@ -215,13 +216,13 @@ $.extend(Iroha.InputPrompt.prototype,
 					}
 				}
 			});
-		
+
 		$(window)
 			.bind('beforeunload' + this.EVENT_NS, $.proxy(this.onBeforeUnload, this));
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * このインスタンスを破棄する
 	 */
@@ -238,10 +239,10 @@ $.extend(Iroha.InputPrompt.prototype,
 		}
 		this.clearPrompt && this.clearPrompt();
 		this.watcher     && this.watcher.clear();
-		
+
 		this.constructor.disposeInstance(this);
 	},
-	
+
 	/**
 	 * get prompt text
 	 * @return prompt text
@@ -250,7 +251,7 @@ $.extend(Iroha.InputPrompt.prototype,
 	getPrompt : function() {
 		return this.prompt;
 	},
-	
+
 	/**
 	 * set prompt text
 	 * @param {String} value    value to set
@@ -270,7 +271,7 @@ $.extend(Iroha.InputPrompt.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * get current text in the text-input (ignoring prompt text)
 	 * @return current value of text-input (ignoring prompt text)
@@ -279,7 +280,7 @@ $.extend(Iroha.InputPrompt.prototype,
 	getText : function() {
 		return this.prompted ? '' : this.$node.val();
 	},
-	
+
 	/**
 	 * set text to the text-input (considering prompt text)
 	 * @param {String} value    value to set
@@ -294,14 +295,14 @@ $.extend(Iroha.InputPrompt.prototype,
 			this.$node.val(value);
 			this.fillPrompt();
 			this.$node.toggleClass(this.constructor.CLASSNAME.changed, !this.prompted);
-			
+
 			// パスワード入力欄むけ暫定対応。
 			(this.type == 'password') && !this.prompted && this.clearPrompt();
-			
+
 			return this;
 		}
 	},
-	
+
 	/**
 	 * show prompt text when the text-input is 'empty'.
 	 * @return this instance
@@ -310,7 +311,7 @@ $.extend(Iroha.InputPrompt.prototype,
 	fillPrompt : function() {
 		if (this.compatMode && this.prompted && !this.$node.val()) {
 			this.$node.val(this.prompt);
-			
+
 			// パスワード入力欄むけ暫定対応。input の上空に案内テキストの入った要素ノードを重ねる方式。
 			if (this.type == 'password') {
 				this.$node.val('');
@@ -325,7 +326,7 @@ $.extend(Iroha.InputPrompt.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * clear prompt text from text-input.
 	 * @return このインスタンス自身
@@ -337,14 +338,14 @@ $.extend(Iroha.InputPrompt.prototype,
 			this.$node.val('');
 		}
 		this.prompted = false;
-		
+
 		// パスワード入力欄むけ暫定対応
 		// input の上空に載っている案内テキストの入った要素ノードを消去する。
 		this.$node.next('.iroha-inputprompt-prompt').remove();
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * テキスト入力欄のテキスト内容変化の監視を開始する。
 	 * @param {Number} [interval=100]    監視間隔。ミリ秒指定。
@@ -353,17 +354,17 @@ $.extend(Iroha.InputPrompt.prototype,
 	 */
 	watch : function(interval) {
 		var interval = Math.max(interval, 100) || 100;
-		
+
 		if (!this.watcher && this.compatMode) {
 			this.watcher = Iroha.Interval.create(function() {
 				var value = this.$node.val();
 				this.focused || !value || value == this.getPrompt() || this.setText(value);
 			}, interval, this);
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * テキスト入力欄のテキスト内容変化の監視を停止する。
 	 * @return このインスタンス自身
@@ -374,7 +375,7 @@ $.extend(Iroha.InputPrompt.prototype,
 		this.watcher = undefined;
 		return this;
 	},
-	
+
 	/**
 	 * event handler for when text-input if focused.
 	 * @private
@@ -388,7 +389,7 @@ $.extend(Iroha.InputPrompt.prototype,
 			this.focused = true;
 		}
 	},
-	
+
 	/**
 	 * event handler for when text-input if blured.
 	 * @private
@@ -402,7 +403,7 @@ $.extend(Iroha.InputPrompt.prototype,
 			this.focused = false;
 		}
 	},
-	
+
 	/**
 	 * event hander for "window.onBeforeUnload"
 	 * @private
@@ -411,10 +412,10 @@ $.extend(Iroha.InputPrompt.prototype,
 	onBeforeUnload : function() {
 		// history を行き来したあと、フォーカス状態を復元されると都合が悪い(IEなど)。よってこの段階で blur しておく。
 		this.focused && this.$node.blur();
-		
+
 		// histroy を行き来したあと、案内テキストがふつうのテキストとして復元されてしまわないために消去しておく。
 		this.clearPrompt();
-		
+
 		// 他のスクリプトが beforeUnload でページ退去確認ダイアログを出した場合、
 		// ユーザーが「退去しない」を選択したときに案内テキストを戻さないとならない。
 		Iroha.Timeout(function() {
@@ -437,13 +438,13 @@ Iroha.InputPrompt.Setting = function() {
 	 * @type String
 	 */
 	this.fromAttr = 'placeholder';
-	
+
 	/**
 	 * "fromAttr" の指定内容や、その属性値の有無の如何に関係なくプレースホルダ文字列 ("prompt") をこれに決定する。
 	 * @type String
 	 */
 	this.prompt = '';
-	
+
 	/**
 	 * "fromAttr" を "placeholder" しているとき、
 	 * ネイティブに placeholder 属性が利用できるブラウザでも従来どおりの互換動作を利用するかどうか。

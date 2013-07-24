@@ -4,7 +4,7 @@
  *       Pseudo Dialog.
  *       (charset : "UTF-8")
  *
- *    @version 3.04.20130313
+ *    @version 3.05.20130621
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires jquery.mousewheel.js
@@ -163,7 +163,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 			}, this));
 
 		// prepare content frame.
-		this.contentFrame = Iroha.PDContentFrame.create();
+		this.contentFrame = Iroha.PDContentFrame.create(setting.contentFrame);
 		this.contentFrame.addCallback('onLoadTimeout'   , function() { this.allowClose(); this.close(    ); }, this);
 		this.contentFrame.addCallback('onConfirmed'     , function() { this.allowClose(); this.close(true); }, this);
 		this.contentFrame.addCallback('onCloseRequested', function() { this.allowClose(); this.close(    ); }, this);
@@ -213,7 +213,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 
 		// z-index 制御。
 		// この疑似ダイアログとそのクリックシールドが、既存の疑似ダイアログとそのクリックシールドの上に乗るように。
-		var zIndex = this.constructor.instances
+		var zIndex = this.constructor.getInstance()
 		             	.map (function(instance) { return instance.zIndex() })
 		             	.sort(function(a, b)     { return b - a })
 		             	[0] || this.zIndex() - 2;
@@ -333,6 +333,9 @@ $.extend(Iroha.PseudoDialog.prototype,
 			// close() 処理中に再び close() が呼び出されると都合が悪いことがある。
 			// (onClose でこのインスタンスを dispose() する場合など）
 			this.disallowClose();
+
+			// openURL() で URL を読み込んだとき、それが開かれるより前に close() が呼び出された場合を考慮。
+			this.removeDisposableCallback('onLoaded');
 
 			this.throbber && this.throbber.hide();
 
@@ -478,8 +481,8 @@ $.extend(Iroha.PseudoDialog.prototype,
 //				this.effect.open();
 //			}
 //		}
-		// @@@@@@@@@@@@@ temporary @@@@@@@@@@@@@@@@@@
-		this.moveToCenter();
+		// @@@@@@@@@@@@@ TODO : temporary @@@@@@@@@@@@@@@@@@
+		this.moveToCenter(this.ignoreX, this.ignoreY);
 
 		return this;
 	},
@@ -494,7 +497,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 			var $input      = this.$node.find('input:text').eq(0);
 			var $closeBtn   = this.$node.find(this.setting.closeBtnExpr  );
 			var $confirmBtn = this.$node.find(this.setting.confirmBtnExpr);
-			var $anchor     = $closeBtn.add($confirmBtn).find('a').andSelf().filter('a').eq(0);
+			var $anchor     = $closeBtn.add($confirmBtn).find('a').addBack().filter('a').eq(0);
 			$input .focus();
 			$anchor.focus();
 			this.contentFrame.setDefaultFocus();
@@ -558,7 +561,7 @@ $.extend(Iroha.PDContentFrame,
 	 * @param {Iroha.PDContentFrame.Setting|jQuery|Element|String} [arg]    設定オブジェクト、または要素ノード
 	 */
 	create : function(arg) {
-		if (!$(arg).is('*')) {
+		if ($(arg).eq(0).prop('nodeType') != 1) {
 			return this.storeInstance((new this).init(arg));
 		} else {
 			return this.getInstance(arg);
@@ -567,7 +570,7 @@ $.extend(Iroha.PDContentFrame,
 });
 
 $.extend(Iroha.PDContentFrame.prototype,
-/** @lends Iroha.PDContentFrame */
+/** @lends Iroha.PDContentFrame.prototype */
 {
 	/**
 	 * 初期化
@@ -618,7 +621,6 @@ $.extend(Iroha.PDContentFrame.prototype,
 		}
 		if (!this.frame) {
 //			this.doCallbackByName('onCloseRequested');
-
 			// これ（↑）何の為に書いたのか不明。とりあえず、 <iframe> なしのテンプレートを使っている場合に
 			// ここの影響でダイアログクローズ時に無限ループになる。
 			// PseudoDialog.close() -> this.unload() -> this.load() -> callback -> PseudoDialog.close() -> ...
@@ -644,6 +646,18 @@ $.extend(Iroha.PDContentFrame.prototype,
 				} else {
 					img.onload = $.proxy(function() { this.setContent(img) }, this);
 				}
+
+			// 読み込むものが画像ではない (＝ HTML だと決めつける）場合
+			} else {
+				// iframe に読み込まれたページの geometry を計測するメソッドのアドホック取り付け。
+				// そのページに Iroha.PseudoDialogContent が存在しない場合のみ。
+				this.$node.on('load', $.proxy(function () {
+					var _Iroha = this.frame.window.Iroha;
+					if (!_Iroha || !_Iroha.PseudoDialogContent) {
+						this.frame.__Iroha_getGeometry__ = function() { return Iroha.getGeometry(null, this.frame) };
+						this.setContent(this.frame);
+					}
+				}, this));
 			}
 		}
 	},
@@ -655,6 +669,7 @@ $.extend(Iroha.PDContentFrame.prototype,
 		this.hide();
 		this.load();
 		this.content = null;
+		this.$node.off('load');
 	},
 
 	/**
@@ -719,11 +734,9 @@ $.extend(Iroha.PDContentFrame.prototype,
 		if (isNaN(width) || isNaN(height)) {
 			this.adjustSize(1, 1);
 			var geom;
-			if (this.content.getGeometry) {
-				geom = this.content.getGeometry();
-			} else {
-				geom = { pageW : this.content.width, pageH : this.content.height };
-			}
+			geom   = this.content.getGeometry           ? this.content.getGeometry()
+			       : this.content.__Iroha_getGeometry__ ? this.content.__Iroha_getGeometry__()
+			       : { pageW : this.content.width, pageH : this.content.height }
 			width  = (this.maxWidth  > 0) ? Math.min(geom.pageW, this.maxWidth ) : geom.pageW;
 			height = (this.maxHeight > 0) ? Math.min(geom.pageH, this.maxHeight) : geom.pageH;
 		}
@@ -831,6 +844,8 @@ $.extend(Iroha.ClickShield.prototype,
 
 	/**
 	 * adjust shield size.
+	 * @return このインスタンス自身
+	 * @type Iroha.ClickSheld
 	 */
 	adjustSize : function() {
 		if (this.active && (Iroha.ua.isMobile || Iroha.ua.isIE && Iroha.ua.version <= 6)) {
@@ -839,10 +854,14 @@ $.extend(Iroha.ClickShield.prototype,
 			var height = Math.max(geom.pageH, geom.windowH) + ((Iroha.ua.isIE && Iroha.ua.version < 7) ? -4 : 0);
 			this.resizeTo(width, height);
 		}
+
+		return this;
 	},
 
 	/**
 	 * enable (visible) the shield.
+	 * @return このインスタンス自身
+	 * @type Iroha.ClickSheld
 	 */
 	enable : function() {
 		if (!this.active) {
@@ -855,6 +874,8 @@ $.extend(Iroha.ClickShield.prototype,
 			);
 		}
 
+		return this;
+
 		function _postProcess() {
 			this.doCallback('onEnabled');
 		}
@@ -862,6 +883,8 @@ $.extend(Iroha.ClickShield.prototype,
 
 	/**
 	 * disable (hide) the shield.
+	 * @return このインスタンス自身
+	 * @type Iroha.ClickSheld
 	 */
 	disable : function() {
 		if (this.active) {
@@ -870,6 +893,8 @@ $.extend(Iroha.ClickShield.prototype,
 				, $.proxy(_postProcess, this)
 			);
 		}
+
+		return this;
 
 		function _postProcess() {
 			this.hide();
@@ -930,14 +955,13 @@ $.extend(Iroha.TabFocusShield,
 	/**
 	 * すべてのインスタンスを一時的に停止（無効化）
 	 * @param {Iroha.TabFocusShield} except    一時停止から除外するインスタンス。
-	 * @return 一時停止になったインンスタンス群
+	 * @return 一時停止になったインスタンス群
 	 * @type Iroha.TabFocusShield[]
 	 */
 	disableAll : function(except) {
-		this.recents = this.instances.filter(function(instance) { return instance !== except && instance.active });
-		this.instances.forEach(function(instance) {
-			if (instance !== except) instance.disable();
-		});
+		var instances = this.getInstance();
+		this.recents  = instances.filter(function(instance) { return instance !== except && instance.active });
+		instances.forEach(function(instance) { instance !== except && instance.disable() });
 		return this.recents;
 	},
 
@@ -960,7 +984,7 @@ $.extend(Iroha.TabFocusShield.prototype,
 	/**
 	 * 初期化
 	 * @param {jQuery|Element|String} node    基底要素ノード
-	 * @return this instance
+	 * @return このインスタンス自身
 	 * @type Iroha.TabFocusShield
 	 * @private
 	 */
@@ -1003,7 +1027,7 @@ $.extend(Iroha.TabFocusShield.prototype,
 
 	/**
 	 * enable the shield.
-	 * @return this instance
+	 * @return このインスタンス自身
 	 * @type Iroha.TabFocusShield
 	 */
 	enable : function() {
@@ -1013,7 +1037,7 @@ $.extend(Iroha.TabFocusShield.prototype,
 
 	/**
 	 * disable the shield.
-	 * @return this instance
+	 * @return このインスタンス自身
 	 * @type Iroha.TabFocusShield
 	 */
 	disable : function() {
@@ -1074,7 +1098,7 @@ $.extend(Iroha.ScrollShield.prototype,
 	/**
 	 * initialize, setup event handler.
 	 * @param {jQuery|Element|String} node    スクロールを許可する範囲を示す要素ノード
-	 * @return this instance
+	 * @return このインスタンス自身
 	 * @type Iroha.ScrollShield
 	 * @private
 	 */
@@ -1089,6 +1113,8 @@ $.extend(Iroha.ScrollShield.prototype,
 
 //		$(window  ).bind(    'scroll' + suffix, $.proxy(this.eventPreventer, this));
 //		$(document).bind('mousewheel' + suffix, $.proxy(this.eventPreventer, this));
+
+		return this;
 	},
 
 	/**
@@ -1128,6 +1154,8 @@ $.extend(Iroha.ScrollShield.prototype,
 
 	/**
 	 * enable the shield.
+	 * @return このインスタンス自身
+	 * @type Iroha.ScrollShield
 	 */
 	enable : function() {
 		if (!this.active) {
@@ -1166,10 +1194,14 @@ $.extend(Iroha.ScrollShield.prototype,
 			this.scrollPos = { X : geom.scrollX, Y : geom.scrollY };
 			window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 		}
+
+		return this;
 	},
 
 	/**
 	 * disable the shield.
+	 * @return このインスタンス自身
+	 * @type Iroha.ScrollShield
 	 */
 	disable : function() {
 		if (this.active) {
@@ -1185,6 +1217,8 @@ $.extend(Iroha.ScrollShield.prototype,
 
 			window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 		}
+
+		return this;
 	}
 });
 
