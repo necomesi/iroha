@@ -4,7 +4,7 @@
  *       Pseudo Menu.
  *       (charset : "UTF-8")
  *
- *    @version 3.08.20130727
+ *    @version 3.10.20130727
  *    @requires jquery.js
  *    @requires jquery.mousewheel.js
  *    @requires iroha.js
@@ -481,6 +481,11 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 
 			// ウオッチ開始
 			this.watch();
+			this.watchVisibility();
+
+			// 疑似セレクトメニューが不可視から可視へ状態変化したら、メニュー幅を再調整する。
+			// たとえば、開閉するブロック内に置かれていて、そのブロックが初期状態で閉じていると、メニュー幅が計算できず潰れた状態になってたりする。
+			this.addCallback('onAppear', this.adjustMenuWidth, this);
 
 			return this;
 		}
@@ -490,23 +495,24 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	 * このインスタンスを破棄する
 	 */
 	dispose : function() {
-		this.watcher    && this.watcher.clear();
-		this.$structure && this.$structure.remove();
-		this.$node      && this.$node.show();
-		this.pseudoMenu && this.pseudoMenu.dispose();
+		this.watcher        && this.watcher.clear();
+		this.visibleWatcher && this.visibleWatcher.clear();
+		this.$structure     && this.$structure.remove();
+		this.$node          && this.$node.show();
+		this.pseudoMenu     && this.pseudoMenu.dispose();
 
 		this.constructor.disposeInstance(this);
 	},
 
 	/**
 	 * ホンモノの select 要素ノードの selected, disabled 状態変化の監視を開始する
-	 * @param {Number} [interval=100]    監視間隔。ミリ秒指定。
+	 * @param {Number} [interval=96]    監視間隔。ミリ秒指定。
 	 * @return このインスタンス自身
 	 * @type Iroha.PseudoSelectMenu
 	 */
 	watch : function(interval) {
 		if (!this.watcher) {
-			var interval = Math.max(interval, 100) || 100;
+			var interval = Math.max(interval, 16) || 96;
 			var node     = this.$node.get(0);
 			var selIndex = node.selectedIndex;
 			var disabled = node.disabled;
@@ -528,6 +534,42 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	unwatch : function() {
 		this.watcher && this.watcher.clear();
 		this.watcher = undefined;
+		return this;
+	},
+
+	/**
+	 * この疑似セレクトメニューの可視・不可視の状態変化を監視。
+	 * @param {Number} [interval=96]    監視間隔。ミリ秒指定。
+	 * @return このインスタンス自身
+	 * @type Iroha.PseudoSelectMenu
+	 */
+	watchVisibility : function(interval) {
+		if (!this.visibleWatcher) {
+			var interval = Math.max(interval, 16) || 96;
+			var $target  = this.$structure;
+			var callback = $.proxy(this.doCallback, this);
+			var recent   = $target.is(':visible');
+			var current;
+
+			this.visibleWatcher = Iroha.Interval.create(function() {
+				current = $target.is(':visible');
+				(!recent &&  current) && callback('onAppear'   );
+				( recent && !current) && callback('onDisappear');
+				recent = current;
+			}, interval);
+		}
+
+		return this;
+	},
+
+	/**
+	 * この疑似セレクトメニューの可視・不可視の状態変化の監視を停止する。
+	 * @return このインスタンス自身
+	 * @type Iroha.PseudoSelectMenu
+	 */
+	unwatchVisibility : function() {
+		this.visibleWatcher && this.visibleWatcher.clear();
+		this.visibleWatcher = undefined;
 		return this;
 	},
 
@@ -917,9 +959,19 @@ Iroha.PseudoSelectMenu.Setting.create = function() {
  */
 /**
  * a callback for when a menu item is selected, or unselected all items.
- * @name Iroha.PseudoMenu.callback.onChange
+ * @name Iroha.PseudoSelectMenu.callback.onChange
  * @function
  * @param {Number} index    index number of the currently selected item.
+ */
+/**
+ * 疑似セレクトメニューが「見えるようになった」時のコールバック
+ * @name Iroha.PseudoSelectMenu.callback.onAppear
+ * @function
+ */
+/**
+ * 疑似セレクトメニューが「見えなくなった」時のコールバック
+ * @name Iroha.PseudoSelectMenu.callback.onDisappear
+ * @function
  */
 
 
