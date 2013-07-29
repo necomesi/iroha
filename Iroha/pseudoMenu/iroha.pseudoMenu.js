@@ -4,7 +4,7 @@
  *       Pseudo Menu.
  *       (charset : "UTF-8")
  *
- *    @version 3.10.20130727
+ *    @version 3.10.20130729
  *    @requires jquery.js
  *    @requires jquery.mousewheel.js
  *    @requires iroha.js
@@ -831,7 +831,7 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 	},
 
 	/**
-	 * call back function for 'onChange' of BAFontSizeObserver.
+	 * call back function for 'onChange' of Iroha.FontSizeObserver.
 	 * @private
 	 */
 	onFontSizeChanged : function() {
