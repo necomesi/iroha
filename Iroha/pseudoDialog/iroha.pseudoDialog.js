@@ -4,7 +4,7 @@
  *       Pseudo Dialog.
  *       (charset : "UTF-8")
  *
- *    @version 3.06.20130725
+ *    @version 3.06.20130729
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires jquery.mousewheel.js
@@ -17,7 +17,7 @@
  *    @requires iroha.pseudoDialog.css
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -1065,7 +1065,7 @@ Iroha.ScrollShield = function() {
 	 * @type Boolean
 	 *  @private
 	 */
-	this.active      = false;
+	this.active = false;
 
 	/**
 	 * インスタンスごとに一意な ID 文字列。
@@ -1079,7 +1079,7 @@ Iroha.ScrollShield = function() {
 	 *  @type Object
 	 *  @private
 	 */
-	this.scrollPos   = { X : 0, Y : 0 };
+	this.scrollPos = { X : 0, Y : 0 };
 
 	/**
 	 * オリジナルのスタイルを格納。
@@ -1090,6 +1090,14 @@ Iroha.ScrollShield = function() {
 };
 
 Iroha.ViewClass(Iroha.ScrollShield).extend(Iroha.Observable);
+
+$.extend(Iroha.ScrollShield,
+/** @lends Iroha.ScrollShield */
+{
+	getActiveInstance : function (except) {
+		return this.getInstance().filter(function(instance) { return instance !== except && instance.active });
+	}
+});
 
 $.extend(Iroha.ScrollShield.prototype,
 /** @lends Iroha.ScrollShield.prototype */
@@ -1161,38 +1169,43 @@ $.extend(Iroha.ScrollShield.prototype,
 		if (!this.active) {
 			this.active = true;
 
-			var geom = Iroha.getGeometry();
-			var node;
+			if (this.constructor.getActiveInstance(this).length) {
+				// 自分の他に有効状態の Iroha.ScrollShield インスタンスがいるなら、もう何もする必要がない。
 
-			// style for 'body' (or 'html' in Safari)
-			node = (!Iroha.ua.isSafari) ? document.body : document.documentElement;
-			this.storedStyle.push({
-				  node  : node
-				, style : {
-						borderRightWidth : $(node).css('borderRightWidth')
-					  , borderRightStyle : $(node).css('borderRightStyle')
-					  , borderRightColor : $(node).css('borderRightColor')
+			} else {
+				var geom = Iroha.getGeometry();
+				var node;
+
+				// style for 'body' (or 'html' in Safari)
+				node = (!Iroha.ua.isSafari) ? document.body : document.documentElement;
+				this.storedStyle.push({
+					  node  : node
+					, style : {
+							borderRightWidth : $(node).css('borderRightWidth')
+						  , borderRightStyle : $(node).css('borderRightStyle')
+						  , borderRightColor : $(node).css('borderRightColor')
+					}
+				});
+
+				if (geom.windowH < geom.pageH || Iroha.ua.isIE) {
+					$(node).css('borderRight', geom.scrollBar + 'px solid white');
 				}
-			});
 
-			if (geom.windowH < geom.pageH || Iroha.ua.isIE) {
-				$(node).css('borderRight', geom.scrollBar + 'px solid white');
+				// style for 'html'
+				node = document.documentElement;
+				this.storedStyle.push({
+					  node  : node
+					, style : {
+						  overflow  : $(node).css('overflow' )
+						, overflowX : $(node).css('overflowX')
+						, overflowY : $(node).css('overflowY')
+					}
+				});
+				$(node).css({ 'overflow' : 'hidden', 'overflowX' : 'hidden', 'overflowY' : 'hidden' });
+
+				this.scrollPos = { X : geom.scrollX, Y : geom.scrollY };
+				window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 			}
-
-			// style for 'html'
-			node = document.documentElement;
-			this.storedStyle.push({
-				  node  : node
-				, style : {
-					  overflow  : $(node).css('overflow' )
-					, overflowX : $(node).css('overflowX')
-					, overflowY : $(node).css('overflowY')
-				}
-			});
-			$(node).css({ 'overflow' : 'hidden', 'overflowX' : 'hidden', 'overflowY' : 'hidden' });
-
-			this.scrollPos = { X : geom.scrollX, Y : geom.scrollY };
-			window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 		}
 
 		return this;
@@ -1206,16 +1219,22 @@ $.extend(Iroha.ScrollShield.prototype,
 	disable : function() {
 		if (this.active) {
 			this.active = false;
-			this.storedStyle.forEach(function(stored) { $(stored.node).css(stored.style) });
 
-			if (Iroha.ua.isSafari) {
-				var geom = Iroha.getGeometry();
-				var node = document.documentElement;
-				if (geom.windowW < geom.pageW && $(node).css('overflowX') == 'visible') $(node).css('overflowX', 'scroll');
-				if (geom.windowH < geom.pageH && $(node).css('overflowY') == 'visible') $(node).css('overflowY', 'scroll');
+			if (this.constructor.getActiveInstance(this).length) {
+				// 自分以外にまだ有効状態の Iroha.ScrollShield インスタンスがいるなら、まだ何もしない。
+
+			} else {
+				this.storedStyle.forEach(function(stored) { $(stored.node).css(stored.style) });
+
+				if (Iroha.ua.isSafari) {
+					var geom = Iroha.getGeometry();
+					var node = document.documentElement;
+					if (geom.windowW < geom.pageW && $(node).css('overflowX') == 'visible') $(node).css('overflowX', 'scroll');
+					if (geom.windowH < geom.pageH && $(node).css('overflowY') == 'visible') $(node).css('overflowY', 'scroll');
+				}
+
+				window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 			}
-
-			window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
 		}
 
 		return this;
@@ -1452,4 +1471,4 @@ Iroha.ClickShield.Setting.create = function() {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);
