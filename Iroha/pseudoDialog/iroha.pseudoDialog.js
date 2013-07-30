@@ -149,13 +149,13 @@ $.extend(Iroha.PseudoDialog.prototype,
 		$(window)
 			.resize($.proxy(function() { if (this.active) this.moveToCenter() }, this));
 		this.$node
-			.on('click', this.setting.confirmBtnExpr, $.proxy(function(e) {
+			.on('click', setting.confirmBtnExpr, $.proxy(function(e) {
 				e.preventDefault();
 				if (!$(e.currentTarget).hasClass('pseudo-disabled')) {
 					this.close(true);
 				}
 			}, this))
-			.on('click', this.setting.closeBtnExpr, $.proxy(function(e) {
+			.on('click', setting.closeBtnExpr, $.proxy(function(e) {
 				e.preventDefault();
 				if (!$(e.currentTarget).hasClass('pseudo-disabled')) {
 					this.close();
@@ -291,7 +291,10 @@ $.extend(Iroha.PseudoDialog.prototype,
 		}
 
 		function _postProcess() {
-			this.allowClose().setDefaultFocus().doCallbackByName('onOpen');
+			this
+				.allowClose()
+				.setDefaultFocus()
+				.doCallbackByName('onOpen');
 		}
 	},
 

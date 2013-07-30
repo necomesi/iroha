@@ -46,7 +46,7 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 		, 'confirmBtnExpr' : '.iroha-pdialog-btn-confirm'
 		, 'closeBtnExpr'   : '.iroha-pdialog-btn-close'
 	},
-	
+
 	/**
 	 * initialize, setup event handlers.
 	 * @return this object itself
@@ -57,18 +57,18 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 		var setting = this.setting;
 		$(document.body).addClass(setting.stateCName);
 		$(document.documentElement).css('width', Iroha.getGeometry().pageW + 'px');
-		
+
 		// setup event handlers for buttons
 		$(setting.confirmBtnExpr)
 			.click($.proxy(function(e) { e.preventDefault(); this.doCallback('onConfirmed'     ) }, this));
 		$(setting.closeBtnExpr  )
 			.click($.proxy(function(e) { e.preventDefault(); this.doCallback('onCloseRequested') }, this));
-		
+
 		// set key equivalents
 		if (Iroha.KeyEquiv) {
 			Iroha.KeyEquiv.create().addKey('!', function() { this.doCallback('onCloseRequested') }, this);
 		}
-		
+
 		// post process
 		Iroha.delay(100, this)
 			.done(function() {
@@ -77,10 +77,10 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 				// Iroha.PseudoDialog は今や複数インスタンスが同時に存在する可能性があるから、こんなずさんなのではいけない。
 				parent.Iroha.PseudoDialog.getInstance(0).contentFrame.setContent(this);
 			});
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * set focus to default button node.
 	 * @return this object itself
@@ -95,7 +95,7 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 		$anchor.focus();
 		return this;
 	},
-	
+
 	/**
 	 * get geometry of dialog content page.
 	 * @return associative array of geometry: windowW, windowH, pageW, pageH, windowX, windowY, scrollX, scrollY, mouseX, mouseY, nodeName, zoom, scrollBar.
