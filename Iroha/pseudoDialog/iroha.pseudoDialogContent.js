@@ -121,16 +121,11 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 
 	/**
 	 * get geometry of dialog content page.
-	 * @return associative array of geometry: windowW, windowH, pageW, pageH, windowX, windowY, scrollX, scrollY, mouseX, mouseY, nodeName, zoom, scrollBar.
-	 * @type Object
+	 * @returns an associative array of geometry properties
+	 * @type Iroha.geom
 	 */
 	getGeometry : function() {
-		var geom = Iroha.getGeometry();
-		if (Iroha.ua.isOpera) {
-			geom.pageW = document.documentElement.offsetWidth ; // but opera returns invalid offsetWidth value...
-			geom.pageH = document.documentElement.offsetHeight;
-		}
-		return geom;
+		return Iroha.getGeometry();
 	}
 });
 

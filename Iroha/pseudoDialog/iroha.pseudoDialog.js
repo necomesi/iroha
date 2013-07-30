@@ -690,13 +690,20 @@ $.extend(Iroha.PDContentFrame.prototype,
 
 			// 読み込むものが画像ではない (＝ HTML だと決めつける）場合
 			} else {
-				// iframe に読み込まれたページの geometry を計測するメソッドのアドホック取り付け。
+				// iframe に読み込まれたページにメソッドのアドホック取り付け。
 				// そのページに Iroha.PseudoDialogContent が存在しない場合のみ。
 				this.$node.on('load', $.proxy(function () {
-					var _Iroha = this.frame.window.Iroha;
-					if (!_Iroha || !_Iroha.PseudoDialogContent) {
-						this.frame.__Iroha_getGeometry__ = function() { return Iroha.getGeometry(null, this.frame) };
-						this.setContent(this.frame);
+					var frame = this.frame;
+					if (!frame.Iroha || !frame.Iroha.PseudoDialogContent) {
+						$.extend(true, frame, {
+							Iroha : {
+								PseudoDialogContent : {
+									  getGeometry     : function() { return frame.parent.Iroha.getGeometry(null, frame) }
+									, setDefaultFocus : function() {}
+								}
+							}
+						});
+						this.setContent(frame.Iroha.PseudoDialogContent);
 					}
 				}, this));
 			}
@@ -776,9 +783,9 @@ $.extend(Iroha.PDContentFrame.prototype,
 		if (isNaN(width) || isNaN(height)) {
 			this.adjustSize(1, 1);
 			var geom;
-			geom   = this.content.getGeometry           ? this.content.getGeometry()
-			       : this.content.__Iroha_getGeometry__ ? this.content.__Iroha_getGeometry__()
-			       : { pageW : this.content.width, pageH : this.content.height }
+			geom   = this.content.getGeometry
+			         	? this.content.getGeometry()
+			         	: { pageW : this.content.width, pageH : this.content.height }
 			width  = (this.maxWidth  > 0) ? Math.min(geom.pageW, this.maxWidth ) : geom.pageW;
 			height = (this.maxHeight > 0) ? Math.min(geom.pageH, this.maxHeight) : geom.pageH;
 		}
