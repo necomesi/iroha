@@ -4,7 +4,7 @@
  *       Pseudo Dialog.
  *       (charset : "UTF-8")
  *
- *    @version 3.06.20130729
+ *    @version 3.07.20130730
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires jquery.mousewheel.js
@@ -491,19 +491,41 @@ $.extend(Iroha.PseudoDialog.prototype,
 	},
 
 	/**
-	 * set default focus into dialog.
-	 * @return this instance itself
+	 * ダイアログの内の所定の要素ノードにフォーカスを当てる。
+	 * @param {String} [expr]    フォーカスを当てる対象を（このあと恒久的に）変更する場合に指定。
+	 *                           "" or "none" : フォーカスしない, "auto" : 自動選択, "<セレクタ表現>" : セレクタ表現（基底要素ノード起点）で指定。
+	 * @return このインスタンス自身
 	 * @type Iroha.PseudoDialog
 	 */
-	setDefaultFocus : function() {
+	setDefaultFocus : function(expr) {
+		var setting = this.setting;
+
+		($.type(expr) != 'string')
+			? (expr = 'auto')
+			: (setting.autoFocusExpr = expr);
+
 		if (this.active) {
-			var $input      = this.$node.find('input:text').eq(0);
-			var $closeBtn   = this.$node.find(this.setting.closeBtnExpr  );
-			var $confirmBtn = this.$node.find(this.setting.confirmBtnExpr);
-			var $anchor     = $closeBtn.add($confirmBtn).find('a').addBack().filter('a').eq(0);
-			$input .focus();
-			$anchor.focus();
-			this.contentFrame.setDefaultFocus();
+			expr = setting.autoFocusExpr;
+			switch (expr) {
+				case ''     :
+				case 'none' :
+					break;
+
+				case 'auto' :
+					var $input      = this.$node.find('input:text').eq(0);
+					var $closeBtn   = this.$node.find(setting.closeBtnExpr  );
+					var $confirmBtn = this.$node.find(setting.confirmBtnExpr);
+					var $anchor     = $closeBtn.add($confirmBtn).find('a').addBack().filter('a').eq(0);
+					$input .focus();
+					$anchor.focus();
+					break;
+
+				default :
+					this.$node.find(expr).focus();
+					break;
+			}
+
+			this.contentFrame.setDefaultFocus(expr);
 		}
 		return this;
 	}
@@ -748,12 +770,12 @@ $.extend(Iroha.PDContentFrame.prototype,
 	},
 
 	/**
-	 * set focus to default button node in the iframe.
+	 * iframe 内のページの所定の要素ノードにフォーカスを当てる。
+	 * @param {String} [expr="auto"]    フォーカスを当てる対象。
+	 *                                  "" or "none" : フォーカスしない, "auto" : 自動選択, "<セレクタ表現>" : セレクタ表現（基底要素ノード起点）で指定。
 	 */
-	setDefaultFocus : function() {
-		if (this.content && this.content.setDefaultFocus) {
-			this.content.setDefaultFocus();
-		}
+	setDefaultFocus : function(expr) {
+		this.content && this.content.setDefaultFocus && this.content.setDefaultFocus(expr);
 	},
 
 	/**
@@ -1284,7 +1306,8 @@ Iroha.PseudoDialog.Setting = function() {
 	                      	, 'focus'  : true
 	                      	, 'scroll' : true
 	                      };
-	this.allowEasyClose = true
+	this.allowEasyClose = true;
+	this.autoFocusExpr  = 'auto';
 	this.closeDisallowedCName = 'iroha-pdialog-disallowed-close';
 };
 

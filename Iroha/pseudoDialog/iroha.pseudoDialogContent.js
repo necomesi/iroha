@@ -3,16 +3,15 @@
  *    @fileoverview
  *       Control for Pseudo Dialog content pages.
  *       (charset : "UTF-8")
- *       (この JS は、8年前のブラウザにはどうしても必要だった。しかし2013年の今、不要のはずだからいずれ廃止する)
  *
- *    @version 3.00.20130313
+ *    @version 3.01.20130730
  *    @requires jquery.js
  *    @requires bajl.js
  *    @requires bajl.keyEquiv.js     (optional)
  *    @requires bajl.pseudoDialog.js (in parent window page)
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -82,17 +81,36 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 	},
 
 	/**
-	 * set focus to default button node.
-	 * @return this object itself
+	 * 既定の要素ノードにフォーカスを当てる。
+	 * @param {String} [expr="auto"]    フォーカスを当てる対象を（このあと恒久的に）変更する場合に指定。
+	 *                                  "" or "none" : フォーカスしない, "auto" : 自動選択, "<セレクタ表現>" : セレクタ表現（基底要素ノード起点）で指定。
+	 * @return このインスタンス自身
 	 * @type Iroha.PseudoDialogContent
 	 */
-	setDefaultFocus : function() {
+	setDefaultFocus : function(expr) {
 		var setting = this.setting;
-		var $input  = $('input:text').eq(0);
-		var $anchor = $(setting.confirmBtnExpr).add(setting.closeBtnExpr).find('a').andSelf().filter('a');
-		window.focus();
-		$input .focus();
-		$anchor.focus();
+		($.type(expr) != 'string') && (expr = 'auto');
+
+		switch (expr) {
+			case ''     :
+			case 'none' :
+				break;
+
+			case 'auto' :
+				var $input   = $('input:text, textarea').first();
+				var $close   = $(setting.closeBtnExpr  );
+				var $confirm = $(setting.confirmBtnExpr);
+				var $anchor   = $close.add($confirm).find('a').addBack().filter('a').first();
+				window .focus();
+				$input .focus();
+				$anchor.focus();
+				break;
+
+			default :
+				$(expr).focus();
+				break;
+		}
+
 		return this;
 	},
 
@@ -113,4 +131,4 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);
