@@ -58,10 +58,15 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 		$(document.documentElement).css('width', Iroha.getGeometry().pageW + 'px');
 
 		// setup event handlers for buttons
-		$(setting.confirmBtnExpr)
-			.click($.proxy(function(e) { e.preventDefault(); this.doCallback('onConfirmed'     ) }, this));
-		$(setting.closeBtnExpr  )
-			.click($.proxy(function(e) { e.preventDefault(); this.doCallback('onCloseRequested') }, this));
+		$(document)
+			.on('click', setting.confirmBtnExpr, $.proxy(function(e) {
+				e.preventDefault();
+				this.doCallback('onConfirmed');
+			}, this))
+			.on('click', setting.closeBtnExpr  , $.proxy(function(e) {
+				e.preventDefault();
+				this.doCallback('onCloseRequested');
+			}, this));
 
 		// set key equivalents
 		if (Iroha.KeyEquiv) {
