@@ -73,8 +73,13 @@ Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
 			.done(function() {
 				// workaround to Gecko, iframe scroll position is corrupted when browser window is minimized.
 				window.scrollTo(0, 0);
-				// Iroha.PseudoDialog は今や複数インスタンスが同時に存在する可能性があるから、こんなずさんなのではいけない。
-				parent.Iroha.PseudoDialog.getInstance(0).contentFrame.setContent(this);
+
+				// 自分自身を親ウインドウに存在する Iroha.PDContentFrame インスタンスに食わせる。
+				// 食わせる適切な対象を windown.name との比較により探す。
+				parent.Iroha.PDContentFrame
+					.getInstance()
+					.filter (function(instance) { return instance.getName() == window.name })
+					.forEach(function(instance) { instance.setContent(this) }, this);　　// 1つしか見つからないはず。単にメソッドチェーンで済ませたいための forEach。
 			});
 
 		return this;

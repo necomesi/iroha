@@ -605,16 +605,32 @@ $.extend(Iroha.PDContentFrame.prototype,
 	 */
 	init : function(setting) {
 		var setting    = $.extend(Iroha.PDContentFrame.Setting.create(), setting);
-		this.$node     = $('iframe[name="' + setting.name + '"]'); // Iroha.PseudoDialog は今や複数インスタンスが同時に存在する可能性があるから、こんなずさんなのではいけない。
-		this.frame     = window.frames[setting.name];              // 同上。
+		this.$node     = $('iframe[name="' + setting.name + '"]');
+		this.frame     = window.frames[setting.name];
 		this.url       =
 		this.initial   = setting.initial || 'about:blank';
 		this.maxWidth  = setting.maxWidth;
 		this.maxHeight = setting.maxHeight;
 
+		// Iroha.PDContentFrame インスタンスは Iroha.PseudoDialog インスタンスの数だけ同時に複数存在しうる。
+		// そのため Iroha.PseudoDialogContent インスタンスが自分を送り込む先の見分けのために
+		// GUID 的な name 属性値が iframe には必要。
+		// この name 値を Iroha.PseudoDialogContent インスタンス側では window.name として得られる。
+		this.frame.name += '-' + Iroha.String.guid().get();
+		this.$node.attr('name', this.frame.name);
+
 		this.unload();
 
 		return this;
+	},
+
+	/**
+	 * このインスタンスが保持している iframe の name 属性値を得る
+	 * @return iframe の name 属性値
+	 * @type String
+	 */
+	getName : function() {
+		return this.frame.name;
 	},
 
 	/**
@@ -707,7 +723,8 @@ $.extend(Iroha.PDContentFrame.prototype,
 	setContent : function(content) {
 		if (!content) {
 			throw new TypeError('Iroha.PseudoDialog.setContent: first argument must be a Iroha.PseudoDialogContent instance.');
-		} else {
+
+		} else if (!this.content) {
 			// preparations.
 			this.clearTimer();
 			this.content = content;
