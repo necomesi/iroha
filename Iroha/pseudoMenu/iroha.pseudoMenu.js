@@ -268,6 +268,14 @@ $.extend(Iroha.PseudoMenu.prototype,
 	 */
 	show : function(args) {
 		this.showSuper.apply(this, arguments);
+
+		// メニューが画面内に収まるように、 $body の高さを調節する。
+		this.$body.height('auto');
+		var geom   = Iroha.getGeometry();
+		var rect   = this.$node.get(0).getBoundingClientRect();
+		var revise = rect.bottom - geom.windowH + 20;
+		revise > 0 && this.$body.height('-=' + revise);
+
 		this.$node.slideUp(0).slideDown(100);
 		Iroha.delay(16, this).done(function() { this.select(this.selectedIndex) });  // フォーカスがうまく当たらない IE 対策で僅かにディレイ
 		return this;
