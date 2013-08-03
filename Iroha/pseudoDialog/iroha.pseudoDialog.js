@@ -4,7 +4,7 @@
  *       Pseudo Dialog.
  *       (charset : "UTF-8")
  *
- *    @version 3.07.20130730
+ *    @version 3.07.20130731
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires jquery.mousewheel.js
@@ -148,6 +148,7 @@ $.extend(Iroha.PseudoDialog.prototype,
 		// set events.
 		$(window)
 			.resize($.proxy(function() { if (this.active) this.moveToCenter() }, this));
+
 		this.$node
 			.on('click', setting.confirmBtnExpr, $.proxy(function(e) {
 				e.preventDefault();
@@ -171,10 +172,9 @@ $.extend(Iroha.PseudoDialog.prototype,
 		// set key equivalents.
 		if (Iroha.KeyEquiv) {
 			// this is an attitude that "ESC" key is an shortcut key of the close button(s)
-			Iroha.KeyEquiv.create().addKey('!', function() {
-				if (this.$closeBtn.length) {
-					this.close();
-				}
+			Iroha.KeyEquiv.create().addKey('!', function(e) {
+				var excepts = 'input, textarea, select, .iroha-pseudoselectmenu';  // TODO。これを setting object で設定可能にしたい。
+				this.$closeBtn.length && $(e.target).closest(excepts).length == 0 && this.close();
 			}, this);
 		}
 
@@ -241,7 +241,12 @@ $.extend(Iroha.PseudoDialog.prototype,
 	 * @type Iroha.PseudoDialog
 	 */
 	update : function(content) {
-		return this.setContent(content).adjustSize();
+		this.setContent(content).adjustSize();
+
+		this.$closeBtn   = this.$node.find(this.setting.closeBtnExpr  );
+		this.$confirmBtn = this.$node.find(this.setting.confirmBtnExpr);
+
+		return this;
 	},
 
 	/**
@@ -513,9 +518,9 @@ $.extend(Iroha.PseudoDialog.prototype,
 
 				case 'auto' :
 					var $input      = this.$node.find('input:text').eq(0);
-					var $closeBtn   = this.$node.find(setting.closeBtnExpr  );
-					var $confirmBtn = this.$node.find(setting.confirmBtnExpr);
-					var $anchor     = $closeBtn.add($confirmBtn).find('a').addBack().filter('a').eq(0);
+					var $closeBtn   = this.$closeBtn;
+					var $confirmBtn = this.$confirmBtn;
+					var $anchor     = this.$closeBtn.add(this.$confirmBtn).find('a').addBack().filter('a').eq(0);
 					$input .focus();
 					$anchor.focus();
 					break;
