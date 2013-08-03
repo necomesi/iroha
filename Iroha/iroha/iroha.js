@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.39.20130730
+ *    @version 3.40.20130803
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -2842,6 +2842,49 @@ Iroha.setTitleFromInnerText = function(target, base) {
 
 
 
+/* --------------- Function : Iroha.trapWheelEvent --------------- */
+/**
+ * マウスホイールイベントを指定要素ノードの領域内にがんばって閉じ込める。これにより領域内のホイール操作ではページスクロールが（ほぼ）発生しなくなる。
+ * @param {jQuery|Element|String}  node    対象要素ノード。単にセレクタ文字列を与えるのを推奨、その瞬間存在しない要素ノードでも有効に機能させることができるため。
+ * @return Iroha オブジェクト
+ * @type Iroha
+ */
+Iroha.trapWheelEvent = function(node) {
+	var type = 'mousewheel.Iroha.trapWheelEvent';
+	$.type(node) == 'string'
+		? $(document).on(type, node, handler)
+		: $(node    ).on(type,       handler);
+
+	return this;
+
+	function handler(e, delta) {
+		var $node  = $(e.currentTarget);
+		var height = $node.prop('scrollHeight') - $node.height();
+		var scrTop = $node.scrollTop();
+		(delta < 0 && scrTop == height || delta > 0 && scrTop == 0) && e.preventDefault();
+	}
+};
+
+
+
+/* --------------- Function : Iroha.untrapWheelEvent --------------- */
+/**
+ * マウスホイールイベントの閉じ込め処理を止める。
+ * @param {jQuery|Element|String}  node    対象要素ノード。 {@link Iroha.trapWheelEvent} で指定したものと同形式のもの。例えば、セレクタ文字列で指定していたならセレクタ文字列。
+ * @return Iroha オブジェクト
+ * @type Iroha
+ */
+Iroha.untrapWheelEvent = function(node) {
+	var type = 'mousewheel.Iroha.trapWheelEvent';
+	$.type(node) == 'string'
+		? $(document).off(type, node)
+		: $(node    ).off(type);
+
+	return this;
+};
+
+
+
 /* --------------- Function : Iroha.fireShigekix --------------- */
 /**
  * シゲキックス発動（IE7用）
@@ -2983,7 +3026,7 @@ $.fn.Iroha_normalizeTextNode = function(deep) {
 	return this;
 };
 
-/* -------------------- jQuery.fn : Iroha_getInnerText() -------------------- */
+/* -------------------- jQuery.fn : Iroha_getInnerText -------------------- */
 /**
  * get whole inner texts in the node.
  * @exports $.fn.Iroha_getInnerText as jQuery.fn.Iroha_getInnerText
@@ -3027,6 +3070,38 @@ $.fn.Iroha_assistSelectEvent = function(wait) {
 		$node.data(key) || $node.data(key, Iroha.barrageShield(function($) { $.trigger('change') }, wait));
 		$node.data(key)($node);
 	}
+};
+
+
+
+/* -------------------- jQuery.fn : Iroha_trapWheelEvent -------------------- */
+/**
+ * マウスホイールイベントをコンテキスト要素ノードの領域内にがんばって閉じ込める。これにより領域内のホイール操作ではページスクロールが（ほぼ）発生しなくなる。
+ * その瞬間存在しない要素に対して適用したい場合は {@link Iroha.trapWheelEvent} を用いる。その第1引数に対象要素を見つけるためのセレクタ文字列を与える。
+ * @exports $.fn.Iroha_trapWheelEvent as jQuery.fn.Iroha_trapWheelEvent
+ * @see Iroha.trapWheelEvent
+ * @return jQuery current context object
+ * @type jQuery
+ */
+jQuery.fn.Iroha_trapWheelEvent = function() {
+	Iroha.trapWheelEvent(this);
+	return this;
+};
+
+
+
+/* -------------------- jQuery.fn : Iroha_untrapWheelEvent -------------------- */
+/**
+ * マウスホイールイベントの閉じ込め処理を解除する。
+ * {@link Iroha.trapWheelEvent} を使ってセレクタ文字列指定で適用していたものは、{@link Iroha.untrapWheelEvent} を使って解除する必要がある。
+ * @exports $.fn.Iroha_untrapWheelEvent as jQuery.fn.Iroha_untrapWheelEvent
+ * @see Iroha.untrapWheelEvent
+ * @return jQuery current context object
+ * @type jQuery
+ */
+jQuery.fn.Iroha_untrapWheelEvent = function() {
+	Iroha.untrapWheelEvent(this);
+	return this;
 };
 
 
