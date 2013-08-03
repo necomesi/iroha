@@ -4,7 +4,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.39.20130725
+ *    @version 3.39.20130730
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -2539,10 +2539,11 @@ Iroha.getCommonDir = function(dirName) {
  * @param {String} expr              string-expression of watching target object.
  * @param {Number} [timeout=3000]    time to giving up (ms, positive number)
  * @param {Object} [base=window]     base object of expr
+ * @param {Number} [interval=96]     watching interval (ms, positive number)
  * @return a Deferred's Promise object.
  * @type jQuery.Deferred.Promise
  */
-Iroha.watchFor = function(expr, timeout, base) {
+Iroha.watchFor = function(expr, timeout, base, interval) {
 	var deferred = $.Deferred();
 	var observer = function() {
 		var obj = Iroha.getValue(expr, base);
@@ -2556,8 +2557,8 @@ Iroha.watchFor = function(expr, timeout, base) {
 		observe.clear()
 		deferred.reject()
 	}
-	var observe = new Iroha.Interval(observer , 100);
-	var giveup  = new Iroha.Timeout (terminate, Math.max(0, timeout) || 3000);
+	var observe = new Iroha.Interval(observer , Math.max(0, interval) ||   96);
+	var giveup  = new Iroha.Timeout (terminate, Math.max(0, timeout ) || 3000);
 	observer();
 
 	return deferred.promise();
