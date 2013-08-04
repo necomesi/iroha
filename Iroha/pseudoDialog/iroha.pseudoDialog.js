@@ -4,7 +4,7 @@
  *       Pseudo Dialog.
  *       (charset : "UTF-8")
  *
- *    @version 3.07.20130731
+ *    @version 3.08.20130805
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires jquery.mousewheel.js
@@ -1127,20 +1127,6 @@ Iroha.ScrollShield = function() {
 	 * @private
 	 */
 	this.guid = '';
-
-	/**
-	 * このシールドを有効にした瞬間のスクロール位置。連想配列 { X:number, Y:number }
-	 *  @type Object
-	 *  @private
-	 */
-	this.scrollPos = { X : 0, Y : 0 };
-
-	/**
-	 * オリジナルのスタイルを格納。
-	 * @type Array
-	 * @private
-	 */
-	this.storedStyle = [];
 };
 
 Iroha.ViewClass(Iroha.ScrollShield).extend(Iroha.Observable);
@@ -1148,6 +1134,28 @@ Iroha.ViewClass(Iroha.ScrollShield).extend(Iroha.Observable);
 $.extend(Iroha.ScrollShield,
 /** @lends Iroha.ScrollShield */
 {
+	/**
+	 * このシールドを有効にする直前のスクロール位置。
+	 * 連想配列 { X:Number, Y:Number }
+	 * @type Object
+	 * @private
+	 */
+	scrollPos : { X : 0, Y : 0 },
+
+	/**
+	 * このシールドを有効にする直前のオリジナルのスタイルを格納。
+	 * 配列メンバーは連想配列 { $node:jQuery, style:String }
+	 * @type Array
+	 * @private
+	 */
+	storedStyle : [],
+
+	/**
+	 * 有効状態の Iroha.ScrollShield インスタンスの配列を得る
+	 * @param {Iroha.ScrollShield} except    このインスタンスは除外したものを得る
+	 * @return 有効状態の Iroha.ScrollShield インスタンスの配列
+	 * @type Iroha.ScrollShield[]
+	 */
 	getActiveInstance : function (except) {
 		return this.getInstance().filter(function(instance) { return instance !== except && instance.active });
 	}
@@ -1201,7 +1209,8 @@ $.extend(Iroha.ScrollShield.prototype,
 			switch (e.type) {
 				case 'scroll' :
 					e.preventDefault();
-					window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
+					var pos = this.constructor.scrollPos;
+					window.scrollTo(pos.X, pos.Y);
 					this.doCallback('onPrevented');
 					break;
 				case 'mouswheel' :
@@ -1223,42 +1232,35 @@ $.extend(Iroha.ScrollShield.prototype,
 		if (!this.active) {
 			this.active = true;
 
-			if (this.constructor.getActiveInstance(this).length) {
+			var klass = this.constructor;
+			if (klass.getActiveInstance(this).length) {
 				// 自分の他に有効状態の Iroha.ScrollShield インスタンスがいるなら、もう何もする必要がない。
 
 			} else {
-				var geom = Iroha.getGeometry();
-				var node;
-
-				// style for 'body' (or 'html' in Safari)
-				node = (!Iroha.ua.isSafari) ? document.body : document.documentElement;
-				this.storedStyle.push({
-					  node  : node
-					, style : {
-							borderRightWidth : $(node).css('borderRightWidth')
-						  , borderRightStyle : $(node).css('borderRightStyle')
-						  , borderRightColor : $(node).css('borderRightColor')
-					}
+				// 現状のスタイルを格納。
+				// このあとの処理でスタイルを変更していくが、jQuery 的にそれらは style 属性値に設定されていく。
+				// そのため現状の style 属性値を保存しておけば、スタイルの復元時にはその値を単に戻せば良いことになる。
+				[ 'html', 'body' ].forEach(function(node) {
+					var $node = $(node);
+					klass.storedStyle.push({ $node : $node, style : $node.attr('style') || '' });
 				});
 
-				if (geom.windowH < geom.pageH || Iroha.ua.isIE) {
-					$(node).css('borderRight', geom.scrollBar + 'px solid white');
+				var geom = Iroha.getGeometry();
+
+				// 縦スクロールバーがなくなることでページ全体がガクッってするのを抑止する。
+				//　そのためにスクロールバー幅の右ボーダーをつけるというゴマカシ方。
+				if (geom.windowH < geom.pageH || Iroha.ua.isIE && Iroha.ua.documentMode < 8) {
+					// 過去の Safari では以下のスタイルを <body> ではなく <html> につける必要があったが
+					// 少なくとも Safari5.1.x 以降は他ブラウザ同様に <body> につければよくなっていた。
+					$('body').css('borderRight', geom.scrollBar + 'px solid transparent');
 				}
 
-				// style for 'html'
-				node = document.documentElement;
-				this.storedStyle.push({
-					  node  : node
-					, style : {
-						  overflow  : $(node).css('overflow' )
-						, overflowX : $(node).css('overflowX')
-						, overflowY : $(node).css('overflowY')
-					}
-				});
-				$(node).css({ 'overflow' : 'hidden', 'overflowX' : 'hidden', 'overflowY' : 'hidden' });
+				// overflow:hidden してページスクロール不能にする
+				$('html, body').css({ 'overflow' : 'hidden', 'overflowX' : 'hidden', 'overflowY' : 'hidden' });
 
-				this.scrollPos = { X : geom.scrollX, Y : geom.scrollY };
-				window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
+				// 現在のスクロール位置を覚える
+				klass.scrollPos = { X : geom.scrollX, Y : geom.scrollY };
+				window.scrollTo(klass.scrollPos.X, klass.scrollPos.Y);
 			}
 		}
 
@@ -1274,20 +1276,29 @@ $.extend(Iroha.ScrollShield.prototype,
 		if (this.active) {
 			this.active = false;
 
-			if (this.constructor.getActiveInstance(this).length) {
+			var klass = this.constructor;
+			if (klass.getActiveInstance(this).length) {
 				// 自分以外にまだ有効状態の Iroha.ScrollShield インスタンスがいるなら、まだ何もしない。
 
 			} else {
-				this.storedStyle.forEach(function(stored) { $(stored.node).css(stored.style) });
+				// このシールドを有効にする直前のオリジナルのスタイルを復元。
+				var entry;
+				while (entry = klass.storedStyle.pop()) {
+					entry.style
+						? entry.$node.attr('style', entry.style)
+						: entry.$node.removeAttr('style');
+				};
 
-				if (Iroha.ua.isSafari) {
-					var geom = Iroha.getGeometry();
-					var node = document.documentElement;
-					if (geom.windowW < geom.pageW && $(node).css('overflowX') == 'visible') $(node).css('overflowX', 'scroll');
-					if (geom.windowH < geom.pageH && $(node).css('overflowY') == 'visible') $(node).css('overflowY', 'scroll');
-				}
+				//　過去の Safari に存在した不具合対策。いつの頃のものか分からなくなっている。現状必要な感じはもうない。
+				// if (Iroha.ua.isSafari) {
+				// 	var geom = Iroha.getGeometry();
+				// 	var node = document.documentElement;
+				// 	if (geom.windowW < geom.pageW && $(node).css('overflowX') == 'visible') $(node).css('overflowX', 'scroll');
+				// 	if (geom.windowH < geom.pageH && $(node).css('overflowY') == 'visible') $(node).css('overflowY', 'scroll');
+				// }
 
-				window.scrollTo(this.scrollPos.X, this.scrollPos.Y);
+				// このシールドを有効にする直前のスクロール位置を復元
+				window.scrollTo(klass.scrollPos.X, klass.scrollPos.Y);
 			}
 		}
 
