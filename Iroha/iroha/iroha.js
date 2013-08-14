@@ -1,10 +1,11 @@
+/*! "iroha.js" | Iroha - Necomesi JS Library | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.40.20130803
+ *    @version 3.50.20130814
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -503,6 +504,13 @@ $.extend(Iroha.ViewClass.prototype,
 /** @lends Iroha.ViewClass.prototype */
 {
 	/**
+	 * Iroha.ViewClass のものであることを示すフラグ
+	 * @type Boolean
+	 * @constant
+	 */
+	isIrohaViewClass : true,
+
+	/**
 	 * 生成したインスタンス群からなる配列
 	 * @type Object[]
 	 */
@@ -633,10 +641,18 @@ $.extend(Iroha.ViewClass.prototype,
 		$.isFunction(constructor) || (constructor = new Function);
 		$.extend(this.prototype, new constructor);
 
+		// コンストラクタ関数に直接取り付けられたプロパティ・メソッドを継承させる。ただし一部を除外しつつ。
+		var except = 'isIrohaViewClass,instances,key,defMethods,extend'.split(',');
+		$.each(constructor, $.proxy(function(key, value) {
+			value.isIrohaViewClass    ||  // Iroha.ViewClass なコンストラクタなら除外（サブクラス的なもの）
+			this[key] === value       ||  // 完全同値なら除外
+			except.indexOf(key) != -1 ||  // 除外プロパティを除外
+				(this[key] = value);
+		}, this));
+
 		return this;
 	}
 });
-
 
 
 
@@ -3025,6 +3041,8 @@ $.fn.Iroha_normalizeTextNode = function(deep) {
 	});
 	return this;
 };
+
+
 
 /* -------------------- jQuery.fn : Iroha_getInnerText -------------------- */
 /**
