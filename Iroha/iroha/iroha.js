@@ -2916,7 +2916,7 @@ Iroha.untrapWheelEvent = function(node) {
 
 /* --------------- Function : Iroha.fireShigekix --------------- */
 /**
- * シゲキックス発動（IE7用）
+ * シゲキックス発動
  * @param {jQuery|Element|String}    シゲキックスを与える要素ノード
  * @return Iroha オブジェクト
  * @type Iroha
