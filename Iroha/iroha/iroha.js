@@ -5,7 +5,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.50.20130814
+ *    @version 3.50.20130820
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -2956,7 +2956,7 @@ Iroha.injectWeinre = function(ident, host, port) {
 		var src = Iroha.String(url).format(param).get();
 
 		!Iroha.env.isDOMReady
-			? document.write('<script src="' + src + '"></script>')
+			? document.write('<script src="' + src + '"><\/script>')
 			: (function(node) {
 				node.setAttribute('src', src);
 				document.body.appendChild(node);
