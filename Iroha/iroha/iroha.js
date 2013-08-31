@@ -110,9 +110,9 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * @property {Number}  mbVersion           float number of Mobile OS version (ex: 5, 2.3, 6.5)
 	 *
 	 * @property {Boolean} isSafari            true if the browser is AppleWebKit-based (but in iOS/MacOS/Windows only, except Chrome Browser)
-	 * @property {Boolean} isChrome            true if the browser is AppleWebKit-based (Chrome Browser)
-	 * @property {Boolean} isAndroidBrowser    true if the browser is AppleWebKit-based (Android "Standard Browser")
-	 * @property {Boolean} isWebKit            true if the browser is AppleWebKit-based
+	 * @property {Boolean} isWebKit            true if the browser is AppleWebKit-based any browsers
+	 * @property {Boolean} isChrome            true if the browser is Chrome Browser
+	 * @property {Boolean} isAndroidBrowser    true if the browser is Android "Standard Browser"
 	 * @property {Boolean} isGecko             true if the browser is Gecko-based.
 	 * @property {Boolean} isOpera             true if the browser is Opera
 	 * @property {Boolean} isIE                true if the browser is IE-based
