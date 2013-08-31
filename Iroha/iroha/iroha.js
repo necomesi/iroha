@@ -2969,7 +2969,7 @@ Iroha.injectWeinre = function(ident, host, port) {
 		var src = Iroha.String(url).format(param).get();
 
 		!Iroha.env.isDOMReady
-			? document.write('<script src="' + src + '"><\/script>')
+			? document.write('<script src="' + src + '"></scr' + 'ipt>')
 			: (function(node) {
 				node.setAttribute('src', src);
 				document.body.appendChild(node);
