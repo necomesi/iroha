@@ -1,10 +1,11 @@
+/*! "iroha.js" | Iroha - Necomesi JS Library | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.40.20130803
+ *    @version 3.50.20130901
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -109,9 +110,9 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * @property {Number}  mbVersion           float number of Mobile OS version (ex: 5, 2.3, 6.5)
 	 *
 	 * @property {Boolean} isSafari            true if the browser is AppleWebKit-based (but in iOS/MacOS/Windows only, except Chrome Browser)
-	 * @property {Boolean} isChrome            true if the browser is AppleWebKit-based (Chrome Browser)
-	 * @property {Boolean} isAndroidBrowser    true if the browser is AppleWebKit-based (Android "Standard Browser")
-	 * @property {Boolean} isWebKit            true if the browser is AppleWebKit-based
+	 * @property {Boolean} isWebKit            true if the browser is AppleWebKit-based any browsers
+	 * @property {Boolean} isChrome            true if the browser is Chrome Browser
+	 * @property {Boolean} isAndroidBrowser    true if the browser is Android "Standard Browser"
 	 * @property {Boolean} isGecko             true if the browser is Gecko-based.
 	 * @property {Boolean} isOpera             true if the browser is Opera
 	 * @property {Boolean} isIE                true if the browser is IE-based
@@ -174,9 +175,11 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * geometry properties object; the property values are updated when {@link Iroha.getGeometry} is called.
 	 * @name Iroha.geom
 	 * @namespace geometry properties object; return value of {@link Iroha.getGeometry}
-	 * @property {Number} windowW      width of the window viewport.
+	 * @property {Number} screenW      width  of the screen (devicePixelRatio considered, never change by orientation)
+	 * @property {Number} screenH      height of the screen (devicePixelRatio considered, never change by orientation)
+	 * @property {Number} windowW      width  of the window viewport.
 	 * @property {Number} windowH      height of the window viewport.
-	 * @property {Number} pageW        width of the document.
+	 * @property {Number} pageW        width  of the document.
 	 * @property {Number} pageH        height of the document.
 	 * @property {Number} scrollX      scrollLeft position of the document.
 	 * @property {Number} scrollY      scrollTop position of the document.
@@ -186,6 +189,8 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * @property {Number} pageY        mouse position on Y-axis (the origin is topleft of the document)
 	 * @property {Number} zoom         window zoom ratio (in WinIE7).
 	 * @property {Number} scrollBar    browser's scrollbar width.
+	 * @proprety {Number} density      pixel density of the screen (devicePixelRatio).
+	 * @proprety {Number} orientation  screen orientation. (0, 90, -90, 180)
 	 */
 	this.geom = {};
 
@@ -503,6 +508,13 @@ $.extend(Iroha.ViewClass.prototype,
 /** @lends Iroha.ViewClass.prototype */
 {
 	/**
+	 * Iroha.ViewClass のものであることを示すフラグ
+	 * @type Boolean
+	 * @constant
+	 */
+	isIrohaViewClass : true,
+
+	/**
 	 * 生成したインスタンス群からなる配列
 	 * @type Object[]
 	 */
@@ -633,10 +645,18 @@ $.extend(Iroha.ViewClass.prototype,
 		$.isFunction(constructor) || (constructor = new Function);
 		$.extend(this.prototype, new constructor);
 
+		// コンストラクタ関数に直接取り付けられたプロパティ・メソッドを継承させる。ただし一部を除外しつつ。
+		var except = 'isIrohaViewClass,instances,key,defMethods,extend'.split(',');
+		$.each(constructor, $.proxy(function(key, value) {
+			value.isIrohaViewClass    ||  // Iroha.ViewClass なコンストラクタなら除外（サブクラス的なもの）
+			this[key] === value       ||  // 完全同値なら除外
+			except.indexOf(key) != -1 ||  // 除外プロパティを除外
+				(this[key] = value);
+		}, this));
+
 		return this;
 	}
 });
-
 
 
 
@@ -2386,29 +2406,38 @@ Iroha.getGeometry = function(e, win) {
 	var isWinIEqm = (Iroha.ua.isIE && Iroha.ua.isWin && Iroha.ua.isQuirksMode);
 	var isMacIE   = (Iroha.ua.isIE && Iroha.ua.isMac);
 	var isSafari2 = (Iroha.ua.isSafari && Iroha.ua.version < 522); /* Safari 2.0.x or ealier */
+	var isAndrStd = Iroha.ua.isAndroidBrowser;
+	var isAndrCrm = Iroha.ua.isAndroid && Iroha.ua.isChrome;
 
-	g.windowW   = w.innerWidth  || (isMacIE ? b.scrollWidth  : d.offsetWidth );
-	g.windowH   = w.innerHeight || (isMacIE ? b.scrollHeight : d.offsetHeight);
-	g.pageW     = (isMacIE) ? d.offsetWidth  : (isWinIEqm) ? b.scrollWidth  : d.scrollWidth ;
-	g.pageH     = (isMacIE) ? d.offsetHeight : (isWinIEqm) ? b.scrollHeight : d.scrollHeight;
-	g.scrollX   = w.scrollX || d.scrollLeft || b.scrollLeft || 0;
-	g.scrollY   = w.scrollY || d.scrollTop  || b.scrollTop  || 0;
-	g.windowX   = (!e) ? (g.windowX || 0) : e.clientX - (( isSafari2) ? g.scrollX : 0);
-	g.windowY   = (!e) ? (g.windowY || 0) : e.clientY - (( isSafari2) ? g.scrollY : 0);
-	g.pageX     = (!e) ? (g.pageX   || 0) : e.clientX + ((!isSafari2) ? g.scrollX : 0);
-	g.pageY     = (!e) ? (g.pageX   || 0) : e.clientY + ((!isSafari2) ? g.scrollY : 0);
-	g.zoom      = _.getZoomRatio();
-	g.scrollBar = _.getScrollBarWidth();
+	g.density     = w.devicePixelRatio || 1;
+	g.orientation = w.orientation      || 0;
+	g.screenW     = (isAndrCrm && Math.abs(g.orientation) == 90 ? screen.height : screen.width ) / (isAndrStd ? g.density : 1);
+	g.screenH     = (isAndrCrm && Math.abs(g.orientation) == 90 ? screen.width  : screen.height) / (isAndrStd ? g.density : 1);
+	g.windowW     = w.innerWidth  || (isMacIE ? b.scrollWidth  : d.offsetWidth );
+	g.windowH     = w.innerHeight || (isMacIE ? b.scrollHeight : d.offsetHeight);
+	g.pageW       = (isMacIE) ? d.offsetWidth  : (isWinIEqm) ? b.scrollWidth  : d.scrollWidth ;
+	g.pageH       = (isMacIE) ? d.offsetHeight : (isWinIEqm) ? b.scrollHeight : d.scrollHeight;
+	g.scrollX     = w.scrollX || d.scrollLeft || b.scrollLeft || 0;
+	g.scrollY     = w.scrollY || d.scrollTop  || b.scrollTop  || 0;
+	g.windowX     = (!e) ? (g.windowX || 0) : e.clientX - (( isSafari2) ? g.scrollX : 0);
+	g.windowY     = (!e) ? (g.windowY || 0) : e.clientY - (( isSafari2) ? g.scrollY : 0);
+	g.pageX       = (!e) ? (g.pageX   || 0) : e.clientX + ((!isSafari2) ? g.scrollX : 0);
+	g.pageY       = (!e) ? (g.pageX   || 0) : e.clientY + ((!isSafari2) ? g.scrollY : 0);
+	g.zoom        = _.getZoomRatio();
+	g.scrollBar   = _.getScrollBarWidth();
 
 	if (Iroha.settings.common.showGeometry) {
 		var msg = [
-			  ['window'   , '${windowW}x${windowH}']
-			, ['page'     , '${pageW}x${pageH}'    ]
-			, ['scroll'   , '${scrollX},${scrollY}']
-			, ['pos(view)', '${windowX},${windowY}']
-			, ['pos(abs)' , '${pageX},${pageY}'    ]
-			, ['zoom'     , '${zoom}'              ]
-			, ['sbar'     , '${scrollBar}'         ]
+			  ['screen'     , '${screenW}x${screenH}']
+			, ['window'     , '${windowW}x${windowH}']
+			, ['page'       , '${pageW}x${pageH}'    ]
+			, ['scroll'     , '${scrollX},${scrollY}']
+			, ['pos(view)'  , '${windowX},${windowY}']
+			, ['pos(abs)'   , '${pageX},${pageY}'    ]
+			, ['zoom'       , '${zoom}'              ]
+			, ['scrollBar'  , '${scrollBar}'         ]
+			, ['density'    , '${density}'           ]
+			, ['orientation', '${orientation}'       ]
 		].map(function(a) { return a.join(': ') }).join(' | ');
 		window.status = Iroha.String(msg).format(g).get();
 	}
@@ -2940,7 +2969,7 @@ Iroha.injectWeinre = function(ident, host, port) {
 		var src = Iroha.String(url).format(param).get();
 
 		!Iroha.env.isDOMReady
-			? document.write('<script src="' + src + '"></script>')
+			? document.write('<script src="' + src + '"><\/script>')
 			: (function(node) {
 				node.setAttribute('src', src);
 				document.body.appendChild(node);
@@ -3025,6 +3054,8 @@ $.fn.Iroha_normalizeTextNode = function(deep) {
 	});
 	return this;
 };
+
+
 
 /* -------------------- jQuery.fn : Iroha_getInnerText -------------------- */
 /**
