@@ -2879,18 +2879,64 @@ Iroha.setTitleFromInnerText = function(target, base) {
  * @type Iroha
  */
 Iroha.trapWheelEvent = function(node) {
-	var type = 'mousewheel.Iroha.trapWheelEvent';
+	var ns = '.Iroha.trapWheelEvent';
+	
+	var wheel       = 'mousewheel' + ns;
+	var msPointer   = navigator.msPointerEnabled;
+	var touchstart  = (msPointer ? 'MSPointerDown' : 'touchstart') + ns;
+	var touchend    = (msPointer ? 'MSPointerUp'   : 'touchend'  ) + ns;
+	var swipe       = touchstart + ' ' + touchend;
+	var postSwipe   = Iroha.Timeout ();
+	
 	$.type(node) == 'string'
-		? $(document).on(type, node, handler)
-		: $(node    ).on(type,       handler);
+		? $(document).on(wheel, node, wheelHandler).on(swipe, node, swipeHandler)
+		: $(node    ).on(wheel,       wheelHandler).on(swipe,       swipeHandler);
 
 	return this;
 
-	function handler(e, delta) {
-		var $node  = $(e.currentTarget);
-		var height = $node.prop('scrollHeight') - $node.height();
-		var scrTop = $node.scrollTop();
-		(delta < 0 && scrTop == height || delta > 0 && scrTop == 0) && e.preventDefault();
+	function swipeHandler(e) {
+		var $node    = $(e.currentTarget);
+		var $content = $node.children().first();
+		var padding  = 1;
+
+		switch (e.type) {
+			case 'touchstart'    :
+			case 'MSPointerDown' :
+				postSwipe.clear();
+				$content.css('padding', padding);
+
+				var scrollLeft  = $node.scrollLeft();
+				var scrollTop   = $node.scrollTop ();
+				var maxScrLeft  = $node.prop('scrollWidth' ) - $node.width ();
+				var maxScrTop   = $node.prop('scrollHeight') - $node.height();
+
+				scrollLeft == 0                            && $node.scrollLeft(scrollLeft + padding);
+				scrollTop  == 0                            && $node.scrollTop (scrollTop  + padding);
+				scrollLeft == maxScrLeft && maxScrLeft > 0 && $node.scrollLeft(scrollLeft - padding);
+				scrollTop  == maxScrTop  && maxScrTop  > 0 && $node.scrollTop (scrollTop  - padding);
+				break;
+
+			case 'touchend'    :
+			case 'MSPointerUp' :
+				postSwipe = Iroha.Timeout(function() {
+					$content.css('padding', 0);
+					$node.scrollLeft($node.scrollLeft() - 2 * padding);
+					$node.scrollTop ($node.scrollTop () - 2 * padding);
+				}, 1000);
+				break;
+		}
+	}
+
+	function wheelHandler(e, delta, deltaX, deltaY) {
+		var $node   = $(e.currentTarget);
+		var width   = $node.prop('scrollWidth' ) - $node.width ();
+		var height  = $node.prop('scrollHeight') - $node.height();
+		var scrLeft = $node.scrollLeft();
+		var scrTop  = $node.scrollTop ();
+		isNaN(deltaX) && (deltaX = 0    );
+		isNaN(deltaY) && (deltaY = delta);
+		(deltaX > 0 && scrLeft == width  || deltaX < 0 && scrLeft == 0) && e.preventDefault();
+		(deltaY < 0 && scrTop  == height || deltaY > 0 && scrTop  == 0) && e.preventDefault();
 	}
 };
 
