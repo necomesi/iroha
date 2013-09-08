@@ -5,7 +5,7 @@
  *       Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.18.20130402
+ *    @version 3.19.20130908
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -70,7 +70,7 @@ Iroha.Scroller = function() {
 	 * @type String
 	 * @private
 	 */
-	this.easing = 'swing';
+	this.easing = 'easeInOutCubic';
 	
 	/** 
 	 * an associative array { left, top } of last designated destination of scrolling.
@@ -130,11 +130,21 @@ $.extend(Iroha.Scroller.prototype,
 	 * @type Iroha.Scroller
 	 */
 	init : function(node, offsetX, offsetY, duration, easing, smartAbort) {
+		// jquery.easing.js を利用している場合
+		// "swing" が指定されたら jquery.easing.js がしているように $.easing.def が示す関数を利用する。
+		// その結果も含め、 "jswing" の指定になるようであれば、改めて "swing" を利用することにする。
+		// "linear", "swing" の指定となる場合は、 jQuery あるいは jquery.easing.js が持つ関数は使われない。
+		// Iroha.Scroller#scrollTo() にてその場で同等のイージング関数を作り出し、それを利用するため。
+		if ($.easing.jswing) {
+			easing ==  'swing' && (swing = $.easing.def);
+			easing == 'jswing' && (swing = 'swing'     );
+		}
+
 		this.$node         = $(node).eq(0);
 		this.offsetX       = Number(offsetX) || 0;
 		this.offsetY       = Number(offsetY) || 0;
 		this.duration      = (Number(duration) >= 0) ? Number(duration) : 1000;
-		this.easing        = ($.easing[easing]) ? easing : 'swing';
+		this.easing        = $.easing[easing] ? easing : 'swing';
 		this.useSmartAbort = $.type(smartAbort) == 'boolean' ? smartAbort : false;
 		
 		var $node = (this.$node.is('html, body')) ? $(document) : this.$node;
@@ -216,23 +226,28 @@ $.extend(Iroha.Scroller.prototype,
 				
 				// 旧来の DOM メソッド使用のスクロール。
 				// PC ブラウザであればこれで十分にパフォーマンスする。
+				// 一見、 jQuery.animate() を使えばいいように見えるが、あえてしていない。
 				} else {
-					// 一見、 jQuery.animate() を使えばいいように見えるが、あえてしていない。
-					var $node    = this.$node;
-					var timer    = new Iroha.Timer;
-					var easing   = options.easing == 'linear'
-						? function(x, t, b, c, d) { return b + c * t / d }
-						: $.easing[options.easing];
+					var $node = this.$node;
+					var timer = new Iroha.Timer;
+
+					// スクロールを物理的に発生させる関数。ページそれ自体と overflow 領域で使い分け。
 					var scrollTo = (Iroha.ua.isiOS && this.$node.is('html, body'))
 						? window.scrollTo
 						: function(left, top) { $node.prop({ scrollLeft : left, scrollTop : top }) };
 					
-					// 実際にスクロールを駆動させている
+					// 使用するイージング関数は jquery.easing.js のものと同様の引数構成を前提とする。
+					// jQuery 備え付けの "linear", "easing" をその構成に合わせたものをこの場で作り出す。
+					var easing = $.easing[options.easing];
+					options.easing == 'linear' && (easing = function(_, t, b, c, d) { return b + c * (t / d)                                 });
+					options.easing == 'swing'  && (easing = function(x, t, b, c, d) { return b + c * (0.5 - Math.cos((t / d) * Math.PI) / 2) });
+
+					// スクロールをアニメしつつ駆動させる関数
 					var animate = $.proxy(function() {
 						var elapsed = timer.getTime();
 						var left    = Math.round(easing(null, elapsed, start.left, end.left - start.left, duration));
 						var top     = Math.round(easing(null, elapsed, start.top , end.top  - start.top , duration));
-						
+
 						scrollTo(left, top);
 						options.step();
 						
