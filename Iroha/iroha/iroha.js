@@ -2411,8 +2411,8 @@ Iroha.getGeometry = function(e, win) {
 
 	g.density     = w.devicePixelRatio || 1;
 	g.orientation = w.orientation      || 0;
-	g.screenW     = (isAndrCrm && Math.abs(g.orientation) == 90 ? screen.height : screen.width ) / (isAndrStd ? g.density : 1);
-	g.screenH     = (isAndrCrm && Math.abs(g.orientation) == 90 ? screen.width  : screen.height) / (isAndrStd ? g.density : 1);
+	g.screenW     = Math.floor((isAndrCrm && Math.abs(g.orientation) == 90 ? screen.height : screen.width ) / (isAndrStd ? g.density : 1));
+	g.screenH     = Math.floor((isAndrCrm && Math.abs(g.orientation) == 90 ? screen.width  : screen.height) / (isAndrStd ? g.density : 1));
 	g.windowW     = w.innerWidth  || (isMacIE ? b.scrollWidth  : d.offsetWidth );
 	g.windowH     = w.innerHeight || (isMacIE ? b.scrollHeight : d.offsetHeight);
 	g.pageW       = (isMacIE) ? d.offsetWidth  : (isWinIEqm) ? b.scrollWidth  : d.scrollWidth ;
