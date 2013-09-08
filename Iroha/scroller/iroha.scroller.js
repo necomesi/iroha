@@ -1,3 +1,4 @@
+/*! "iroha.scroller.js" | Iroha.Scroller - Necomesi JS Library | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /** 
  *    @fileoverview
@@ -11,7 +12,7 @@
  *    @requires iroha.js
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, window, document) {
 
 
 
@@ -893,4 +894,4 @@ Iroha.PageScroller.Setting.create = function() {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.jQuery, window, document);

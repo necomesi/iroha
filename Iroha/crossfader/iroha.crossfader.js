@@ -1,16 +1,17 @@
+/*! "iroha.crossfader.js" | Iroha.Crossfader - Necomesi JS Library | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
  *       クロスフェードなトランジション
  *       (charset : "UTF-8")
  *
- *    @version 3.03.20130312
+ *    @version 3.03.20130908
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.fontSizeObserver.js  (optional)
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, window, document) {
 
 
 
@@ -35,6 +36,11 @@ $.fn.Iroha_Crossfader = function(setting) {
  * @extends Iroha.Observable
  */
 Iroha.Crossfader = function() {
+	var args = arguments;
+	var self = args.callee;
+	var suit = this instanceof self;
+	if (!suit || args.length) return self.create.apply(self, args);
+	
 	/**
 	 * settings for this instance
 	 * @type Iroha.Crossfader.Setting */
@@ -468,4 +474,4 @@ Iroha.Crossfader.Setting.create = function() {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.jQuery, window, document);
