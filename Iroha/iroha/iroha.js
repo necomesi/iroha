@@ -5,7 +5,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.50.20130901
+ *    @version 3.50.20130904
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -1460,10 +1460,10 @@ Iroha.Observable = function() {
  * @return Iroha.Observable の新規インスタンス
  * @type Iroha.Observable
  */
-Iroha.Observable.create = function() {
-	var instance = new this;
-	return instance.init.apply(instance, arguments);
-};
+// Iroha.Observable.create = function() {
+// 	var instance = new this;
+// 	return instance.init.apply(instance, arguments);
+// };
 
 $.extend(Iroha.Observable.prototype,
 /** @lends Iroha.Observable.prototype */
