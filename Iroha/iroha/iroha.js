@@ -2880,18 +2880,17 @@ Iroha.setTitleFromInnerText = function(target, base) {
  */
 Iroha.trapWheelEvent = function(node) {
 	var ns = '.Iroha.trapWheelEvent';
-	
+
 	var wheel       = 'mousewheel' + ns;
 	var msPointer   = navigator.msPointerEnabled;
 	var touchstart  = (msPointer ? 'MSPointerDown' : 'touchstart') + ns;
 	var touchend    = (msPointer ? 'MSPointerUp'   : 'touchend'  ) + ns;
 	var swipe       = touchstart + ' ' + touchend;
 	var postSwipe   = Iroha.Timeout ();
-	
+
 	$.type(node) == 'string'
 		? $(document).on(wheel, node, wheelHandler).on(swipe, node, swipeHandler)
 		: $(node    ).on(wheel,       wheelHandler).on(swipe,       swipeHandler);
-
 	return this;
 
 	function swipeHandler(e) {
