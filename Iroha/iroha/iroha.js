@@ -5,7 +5,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.50.20130904
+ *    @version 3.52.20130929
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -1247,7 +1247,9 @@ $.extend(Iroha.StyleSheets.prototype,
 	 */
 	add : function(sheets) {
 		$.makeArray(sheets).forEach(function(sheet, i) {
-			if (sheet.type == 'text/css') {
+			// 追加するのは "text/css" のものに限定する。（へんなのが来ても困る）
+			// しかし HTML5 で <link> や <style> の type 属性を省略しているとき、 IE8 以前では本当に type が未定義になってる。うざい。
+			if (!sheet.type || sheet.type == 'text/css') {
 				this[this.length++] = sheet;
 			}
 		}, this);
