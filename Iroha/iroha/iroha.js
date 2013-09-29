@@ -1737,29 +1737,35 @@ $.extend(Iroha.Iterator.prototype,
 		}
 	},
 
-	/*
+	/**
 	 * start automatic iterating.
 	 * @param {Function} func             callback function
 	 * @param {Number}   [ms=0]           milliseconds to interval
 	 * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
-	 * @return this instance
-	 * @type Iroha.Iterator
+	 * @param {Deferred} [_dfd]           (internal use)
+	 * @return jQuery.Deferred.Promise
+	 * @type jQuery.Deferred.Promise
 	 */
-	iterate : function(func, ms, aThisObject) {
+	iterate : function(func, ms, aThisObject, _dfd) {
 		if (typeof func != 'function') {
 			throw new TypeError('Iroha.Iterator#iterate: first argument must be a function object.');
 
 		} else {
+			var dfd  = _dfd || $.Deferred();
 			var flag = !this.aborted && this.hasNext()
 				? func.apply(aThisObject, $.makeArray(this.next()))
 				: false;
-			if (flag !== false) {
+
+			if (flag === false) {
+				dfd.resolve(this.aborted ? 'aborted' : 'complete');
+
+			} else {
 				ms > 0
-					? Iroha.delay(ms, this).done(function() { this.iterate(func, ms, aThisObject) })
-					: this.iterate(func, ms, aThisObject);
+					? Iroha.delay(ms, this).done(function() { this.iterate(func, ms, aThisObject, dfd) })
+					: this.iterate(func, ms, aThisObject, dfd);
 			}
 		}
-		return this;
+		return dfd.promise();
 	},
 
 	/**
