@@ -5,7 +5,7 @@
  *       Iroha : Necomesi JS Library - base script.
  *       (charset : "UTF-8")
  *
- *    @version 3.52.20130929
+ *    @version 3.53.20130930
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -1399,11 +1399,17 @@ $.extend(Iroha.StyleSheets.prototype,
 	 * @return このインスタンス自身
 	 * @type Iroha.StyleSheets
 	 */
-	removeRule : function(index) {
+	deleteRule : function(index) {
 		var sheet = this.get(0);
-		sheet && sheet.removeRule(index);
+		if (sheet) {
+			     if (sheet.deleteRule) sheet.deleteRule(index);  // Std. DOM
+			else if (sheet.removeRule) sheet.removeRule(index);  // IE
+		}
 		return this;
-	}
+	},
+
+	/** @deprecated use #deleteRule */
+	removeRule : function() { return this.deleteRule.apply(this, arguments) }
 });
 
 /* ----- for JSDoc toolkit output ----- */
