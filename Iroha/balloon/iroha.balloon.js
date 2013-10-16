@@ -1,15 +1,16 @@
+/*! "iroha.balloon.js" | Iroha - Necomesi JSLib : Balloon (Floating Layer) | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       Balloon (Floating Layer) Controls.
+ *       Iroha - Necomesi JSLib : Balloon (Floating Layer)
  *
- *    @version 3.03.20130728
+ *    @version 3.03.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.balloon.css
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -752,4 +753,4 @@ Iroha.Balloon.Geometry.create = function() {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

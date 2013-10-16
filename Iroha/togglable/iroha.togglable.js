@@ -1,8 +1,8 @@
-/*! "iroha.togglable.js" | Iroha - Necomesi JS Library | by Necomesi Ltd. */
+/*! "iroha.togglable.js" | Iroha - Necomesi JSLib : Open/Close Togglables | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       任意のブロックを閉じたり開いたりする UI
+ *       Iroha - Necomesi JSLib : Open/Close Togglables
  *       (charset : "UTF-8")
  *
  *    @version 3.04.20130314

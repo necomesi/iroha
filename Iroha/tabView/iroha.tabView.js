@@ -1,17 +1,18 @@
+/*! "iroha.tabView.js" | Iroha - Necomesi JSLib : Tab View | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       典型的なよくあるタブ切替の UI
+ *       Iroha - Necomesi JSLib : Tab View
  *       (charset : "UTF-8")
  *
- *    @version 3.00.20130312
+ *    @version 3.00.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.fontSizeObserver.js  (optional)
  *    @requires iroha.tabView.css
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -42,20 +43,20 @@ Iroha.TabView = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * 設定用オブジェクト
 	 * @type Iroha.TabView.Setting
 	 * @private
 	 */
 	this.setting = Iroha.TabView.Setting.create();
-	
+
 	/**
 	 * 基底要素ノード
 	 * @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * タブページ（Iroha.TabView.Page インスタンス）群を収めた配列。
 	 * タブページは、切替ボタンと切替対象のペインの組を表す。
@@ -63,14 +64,14 @@ Iroha.TabView = function() {
 	 * @private
 	 */
 	this.pages = [];
-	
+
 	/**
 	 * 現在選択（表示）されているページのインスタンス
 	 * @type Iroha.TabView.Page
 	 * @private
 	 */
 	this.currentPage = null;
-	
+
 	/**
 	 * true のとき「高さの自動揃え」を実行しない。 IE 向け対策の一環。
 	 * @type Boolean
@@ -113,49 +114,49 @@ $.extend(Iroha.TabView.prototype,
 	init : function(node, setting) {
 		this.setting = $.extend(this.setting, setting);
 		this.$node   = $(node).first();
-		
+
 		// indicate enabled className
 		var cname = this.constructor.CLASSNAME;
 		this.$node.addClass([ cname.baseNode, cname.enabled ].join(' '));
-		
+
 		// temporary disable setting values
 		var _tmp_changeHash  = this.setting.changeHash    ; this.setting.changeHash     = false;
 		var _tmp_fixedHeight = this.setting.fixedHeight   ; this.setting.fixedHeight    = false;
 		var _tmp_useEffect   = this.setting.effect.enabled; this.setting.effect.enabled = false;
-		
+
 		// create page instances
 		this.$node.find(this.setting.tab).get().forEach(function(node) {
 			this.add(Iroha.TabView.Page.create(node));
 		}, this);
-		
+
 		// flat heights when browser's displaying font size is changed.
 		Iroha.FontSizeObserver && Iroha.FontSizeObserver.addCallback('onChange', this.flatHeights, this);
-		
+
 		// flat heights when browser's window is resized.
 		$(window).resize(Iroha.barrageShield(this.flatHeights, 250, this));
-		
+
 		// auto-select a page which is indicated by or className in HTML.
 		// if no pages are selected, auto-select first page.
 		this.select(this.pages.filter(function(page) { return page.selected }).pop() || 0);
-		
+
 		// restore original setting values
 		this.setting.changeHash     = _tmp_changeHash;
 		this.setting.fixedHeight    = _tmp_fixedHeight;
 		this.setting.effect.enabled = _tmp_useEffect;
-		
+
 		// flatten heights if needed.
 		this.flatHeights();
-		
+
 		// autoselect tab-page by fragment-id in given url.
 		var page = location.hash.split('#')[1] || '';
 		if (this.has(page)) {
 			this.select(page, 'noEffect');
 			Iroha.Timeout(function() { this.scrollIntoView() }, 500, this);
 		}
-		
+
 		return this;
 	},
-		
+
 	/**
 	 * add page instance.
 	 * @param {Iroha.TabView.Page} page    page instance to be added
@@ -168,12 +169,12 @@ $.extend(Iroha.TabView.prototype,
 			this.flatHeights();
 			page.addCallback('onSelectRequested', this.select, this);
 		}
-		
+
 		this.$node.toggleClass(this.constructor.CLASSNAME.discarded, this.pages.length == 1);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * get specified page instance.
 	 * @param {Iroha.TabView.Page|Number|String} page    page instance, index number, or ID-string to get a page.
@@ -184,15 +185,15 @@ $.extend(Iroha.TabView.prototype,
 		switch (typeof page) {
 			case 'string' :
 				return this.pages.filter(function(_) { return (_.getId() == page) }).shift();
-			
+
 			case 'number' :
 				return this.pages[page];
-			
+
 			default :
 				return (this.pages.indexOf(page) != -1) ? page : undefined;
 		}
 	},
-	
+
 	/**
 	 * get currently selected page instance
 	 * @return page instance, or undefined if the page does not exist.
@@ -201,7 +202,7 @@ $.extend(Iroha.TabView.prototype,
 	getCurrentPage : function() {
 		return this.currentPage;
 	},
-	
+
 	/**
 	 * get all page instance
 	 * @return an array of page instance.
@@ -210,7 +211,7 @@ $.extend(Iroha.TabView.prototype,
 	getAllPages : function() {
 		return $.makeArray(this.pages);
 	},
-	
+
 	/**
 	 * does this tabview has specified page?
 	 * @param {Iroha.TabView.Page|Number|String} page    page instance, index number, or ID-string to get a page.
@@ -220,7 +221,7 @@ $.extend(Iroha.TabView.prototype,
 	has : function(page) {
 		return Boolean(this.get(page));
 	},
-	
+
 	/**
 	 * switch to specified page.
 	 * @param {Iroha.TabView.Page|Number|String} page        page instance, index number, or ID-string to select a page.
@@ -230,18 +231,18 @@ $.extend(Iroha.TabView.prototype,
 	 */
 	select : function(page, noEffect) {
 		var page = this.get(page);
-		
+
 		if (page && page != this.currentPage) {
 			var oldHeight = this.currentPage ? this.currentPage.unselect().getHeight() : -1;
 			(this.currentPage = page).select();
-			
+
 			if (this.setting.changeHash) {
 				var id = page.getId();
 				page.setId('');    // workaround for IE7 and earlier
 				window.location.hash = '#' + id;
 				page.setId(id);    // workaround for IE7 and earlier
 			}
-			
+
 			// do resizing effect if requested.
 			var fixedHeight = this.setting.fixedHeight;
 			var effect      = this.setting.effect;
@@ -250,13 +251,13 @@ $.extend(Iroha.TabView.prototype,
 					.setHeight(oldHeight)
 					.setHeight('auto', effect.duration, effect.easing, function() { page.setHeight('auto') });
 			}
-			
+
 			this.doCallback('onSelect', this.currentPage);
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * flat all height of pages to max height of the pages.
 	 * @param {Boolean} force    force to flatten heights; this.setting.fixedHeight is forced to change into "true".
@@ -270,25 +271,25 @@ $.extend(Iroha.TabView.prototype,
 			Iroha.Timeout(function() {
 				this.preventFH = false;
 			}, 500, this);  // delay needs 2 times of Iroha.barrageShield's delay in "this.init()".
-			
+
 			_setHeight.call(this, 'auto');
 			_setHeight.call(this, _getMaxHeight.call(this));
 		}
-		
+
 		return this;
-		
+
 		/**
 		 * set height (border-box height) of all pages' "pane block"
 		 * @param {Number|String} [_height]    "auto" or px number for new height (border-box height) of the "pane block"
 		 * @see Iroha.TabView.Page#setHeight
 		 * @inner
-		 */ 
+		 */
 		function _setHeight(_height) {
 			this.pages
 				.forEach(function(_) { _.setHeight(_height) });
 		}
-		
-		/** 
+
+		/**
 		 * get max height (border-box height) in all pages' "pane block" (px)
 		 * @see Iroha.TabView.Page#getHeight
 		 * @inner
@@ -300,7 +301,7 @@ $.extend(Iroha.TabView.prototype,
 					.pop() || 0;
 		}
 	},
-	
+
 	/**
 	 * scrolls this tab into view.
 	 * @return this instance
@@ -324,14 +325,14 @@ Iroha.TabView.Page = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * このタブページを一意に示す識別子。「タブペイン」要素ヨードの id 属性値と同じになる。
 	 * @type String
 	 * @private
 	 */
 	this.id = '';
-	
+
 	/**
 	 * 「タブ切替ボタン」。リンクアンカー自体か、それを内包する要素ノード。
 	 * このボタンが保持しているリンクは、切替対象たる「タブペイン」へのページ内リンクになっている必要がある。
@@ -339,14 +340,14 @@ Iroha.TabView.Page = function() {
 	 * @private
 	 */
 	this.$tab = $();
-	
+
 	/**
 	 * 「タブペインブロック」。実際に表示が切り替わる側。実コンテンツを内包する要素ノード。
 	 * 「タブ切替ボタン」との対応付けは、ボタン→ペインブロックのページ内リンクによって確立される。
 	    @type jQuery
 	    @private */
 	this.$pane = $();
-	
+
 	/**
 	 * このタブページが選択（表示）されている状態なら true 。
 	 * @type Boolean
@@ -385,19 +386,19 @@ $.extend(Iroha.TabView.Page.prototype,
 	init : function(tab) {
 		var $tab    = $(tab).first();
 		var $anchor = $tab.is('a') ? $tab : $tab.find('a').first();  // jQuery1.8 以降の addBack() を使うか、1.8 以降 deprecated 扱いの andSelf() を使うか、悩ましいし。
-		
+
 		this.$tab   = $tab;
 		this.$pane  = $anchor.Iroha_getLinkTarget();
-		
+
 		if (this.$pane.length) {
 			this.id       = this.$pane.attr('id');
 			this.selected = this.$tab.hasClass(this.constructor.CLASSNAME.selectedTab);
-			
+
 			$anchor.on('click', $.proxy(function(e) {
 				e.preventDefault();
-				
+
 				this.selected || this.doCallback('onSelectRequested', this);
-				
+
 				// aware of a behavior of Iroha.PageScroller.
 				if (Iroha.PageScroller) {
 					Iroha.PageScroller.abort();
@@ -405,13 +406,13 @@ $.extend(Iroha.TabView.Page.prototype,
 				}
 			}, this));
 		}
-		
+
 		// hide outline indicating focus.
 		$anchor.css('outline', 'none').prop('hideFocus', true);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * get id string of this tab pane.
 	 * @returns id
@@ -420,7 +421,7 @@ $.extend(Iroha.TabView.Page.prototype,
 	getId : function() {
 		return this.id;
 	},
-	
+
 	/**
 	 * set id string of this tab pane.
 	 * @returns this instance
@@ -434,7 +435,7 @@ $.extend(Iroha.TabView.Page.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * get height (border-box height) of "pane block" in this page.
 	 * @return height (border-box height) of "pane block" (px)
@@ -444,10 +445,10 @@ $.extend(Iroha.TabView.Page.prototype,
 		var cname  = this.constructor.CLASSNAME.selectedPane;
 		var height = this.$pane.addClass(cname).outerHeight();
 		this.selected || this.$pane.removeClass(cname);
-		
+
 		return height;
 	},
-	
+
 	/**
 	 * set height (border-box height) of "pane block" in this page.
 	 * @param {Number|String} [height="auto"]     "auto" or px number for new height (border-box height) of the "pane block"
@@ -459,17 +460,17 @@ $.extend(Iroha.TabView.Page.prototype,
 	 */
 	setHeight : function(height, duration, easing, callback) {
 		var oldHeight = this.getHeight();
-		
+
 		if (!$.isNumeric(height)) {
 			height = this.$pane.height('auto').height();
-		
+
 		} else {
 			this.$pane
 				.stop()
 				.height(height = Math.max(0, height) || 0)
 				.height(height = Math.max(height * 2 - this.getHeight(), 0));
 		}
-		
+
 		// do resize with animation
 		if (this.selected && duration >= 0) {
 			this.setHeight(oldHeight);
@@ -483,10 +484,10 @@ $.extend(Iroha.TabView.Page.prototype,
 				}
 			);
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * select this pane.
 	 * @return this instance
@@ -494,14 +495,14 @@ $.extend(Iroha.TabView.Page.prototype,
 	 */
 	select : function() {
 		this.selected = true;
-		
+
 		var cname = this.constructor.CLASSNAME;
 		this.$tab .addClass(cname.selectedTab );
 		this.$pane.addClass(cname.selectedPane);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * unselect this pane.
 	 * @return this instance
@@ -509,11 +510,11 @@ $.extend(Iroha.TabView.Page.prototype,
 	 */
 	unselect : function() {
 		this.selected = false;
-		
+
 		var cname = this.constructor.CLASSNAME;
 		this.$tab .removeClass(cname.selectedTab );
 		this.$pane.removeClass(cname.selectedPane);
-		
+
 		return this;
 	}
 });
@@ -529,40 +530,40 @@ Iroha.TabView.Setting = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * 「タブ切替ボタンコンテナ（ボタンすべてをひとまとめにしている要素ノード）」を探すためのセレクタ文字列。
 	 * この要素ノードは {@link Iroha.TabView} の基底要素ノードの内部に存在しなければならない。ノード探索時にそれを前提とするため。
 	 * @type String
 	 */
 	this.tabs = '.iroha-tabview-tabs';
-	
+
 	/**
 	 * 「タブ切替ボタン」個々の要素ノードを探すためのセレクタ文字列。
 	 * この要素ノードは「タブ切替ボタンコンテナ」の内部に存在しなければならない。ノード探索時にそれを前提とするため。
 	 * @type String
 	 */
 	this.tab = '.iroha-tabview-tab';
-	
+
 	/**
 	 * 「タブペインブロック」個々の要素ノードを探すためのセレクタ文字列。
 	 * この要素ノードは {@link Iroha.TabView} の基底要素ノードの内部に存在しなければならない。ノード探索時にそれを前提とするため。
 	 * @type String
 	 */
 	this.pane = '.iroha-tabView-pane';
-	
+
 	/**
 	 * すべての「タブペインブロック」の高さを揃えるかどうか。タブ切替時に後続コンテンツがガタガタさせたくない時に。
 	 * @type Boolean
 	 */
 	this.fixedHeight = false;
-	
+
 	/**
 	 * タブ切替したときに選択したタブペインの id を location.hash に設定し、また location.hassh 値をもとに初期選択ペインを決定するかどうか。
 	 * @type Boolean
 	 */
 	this.changeHash = false;
-	
+
 	/**
 	 * アニメーション視覚効果の設定。
 	 *   - {Boolean} enabled     アニメーションを有効にするかどうか
@@ -608,4 +609,4 @@ Iroha.TabView.Setting.create = function() { return new this };
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

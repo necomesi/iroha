@@ -1,14 +1,15 @@
+/*! "iroha.fontSizeObserver.js" | Iroha - Necomesi JSLib : Observing Change of Fontsize | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       observe changing font size.
+ *       Iroha - Necomesi JSLib : Observing Change of Fontsize
  *
- *    @version 3.00.20130313
+ *    @version 3.01.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -17,7 +18,7 @@
  * @namespace font size observer.
  * @extends Iroha.Observable
  */
-Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
+Iroha.FontSizeObserver = $.extend(new Iroha.Observable,
 /** @lends Iroha.FontSizeObserver */
 {
 	/**
@@ -150,4 +151,4 @@ Iroha.FontSizeObserver = $.extend(Iroha.Observable.create(),
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

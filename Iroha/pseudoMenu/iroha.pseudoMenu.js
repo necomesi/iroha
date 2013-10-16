@@ -1,7 +1,8 @@
+/*! "iroha.pseudoMenu.js" | Iroha - Necomesi JSLib : Pseudo Selector Menu | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       Pseudo Menu.
+ *       Iroha - Necomesi JSLib : Pseudo Selector Menu
  *       (charset : "UTF-8")
  *
  *    @version 3.10.20130729

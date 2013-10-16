@@ -1,8 +1,8 @@
-/*! "iroha.js" | Iroha - Necomesi JS Library | by Necomesi Ltd. */
+/*! "iroha.js" | Iroha - Necomesi JSLib : Base Script | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       Iroha : Necomesi JS Library - base script.
+ *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
  *    @version 3.53.20130930

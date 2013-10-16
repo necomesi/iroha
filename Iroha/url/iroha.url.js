@@ -1,14 +1,15 @@
+/*! "iroha.url.js" | Iroha - Necomesi JSLib : URL Handling Utilities | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       URL handling utility.
+ *       Iroha - Necomesi JSLib : URL Handling Utilities
  *
- *    @version 3.00.20130217
+ *    @version 3.00.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -30,7 +31,7 @@ Iroha.Url = function(url) {
 $.extend(Iroha.Url,
 /** @lends Iroha.Url */
 {
-	/** 
+	/**
 	 * create an instance
 	 * @param {String} [url=location.href]    full URL string to set.
 	 * @return this instance itself
@@ -53,7 +54,7 @@ $.extend(Iroha.Url.prototype,
 	get : function() {
 		return this.anchor.href;
 	},
-	
+
 	/**
 	 * toString; an alias of {@link Iroha.Url#get}.
 	 * @return full URL string
@@ -62,7 +63,7 @@ $.extend(Iroha.Url.prototype,
 	toString : function() {
 		return this.get();
 	},
-	
+
 	/**
 	 * set full URL string.
 	 * @param {String} [url=location.href]    full URL string to set.
@@ -73,7 +74,7 @@ $.extend(Iroha.Url.prototype,
 		this.anchor.href = String(url || location.href);
 		return this;
 	},
-	
+
 	/**
 	 * getter / setter of protocol part of the URL.
 	 * @param {String} [url=location.protocol]    protocol part to set.
@@ -88,7 +89,7 @@ $.extend(Iroha.Url.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * getter / setter of hostname part of the URL.
 	 * @param {String} [hostname=location.hostname]    hostname to set.
@@ -103,7 +104,7 @@ $.extend(Iroha.Url.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * getter / setter of port number of the URL.
 	 * @param {String|Number} [port=location.port]    port number to set.
@@ -119,7 +120,7 @@ $.extend(Iroha.Url.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * getter / setter of host string ("hostname:portnumber") of the URL.
 	 * @param {String} [host=location.host]    host string to set.
@@ -134,7 +135,7 @@ $.extend(Iroha.Url.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * getter / setter of pathname of the URL.
 	 * @param {String} [pathname='/']    pathname to set.
@@ -150,7 +151,7 @@ $.extend(Iroha.Url.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * getter / setter of search (query string "?xxx") part of the URL.
 	 * @param {String} [search]    search (query string) part to set.
@@ -165,7 +166,7 @@ $.extend(Iroha.Url.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * getter / setter of hash ("#xxx") part of the URL.
 	 * @param {String} [hash]    hash part to set
@@ -180,7 +181,7 @@ $.extend(Iroha.Url.prototype,
 			return this;
 		}
 	},
-	
+
 	/**
 	 * getter / setter of associative array of key-value; to handle query string part.
 	 * @param {Object} [params]    an associative array to set
@@ -210,4 +211,4 @@ $.extend(Iroha.Url.prototype,
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

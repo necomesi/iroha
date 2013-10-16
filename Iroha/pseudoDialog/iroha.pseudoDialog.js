@@ -1,7 +1,8 @@
+/*! "iroha.pseudoDialog.js" | Iroha - Necomesi JSLib : Pseudo Dialog | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       Pseudo Dialog.
+ *       Iroha - Necomesi JSLib : Pseudo Dialog
  *       (charset : "UTF-8")
  *
  *    @version 3.08.20130805

@@ -1,17 +1,18 @@
+/*! "iroha.carousel.js" | Iroha - Necomesi JSLib : Carousel | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       いわゆるカルーセル
+ *       Iroha - Necomesi JSLib : Carousel
  *       (charset : "UTF-8")
  *
- *    @version 3.14.20130414
+ *    @version 3.14.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.scroller.js
  *    @requires iroha.carousel.css
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -31,7 +32,7 @@ $.fn.Iroha_Carousel = function(setting) {
 
 /* -------------------- Class : Iroha.Carousel -------------------- */
 /**
- * creates carousel behavior controller
+ * いわゆるカルーセル
  * @class carrousel
  * @extends Iroha.Observable
  */
@@ -41,70 +42,70 @@ Iroha.Carousel = function() {
 	 * @type Iroha.Carousel.Setting
 	 */
 	this.setting = undefined;
-	
+
 	/**
 	 * jQuery object indicating base element of this instance.
 	 * @type jQuery
 	 * @private
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * jQuery object indicating viewport element which contains a grouping block.
 	 * @type jQuery
 	 * @private
 	 */
 	this.$viewport = $();
-	
+
 	/**
 	 * jQuery object indicating grouping block element which contains content-units elements.
 	 * @type jQuery
 	 * @private
 	 */
 	this.$group = $();
-	
+
 	/**
 	 * jQuery object indicating the content-unit elements in the carousel.
 	 * @type jQuery
 	 * @private
 	 */
 	this.$units = $();
-	
+
 	/**
 	 * an array of instances of select buttons.
 	 * @type Iroha.Carousel.SelectBtn[]
 	 * @private
 	 */
 	this.selectBtn = [];
-	
+
 	/**
 	 * an array of instances of prev buttons.
 	 * @type Iroha.Carousel.StepBtn[]
 	 * @private
 	 */
 	this.prevBtn = [];
-	
+
 	/**
 	 * an array of instances of next buttons.
 	 * @type Iroha.Carousel.StepBtn[]
 	 * @private
 	 */
 	this.nextBtn = [];
-	
+
 	/**
 	 * number of currently shown carousel unit.
 	 * @type Number
 	 * @private
 	 */
 	this.currentNum = 0;
-	
+
 	/**
 	 * interval timer to control rotation
 	 * @type Iroha.Interval
 	 * @private
 	 */
 	this.timer = undefined;
-	
+
 	/**
 	 * smooth scroller instance
 	 * @type Iroha.Scroller
@@ -156,7 +157,7 @@ $.extend(Iroha.Carousel.prototype,
 		var $group    = this.$group    = $viewport.find(setting.group   ).first();
 		var $units    = this.$units    = $group   .find(setting.units   );
 		var step      = setting.groupedUnit;
-		
+
 		// init scroll field.
 		this.scroller = Iroha.Scroller.create(
 			  /* node       */ $viewport
@@ -166,46 +167,46 @@ $.extend(Iroha.Carousel.prototype,
 			, /* easing     */ setting.easing
 			, /* smartAbort */ false
 		);
-		
+
 		// initiate prev buttons
 		this.prevBtn = $node.find(setting.prevBtn).get().map(function(node) {
 			return Iroha.Carousel.StepBtn.create(node, -1 * step).addCallback('onClick', this.selectBy, this);
 		}, this);
-		
+
 		// initiate next buttons
 		this.nextBtn = $node.find(setting.nextBtn).get().map(function(node) {
 			return Iroha.Carousel.StepBtn.create(node, +1 * step).addCallback('onClick', this.selectBy, this);
 		}, this);
-		
+
 		// initiate select buttons
 		this.selectBtn = $node.find(setting.selectBtn).get().map(function(node, i) {
 			return Iroha.Carousel.SelectBtn.create(node, i).addCallback('onClick', this.select, this);
 		}, this);
-		
+
 		// revising for quirk behavior of some browsers.
 		this.initScrollReviser($viewport);
 		this.createWastingInsForOpera();
-		
+
 		// select first carousel unit.
 		this.select(0);
 		// this shows units which is needed to be shown
 		$units.slice(0, setting.visibleUnit).addClass(cname.selected);
-		
+
 		// auto start rotation (if necessary)
 		this.startRotate(setting.interval);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * このインスタンスを破棄する
 	 */
 	dispose : function() {
 		this.timer && this.timer.clear();
-		
+
 		this.constructor.disposeInstance(this);
 	},
-	
+
 	/**
 	 * revise scrollLeft on vertical scrolling by user operation (for Gecko only, temporary).
 	 * @param {Element|jQuery|String} viewport    viewport element node
@@ -213,21 +214,21 @@ $.extend(Iroha.Carousel.prototype,
 	 */
 	initScrollReviser : function(viewport) {
 		if (!Iroha.ua.isGecko) return;
-	
+
 		var lock = false;
 		var posX = 0;
 		this.scroller.addCallback('onStart'   , function(x, y) { lock = true            });
 		this.scroller.addCallback('onComplete', function(x, y) { lock = false; posX = x });
 		$(viewport).scroll(function(e) { if (!lock) e.currentTarget.scrollLeft = posX });
 	},
-	
+
 	/**
 	 * workaround for Opera (temporary).
 	 * @private
 	 */
 	createWastingInsForOpera : function() {
 		if (!Iroha.ua.isOpera) return;
-	
+
 		this.$units.eq(0).append(
 			$(document.createElement('ins'))
 				.text('.')
@@ -244,7 +245,7 @@ $.extend(Iroha.Carousel.prototype,
 				})
 		);
 	},
-	
+
 	/**
 	 * [experimental] カルーセル内のスクロール処理を CSS Transform の translate() で実現するモードへ変更する。
 	 * @return このインスタンス自身
@@ -254,7 +255,7 @@ $.extend(Iroha.Carousel.prototype,
 		this.scroller.useCssTranslate(this.$group, 'norevise');
 		return this;
 	},
-	
+
 	/**
 	 * add carousel unit block.
 	 * @param {Element|jQuery|String} node    an element node which indicates carousel unit block
@@ -266,7 +267,7 @@ $.extend(Iroha.Carousel.prototype,
 		this.updateStatus();
 		return this;
 	},
-	
+
 	/**
 	 * remove carousel unit block.
 	 * @param {Element|jQuery|String} node    an element node which indicates carousel unit block
@@ -279,7 +280,7 @@ $.extend(Iroha.Carousel.prototype,
 		this.updateStatus();
 		return this;
 	},
-	
+
 	/**
 	 * select a carousel unit by unit number
 	 * @param {Number} num     carousel unit number
@@ -290,28 +291,28 @@ $.extend(Iroha.Carousel.prototype,
 		var cname  = this.constructor.CLASSNAME;
 		var vunits = this.setting.visibleUnit;
 		var size   = this.$units.size();
-		
+
 		num = Math.min(num, size - (this.setting.endless ? 0 : vunits));
 		num = Math.max(num, 0);
-	
+
 		this.$units.eq(num).each($.proxy(function(_i, _node) {   // syntax sugar, to check existing, to change scope.
 			this.currentNum = num;
-	
+
 			this
 				.startRotate()     // reset timer and continue rotation.
 				.endressPrepare()  // preparation for endless loop.
 				.updateStatus()
 				.doCallback('onStart', num);
-	
+
 			this.scroller
 				.removeDisposableCallback('onStart'   )  // cleanup unused disposable callbacks
 				.removeDisposableCallback('onComplete')  // which is set recent "select()" process.
-	
+
 				.addCallback('onStart', function() {
 					this.$node .addClass(cname.scrolling);
 					this.$units.addClass(cname.selected );
 				}, this, 'disposable')
-	
+
 				.addCallback('onComplete', function() {
 					this.$node .removeClass(cname.scrolling);
 					this.$units.removeClass(cname.selected)
@@ -321,7 +322,7 @@ $.extend(Iroha.Carousel.prototype,
 							this.$units.slice(0, vunits - 1).addClass(cname.selected);
 						} else {
 							this.$units.get().forEach(function(node) { $(node).parent().append(node) })
-							
+
 							// このブロック内部にある scrollToNode() を呼び出すと、完了時コールバックが発生する。
 							// 結果、再度ここへ実行コンテキストが戻ってくることになり、無限ループに陥るため、それを防がなければならない。
 							this.scroller
@@ -332,14 +333,14 @@ $.extend(Iroha.Carousel.prototype,
 					}
 					this.doCallback('onSelect', num);
 				}, this, 'disposable')
-	
+
 				.abort()
 				.scrollToNode(_node);
 		}, this));
-	
+
 		return this;
 	},
-	
+
 	/**
 	 * reveal current carousel unit immediately (scroll-x position is set to 0 when the base node is hidden)
 	 * @return this instance
@@ -349,7 +350,7 @@ $.extend(Iroha.Carousel.prototype,
 		this.scroller.scrollToNode(this.$units.eq(this.currentNum), 0);
 		return this;
 	},
-	
+
 	/**
 	 * update base block's className and button's statuses.
 	 * @return this instance
@@ -362,17 +363,17 @@ $.extend(Iroha.Carousel.prototype,
 		var vunits    = this.setting.visibleUnit;
 		var size      = this.$units.size();
 		var discarded = (size <= vunits);
-	
+
 		// update status className of the base element block
 		this.$node.toggleClass(cname.discarded,  discarded);
 		this.$node.toggleClass(cname.enabled  , !discarded);
-	
+
 		// select/unselect select buttons
 		this.selectBtn.forEach(function(btn, i) {
 			if (num == i) btn.select  ();
 			else          btn.unselect();
 		}, this);
-	
+
 		// enable/disable prev/next buttons
 		if (!this.setting.endless) {
 			var min = 0;
@@ -386,10 +387,10 @@ $.extend(Iroha.Carousel.prototype,
 				else            btn.enable ();
 			}, this);
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * select carousel unit by difference from current selected carousel unit's number
 	 * @param {Number} step    deference from current selected carousel unit's number; typically '+1' or '-1'
@@ -408,7 +409,7 @@ $.extend(Iroha.Carousel.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * preparation for "endress mode"
 	 * @param {Number} [step]    deference from current selected carousel unit's number; typically '+1' or '-1'
@@ -424,7 +425,7 @@ $.extend(Iroha.Carousel.prototype,
 			var size   = this.$units.size();
 			var left   = getPos('left');
 			var top    = getPos('top' );
-			
+
 			if (step < 0) {
 				while ($unit.prevAll(units).size() < Math.min(size - 1, Math.abs(step))) {
 					$unit.siblings(units).last().prependTo($unit.parent());
@@ -438,7 +439,7 @@ $.extend(Iroha.Carousel.prototype,
 			this.scroller.scrollBy(getPos('left') - left, getPos('top') - top, 0);
 		}
 		return this;
-		
+
 		/**
 		 * @param {String} prop    'left' or 'top'
 		 * @return offset position of current unit (px)
@@ -449,7 +450,7 @@ $.extend(Iroha.Carousel.prototype,
 			return $unit.position()[prop] - $unit.parent().position()[prop] || 0;
 		}
 	},
-	
+
 	/**
 	 * start rotating
 	 * @param {Number} [interval]    new interval (in milliseconds); if 0 given, or current interval time is 0, it doesn't start rotation!
@@ -466,7 +467,7 @@ $.extend(Iroha.Carousel.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * stop rotating
 	 * @return this instance
@@ -497,7 +498,7 @@ Iroha.Carousel.StepBtn = function() {
 	 * @constant
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * number to forward/backward selection of the carousel units when this button is clicked
 	 * @type Number
@@ -505,7 +506,7 @@ Iroha.Carousel.StepBtn = function() {
 	 * @constant
 	 */
 	this.step = 1;
-	
+
 	/**
 	 * is this button currently disabled?
 	 * @type Boolean
@@ -546,10 +547,10 @@ $.extend(Iroha.Carousel.StepBtn.prototype,
 	init : function(node, step) {
 		this.$node = $(node).click($.proxy(this.onclick, this));
 		this.step  = Number(step) || 1;
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * event handler for when the button is clicked.
 	 * @param {Event} e    event object
@@ -560,7 +561,7 @@ $.extend(Iroha.Carousel.StepBtn.prototype,
 		e.preventDefault();
 		if (!this.disabled) this.doCallback('onClick', this.step);
 	},
-	
+
 	/**
 	 * enable this button
 	 * @returns this instance
@@ -571,7 +572,7 @@ $.extend(Iroha.Carousel.StepBtn.prototype,
 		this.$node.removeClass(this.constructor.CLASSNAME.disabled);
 		return this;
 	},
-	
+
 	/**
 	 * disable this button
 	 * @returns this instance
@@ -599,7 +600,7 @@ Iroha.Carousel.SelectBtn = function() {
 	 * @constant
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * number to select a carousel unit when this button is clicked.
 	 * @type Number
@@ -607,7 +608,7 @@ Iroha.Carousel.SelectBtn = function() {
 	 * @constant
 	 */
 	this.index = 0;
-	
+
 	/**
 	 * is this button currently selected?
 	 * @type Boolean
@@ -648,10 +649,10 @@ $.extend(Iroha.Carousel.SelectBtn.prototype,
 		this.$node    = $(node).click($.proxy(this.onclick, this));
 		this.index    = index;
 		this.selected = false;
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * event handler for when the button is clicked.
 	 * @param {Event} e    event object
@@ -662,7 +663,7 @@ $.extend(Iroha.Carousel.SelectBtn.prototype,
 		e.preventDefault();
 		this.doCallback('onClick', this.index);
 	},
-	
+
 	/**
 	 * select this button
 	 * @returns this instance
@@ -673,7 +674,7 @@ $.extend(Iroha.Carousel.SelectBtn.prototype,
 		this.$node.addClass(this.constructor.CLASSNAME.selected);
 		return this;
 	},
-	
+
 	/**
 	 * unselect this button
 	 * @returns this instance
@@ -699,67 +700,67 @@ Iroha.Carousel.Setting = function() {
 	 * @type Number
 	 */
 	this.visibleUnit = 1;
-	
+
 	/**
 	 * number of grouped units; this value is used as step count value of prev/next button.
 	 * @type Number
 	 */
 	this.groupedUnit = 1;
-	
+
 	/**
 	 * milliseconds of rotate interval; if 0 then it doesn't rotate.
 	 * @type Number
 	 */
 	this.interval = 0;
-	
+
 	/**
 	 * milliseconds of duration of scroll animation.
 	 * @type Number
 	 */
 	this.duration = 375;
-	
+
 	/**
 	 * easing function name existing in jQuery.easing.
 	 * @type String
 	 */
 	this.easing = 'easeInOutCubic';
-	
+
 	/**
 	 * flag to enable "endress mode".
 	 * @type Boolean
 	 */
 	this.endless = false;
-	
+
 	/**
 	 * an expression to find viewport element which contains a grouping block.
 	 * @type String
 	 */
 	this.viewport = '.iroha-carousel-viewport';
-	
+
 	/**
 	 * an expression to find grouping block element which contains content-units elements.
 	 * @type String
 	 */
 	this.group = '.iroha-carousel-group';
-	
+
 	/**
 	 * an expression to find content-unit elements.
 	 * @type String
 	 */
 	this.units = '.iroha-carousel-unit';
-	
+
 	/**
 	 * an expression to find buttons to select previous unit.
 	 * @type String
 	 */
 	this.prevBtn = '.iroha-carousel-prev-btn';
-	
+
 	/**
 	 * an expression to find buttons to select next unit.
 	 * @type String
 	 */
 	this.nextBtn = '.iroha-carousel-next-btn';
-	
+
 	/**
 	 * an expression to find buttons to select one unit directry.
 	 * @type String
@@ -798,4 +799,4 @@ Iroha.Carousel.Setting.create = function() {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

@@ -1,16 +1,17 @@
+/*! "iroha.flatHeights.js" | Iroha - Necomesi JSLib : Flatten Heights of Elements | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
-/** 
+/**
  *    @fileoverview
- *       flatten heights of the element nodes.
+ *       Iroha - Necomesi JSLib : Flatten Heights of Elements
  *       (charset : "UTF-8")
  *
- *    @version 3.0.20120419
+ *    @version 3.00.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.fontSizeObserver.js (optional)
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -44,7 +45,7 @@ Iroha.FlatHeights = function() {
 	 * @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * 現在の高さ (px)
 	 * @type Number
@@ -64,7 +65,7 @@ $.extend(Iroha.FlatHeights,
 	 * @constant
 	 */
 	BASE_CLASSNAME : 'iroha-flatheights-target',
-	
+
 	/**
 	 * すべての既存インスタンスの高さ揃えを実行する
 	 * @return このクラスオブジェクト自身
@@ -86,16 +87,16 @@ $.extend(Iroha.FlatHeights.prototype, {
 	init : function(nodes) {
 		this.$node = $(nodes);
 		this.height = 0;
-		
+
 		this.$node.addClass(this.constructor.BASE_CLASSNAME);
 		this.process();
-		
+
 		if (Iroha.FontSizeObserver) {
 			Iroha.FontSizeObserver
 				.init()
 				.addCallback('onChange', this.process, this);
 		}
-		
+
 		// しばらく間、高さを揃え続ける (Webkit対策)
 		var height = 0;
 		var timer  = new Iroha.Interval(function() {
@@ -106,13 +107,13 @@ $.extend(Iroha.FlatHeights.prototype, {
 				height = this.height;
 			}
 		}, 100, this);
-	
+
 		// それを1秒でやめる。
 		new Iroha.Timeout(timer.clear, 1000, timer);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * 対象要素ノード群の高さを揃える。
 	 * @return このインスタンス自身
@@ -122,7 +123,7 @@ $.extend(Iroha.FlatHeights.prototype, {
 		this.setHeight(this.getHeight(true));
 		return this;
 	},
-	
+
 	/**
 	 * 現在の高さ、または対象要素ノード群の高さのうち最大のものを返す
 	 * @param {Boolean} recalibrate    true の場合は、一旦高さをそろえない状態に戻してから高さを得る。
@@ -141,20 +142,20 @@ $.extend(Iroha.FlatHeights.prototype, {
 			return height;
 		}
 	},
-	
+
 	/**
 	 * 対象要素ノード群の高さを指定値に変更する。
 	 * @param {Number} height    高さ (border-box height)。 0 の指定は height:auto を意味する。
 	 * @return このインスタンス自身
 	 * @type Iroha.FlatHeights
-	 */ 
+	 */
 	setHeight : function(height) {
 		height = Math.max(height, 0) || 0;
 		this.$node.each(function() {
 			var $node   = $(this).css('height', (height == 0) ? 'auto' : height + 'px');
 			var current = $node.outerHeight();
 			var revise  = 2 * height - current;
-	
+
 			if (current != height && revise >= 0) {
 				$node.css('height', revise + 'px');
 			}
@@ -166,4 +167,4 @@ $.extend(Iroha.FlatHeights.prototype, {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

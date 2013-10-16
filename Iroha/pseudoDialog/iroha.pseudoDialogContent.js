@@ -1,10 +1,11 @@
+/*! "iroha.pseudoDialogContent.js" | Iroha - Necomesi JSLib : Pseudo Dialog Content | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       Control for Pseudo Dialog content pages.
+ *       Iroha - Necomesi JSLib : Pseudo Dialog Content
  *       (charset : "UTF-8")
  *
- *    @version 3.01.20130730
+ *    @version 3.02.20131016
  *    @requires jquery.js
  *    @requires bajl.js
  *    @requires bajl.keyEquiv.js     (optional)
@@ -30,7 +31,7 @@ $(function() {
  * @namespace pseudo dialog content
  * @extends Iroha.Observable
  */
-Iroha.PseudoDialogContent = $.extend(Iroha.Observable.create(),
+Iroha.PseudoDialogContent = $.extend(new Iroha.Observable,
 /** @lends Iroha.PseudoDialogContent */
 {
 	/**
