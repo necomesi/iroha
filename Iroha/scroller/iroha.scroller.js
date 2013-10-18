@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.19.20131016
+ *    @version 3.20.20131019
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -467,7 +467,6 @@ $.extend(Iroha.Scroller.prototype,
 		var transform  = 'translate3d(${x}px, ${y}px, 0px)';
 		var transition = '${pfx}transform ${d}s ${f} 0s';
 		var params     = { x : x, y : y, d : d / 1000, f : f };
-		var origin     = $node.offset();
 
 		// 既存のタイマーを停止
 		clearInterval($node.data(ns + '.interval'));
@@ -493,11 +492,17 @@ $.extend(Iroha.Scroller.prototype,
 		// そうでなければふつうに TransitionEnd を検出して完了をコールバック
 		} else {
 			// 途中経過を等間隔でコールバックしつづけるインターバルタイマー。
-			// translate による表示位置の移動量を、純粋な引き算で検出しつつ
-			// data 属性に保持。これを {@link #scrollPos} メソッドが利用する。
+			// translate による表示位置の移動量を data 属性に保持。
+			// これを {@link #scrollPos} メソッドが利用する。
 			var interval = setInterval(function() {
-				var pos = $node.offset();
-				$node.data(ns + '.pos', { left : Math.round(pos.left - origin.left), top : Math.round(pos.top - origin.top) });
+				var pos    = { left : 0, top : 0 };
+				var matrix = $node.css('transform');
+				var regexp = /^matrix\((.+)\)$/;
+				if (regexp.test(matrix)) {
+					matrix = RegExp.$1.split(',').map(function(n) { return Number(n) });
+					pos    = { left : Math.round(matrix[4]) || 0, top : Math.round(matrix[5]) || 0 };
+				}
+				$node.data(ns + '.pos', pos);
 				dfd.notify();
 			}, 16);
 
