@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.53.20130930
+ *    @version 3.54.20131024
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -1501,9 +1501,13 @@ $.extend(Iroha.Observable.prototype,
 
 		} else {
 			var ret;
-			var args = Array.prototype.slice.call(arguments, 1);
+			var args  = Array.prototype.slice.call(arguments, 1);
+			var chain = chains[name].slice();  // 参照切断して複製
 
-			chains[name]
+			// "disposable" な callback はこの時点で掃除しておく。
+			this.removeDisposableCallback(name);
+
+			chain
 				.filter(function(delegate) {
 					var level = ignore[name] || 'none';
 					switch (level) {
@@ -1518,7 +1522,6 @@ $.extend(Iroha.Observable.prototype,
 					ret = delegate.apply(null, args);
 				});
 
-			this.removeDisposableCallback(name);
 			return ret;
 		}
 	},
