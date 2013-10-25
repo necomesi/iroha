@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.54.20131024
+ *    @version 3.55.20131025
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -3013,32 +3013,89 @@ Iroha.delay = function(delay, aThisObject) {
 /**
  * Weinre をつかってインスペクトを始める（そのための外部 JS を非同期で注入する）。
  * Weinre : {@link http://people.apache.org/~pmuellr/weinre/docs/latest/}
- * @param {String} [ident="anonymous"]         アプリケーション識別子。任意に設定。
- * @param {Stirng] [host=location.hostname]    Weinre が稼働しているマシンのホストネーム。無指定時は表示中の HTML と同じものが指定される。
- * @param {Stirng] [port="8080"]               Weinre が稼働している（Listenしている）ポート番号。無指定時はデフォルトの "8080"。
+ * @param {String} [ident="anonymous"]             アプリケーション識別子。任意に設定。
+ * @param {Stirng] [base="//{samedomain}:8080"]    Weinre が稼働している場所。無指定時は表示中の HTML と同じプロトコル・ドメインのポート 8080 番。
  * @return Iroha オブジェクト
  * @type Iroha
  */
-Iroha.injectWeinre = function(ident, host, port) {
-	if (!Iroha.alreadyApplied(arguments.callee)) {
-		var url   = '${protocol}//${host}:${port}/target/target-script-min.js#${ident}';
-		var param = {
-			  protocol : location.protocol
-			, ident    : ident || 'anonymous'
-			, host     : host  || location.hostname
-			, port     : port  || '8080'
-		};
-		var src = Iroha.String(url).format(param).get();
+Iroha.injectWeinre = function(ident, base) {
+	var args = arguments;
+	var self = args.callee;
 
+	// baseURL が "//" を含まない (URLっぽくない) ものの時は旧引数形式の呼び出しとみなす
+	if (base && base.indexOf('//') == -1) {
+		return self.compat.apply(self, args);
+	}
+
+	var param = {
+		  base  : base  || Iroha.String('//${0}:8080').format(location.hostname)
+		, ident : ident || 'anonymous'
+	};
+	var src = Iroha.String('${base}/target/target-script-min.js#${ident}').format(param);
+	var id  = self.SCRIPT_ID_PREFIX + param.ident;
+
+	if (!document.getElementById(id)) {
 		!Iroha.env.isDOMReady
-			? document.write('<script src="' + src + '"></scr' + 'ipt>')
+			? document.write(Iroha.String('<script src="${0}" id="${1}"></scr' + 'ipt>').format(src, id))
 			: (function(node) {
 				node.setAttribute('src', src);
+				node.setAttribute('id' , id );
 				document.body.appendChild(node);
 			})(document.createElement('script'));
 	}
-	return this;
+
+	return self.getInfo(param.ident);
 };
+
+$.extend(Iroha.injectWeinre,
+/** @lends Iroha.injectWeinre */
+{
+	/**
+	 * script 要素につける id 属性値の接頭辞
+	 * @type String
+	 * @constant
+	 */
+	SCRIPT_ID_PREFIX : 'iroha-inject-weinre-',
+
+	/**
+	 * 古い引数形式による呼び出しのための互換措置
+	 * @param {String} [ident="anonymous"]         アプリケーション識別子。任意に設定。
+	 * @param {Stirng] [host=location.hostname]    Weinre が稼働しているマシンのホストネーム。無指定時は表示中の HTML と同じものが指定される。
+	 * @param {Stirng] [port="8080"]               Weinre が稼働している（Listenしている）ポート番号。無指定時はデフォルトの "8080"。
+	 * @return Iroha オブジェクト
+	 * @type Iroha
+	 */
+	compat : function(ident, host, port) {
+		var args  = arguments;
+		var url   = '${protocol}//${host}:${port}';
+		var param = { protocol : location.protocol , host : host, port : port || '8080' };
+		this(ident, Iroha.String(url).format(param).get());
+		return Iroha;
+	},
+
+	/**
+	 * 注入した Weinre についての各種 URL 等の情報を得る
+	 * @param {String} [ident="anonymous"]    アプリケーション識別子。任意に設定。
+	 * @return 連想配列 { injected:String, weinre:String, weinreUI:String, weinreDoc:String }
+	 * @type Object
+	 */
+	getInfo : function(ident) {
+		var ident = ident || 'anonymous';
+		var node  = document.getElementById(this.SCRIPT_ID_PREFIX + ident);
+		if (!node) {
+			return undefined;
+		} else {
+			var src  = node.src;
+			var base = /^.+?:\/+[^\/]+\//.test(src) ? RegExp.lastMatch : undefined;
+			return {
+				  injected : src
+				, toppage  : base
+				, client   : base + 'client/#' + ident
+				, docs     : base + 'doc/'
+			};
+		}
+	}
+});
 
 
 
