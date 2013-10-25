@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.20.20131019
+ *    @version 3.21.20131020
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -165,6 +165,24 @@ $.extend(Iroha.Scroller.prototype,
 	},
 
 	/**
+	 * このインスタンスを破棄する
+	 */
+	dispose : function() {
+		//
+		// [TODO] 以下はとりいそぎ。ちゃんと実装するべき。
+		//
+
+		this.$node && this.$node
+			.removeClass('iroha-scroller-enabled iroha-scroller-translate-enabled');
+
+		this.$stage && this.$stage
+			.removeClass('iroha-scroller-translate-target')
+			.css({'transform' : 'none', 'transition' : 'none'});
+
+		this.constructor.disposeInstance(this);
+	},
+
+	/**
 	 * scroll to the specified coordinate.
 	 * @param {Number} x             X-coordinate of the scroll destination (px)
 	 * @param {Number} y             Y-coordinate of the scroll destination (px)
@@ -182,9 +200,9 @@ $.extend(Iroha.Scroller.prototype,
 
 			var $node = this.$node.is('body') ? $(document.documentElement) : this.$node;
 			var zoom  = 1;  // temporary, correct zoom ratio is needed for IE7...
-			var trans = this.$stage.data('Iroha.Scroller.Translate.pos') || { left : 0, top : 0 };  // CSS Translate で動かしている場合、scrollWidth/scrollHeight が動かした分だけ減少するのを補う必要がある。
-			var maxX  = Math.max(0, $node.prop('scrollWidth' ) - $node.prop('clientWidth' ) - trans.left);
-			var maxY  = Math.max(0, $node.prop('scrollHeight') - $node.prop('clientHeight') - trans.top );
+			var trans = this.$stage.data('Iroha.Scroller.Translate.pos') || { left : 0, top : 0 };  // CSS Translate で動かしている場合、scrollWidth/scrollHeight が動かした分だけ減少するのを補う必要がある。[TODO] 本当？
+			var maxX  = Math.max(0, $node.prop('scrollWidth' ) - $node.prop('clientWidth' ) /* - trans.left */);
+			var maxY  = Math.max(0, $node.prop('scrollHeight') - $node.prop('clientHeight') /* - trans.top  */);
 			duration  = (Number(duration) >= 0) ? Number(duration) : this.duration;
 
 			var start = this.scrollPos();
@@ -381,7 +399,7 @@ $.extend(Iroha.Scroller.prototype,
 		var ua    = Iroha.ua;
 		var IEver = ua.documentMode;
 		(ua.isWebKit || ua.isGecko || ua.isIE && IEver >= 10) && (capable = true );
-		(                             ua.isIE && IEver <=  0) && (capable = false);
+		(                             ua.isIE && IEver <=  9) && (capable = false);
 
 		// 適合を指名されたブラウザ
 		if (capable) {
@@ -393,11 +411,9 @@ $.extend(Iroha.Scroller.prototype,
 			var before = $test.offset();
 
 			this.translate(100, 100, 16, $test)
-
-				// 500ms くらいのディレイが無いと判定にしくじる人がいる（ Android Browser とか…）
-				.pipe(function() { return Iroha.delay(500) })  // deferred.pipe() は jQuery 1.8 で Deprecated とされてる…しかし…
-//				.then(function() { return Iroha.delay(500) })  // deferred.then() の動きが 1.7 以前と 1.8 以降で違っている…。
-
+				// 500ms くらいのディレイが無いと判定にしくじる人がいる（ Android Brower とか Android Chrome とか…)
+//				.pipe(function() { return Iroha.delay(500) })  // deferred.pipe() は jQuery 1.8 で Deprecated とされている。しかし…
+				.then(function() { return Iroha.delay(500) })  // deferred.then() の動きが 1.7 以前と 1.8 以降で違っていることに注意。
 				.done($.proxy(function() {
 					var after   = $test.offset();
 					var capable = Math.abs(before.left - after.left) + Math.abs(before.top - after.top) > 0;
@@ -408,7 +424,8 @@ $.extend(Iroha.Scroller.prototype,
 
 		// 適合・非適合ブラウザ関係なく、
 		// 実スクロール位置の補正をしないモードの指定なら、スクロール領域の基底要素ノードは overflow:hidden にしておく。
-		norevise && $base.css('overflow', 'hidden');
+		// [TODO] がしかし勝手にそういうスタイルが追加されると都合のわるいことも実際あった…。
+		// norevise && $base.css('overflow', 'hidden');
 
 		return this;
 	},
@@ -476,10 +493,8 @@ $.extend(Iroha.Scroller.prototype,
 		prefix.forEach(function(pfx) {
 			$.extend(params, { pfx : pfx });
 			$node.css({
-				  'transition'          : Iroha.String(transition).format(params).get()
-				, 'transform'           : Iroha.String(transform ).format(params).get()
-				, 'backface-visibility' : 'hidden'
-				, 'perspective'         : 1000
+				  'transition' : Iroha.String(transition).format(params).get()
+				, 'transform'  : Iroha.String(transform ).format(params).get()
 			});
 		});
 
