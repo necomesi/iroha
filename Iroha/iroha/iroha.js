@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.55.20131025
+ *    @version 3.56.20131026
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -3252,6 +3252,28 @@ jQuery.fn.Iroha_trapWheelEvent = function() {
 jQuery.fn.Iroha_untrapWheelEvent = function() {
 	Iroha.untrapWheelEvent(this);
 	return this;
+};
+
+
+
+/* -------------------- jQuery.fn : Iroha_shuffleContent -------------------- */
+/**
+ * コンテキスト要素の直接子ノード群をシャッフル（ランダム並び替え）
+ * @return jQuery current context object
+ * @type jQuery
+ */
+jQuery.fn.Iroha_shuffleContent = function() {
+	return this.each(function() {
+		var $node = $(this);
+		$.each(shuffle($node.contents().get()), function() { $node.append(this) });
+	});
+
+	function shuffle(arr){
+		var len = arr.length;
+		var ret = [];
+		while(len) ret.push(arr.splice(Math.floor(Math.random() * len--), 1)[0]);
+		return ret;
+	}
 };
 
 
