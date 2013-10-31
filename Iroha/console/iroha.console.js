@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Tiny Console Display
  *       (charset : "UTF-8")
  *
- *    @version 1.01.20131024
+ *    @version 1.02.20131031
  *    @requires jquery.js
  *    @requires iroha.js
  */
@@ -71,7 +71,7 @@ $.extend(Iroha.Console.prototype,
 			.addClass(this.constructor.BASE_CLASSNAME)
 			.on('click', $.proxy(function(e) {
 				e.preventDefault();
-				this.clear().hide();
+				this.clear();
 			}, this));
 
 		// DOM Ready されたら（されていたら）ノードツリー挿入
