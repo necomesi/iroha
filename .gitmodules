@@ -1,0 +1,3 @@
+[submodule "Iroha"]
+	path = Iroha
+	url = https://github.com/necomesi/Iroha.git
