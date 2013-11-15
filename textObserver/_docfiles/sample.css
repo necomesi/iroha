@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+/* -----------------------------------------------
+        sample style for iroha.textObserver.js
+   ----------------------------------------------- */
+
+.iroha-textobserver-target {
+	padding: 1px;
+	border: 1px solid #7f9db9;
+}
+
+.iroha-textobserver-error {
+	background-color: #ffd559;
+}

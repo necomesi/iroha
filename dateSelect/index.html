@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Iroha.DateSelect</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<script src="../assets/js/jquery.js"></script>
+<script src="../project/Iroha/iroha/iroha.js"></script>
+<script src="../project/Iroha/dateSelect/iroha.dateSelect.js"></script>
+<script src="_docfiles/sample.js"></script>
+</head>
+<body>
+
+<h1>Iroha.DateSelect</h1>
+
+<ul id="to-index">
+	<li><a href="../index.html">Necomesi JavaScript Library (Iroha)</a></li>
+</ul>
+
+<h2 id="overview">概要</h2>
+
+<p>年/月/日の最大 3 つの select 要素を使って日付を選択する。</p>
+<p>選択した年と月に存在しない日は自動的に選択肢から外される。</p>
+<p>選択可能な日付の期間を範囲指定可能。</p>
+
+<h2 id="coverage">動作確認ブラウザ</h2>
+
+<p>(fixme)</p>
+
+<h2 id="deployment">実装ファイル配置</h2>
+
+<dl>
+	<dt>主ファイル</dt>
+	<dd>
+		<ul>
+			<li><a href="../project/Iroha/dateSelect/iroha.dateSelect.js">iroha.dateSelect.js</a></li>
+		</ul>
+	</dd>
+	<dt>依存ファイル（主ファイルの動作に必要） </dt>
+	<dd>
+		<ul>
+			<li><a href="http://jquery.com/">jQuery</a><span class="info">(<a href="../assets/js/jquery.js">jquery.js</a>)</span></li>
+			<li><a href="../iroha/index.html">Iroha</a><span class="info">(<a href="../project/Iroha/iroha/iroha.js">iroha.js</a>)</span></li>
+		</ul>
+	</dd>
+</dl>
+
+<h3>HTML への組み込み</h3>
+
+<pre>&lt;head&gt;
+    :
+    &lt;script type=&quot;text/javascript&quot; src=&quot;path/to/<em>jquery.js</em>&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;path/to/<em>iroha.js</em>&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;path/to/<em>iroha.dateSelect.js</em>&quot;&gt;&lt;/script&gt;
+    :
+&lt;/head&gt;</pre>
+
+<ul>
+	<li>jquery.js, iroha.js は、これらに依存する各種スクリプトすべてより前に読み込ませておく必要があります。</li>
+</ul>
+
+<h2 id="example">動作例</h2>
+
+<label>
+<select name="year">
+<option class="iroha-dateselect-placeholder">-</option>
+<option value="2010" selected="selected">2010</option>
+</select>
+年
+</label>
+
+<label>
+<select name="month">
+<option class="iroha-dateselect-placeholder">-</option>
+<option value="10" selected="selected">10</option>
+</select>
+月
+</label>
+
+<label>
+<select name="date">
+<option class="iroha-dateselect-placeholder">-</option>
+<option value="10" selected="selected">10</option>
+</select>
+日
+</label>
+
+
+
+
+<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2012-05-29</address>
+
+</body>
+</html>

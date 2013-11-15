@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Iroha.Carousel</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="styleSheet" href="../project/Iroha/carousel/iroha.carousel.css">
+<link rel="stylesheet" href="_docfiles/sample.css">
+<script src="../assets/js/jquery.js"></script>
+<script src="../assets/js/jquery.easing.js"></script>
+<script src="../assets/js/jquery.mousewheel.js"></script>
+<script src="../project/Iroha/iroha/iroha.js"></script>
+<script src="../project/Iroha/scroller/iroha.scroller.js"></script>
+<script src="../project/Iroha/carousel/iroha.carousel.js"></script>
+<script src="_docfiles/sample.js"></script>
+</head>
+<body>
+
+<h1>Iroha.Carousel</h1>
+
+<ul id="to-index">
+	<li><a href="../index.html">Necomesi JavaScript Library (Iroha)</a></li>
+</ul>
+
+<h2 id="overview">概要</h2>
+
+<p>覗き窓の中をコンテンツがスライドします。最近、世間一般ではカルーセルとかいう呼び方がされているらしいけど、要するにそういうもの。</p>
+
+<h2 id="coverage">動作確認ブラウザ</h2>
+
+<p>(fixme)</p>
+
+<h2 id="deployment">実装ファイル配置</h2>
+
+<p>(fixme)</p>
+
+<h3>HTML への組み込み</h3>
+
+<p>(fixme)</p>
+
+<h2 id="example">動作例</h2>
+
+<p><a href="../project/Iroha/carousel/iroha.carousel.css">iroha.carousel.css</a> には最低限必要なスタイルしか書かれていません。実際の案件で使えるレベルにするには、その案件でのビジュアルデザインに沿ってスタイルを作り込む必要があります。たとえば、以下の例の見た目を実現するために、追加スタイル <a href="_docfiles/sample.css">sample.css</a> が使われています。</p>
+
+<div class="iroha-carousel">
+<div class="iroha-carousel-viewport">
+<div class="iroha-carousel-group">
+
+<div class="iroha-carousel-unit">
+<p><img src="_docfiles/pic_001.png" width="300" height="300" alt=""><br>画像タイトル1</p>
+<!-- /iroha-carousel-unit --></div>
+
+<div class="iroha-carousel-unit">
+<p><img src="_docfiles/pic_002.png" width="300" height="300" alt=""><br>画像タイトル2</p>
+<!-- /iroha-carousel-unit --></div>
+
+<div class="iroha-carousel-unit">
+<p><img src="_docfiles/pic_003.png" width="300" height="300" alt=""><br>画像タイトル3</p>
+<!-- /iroha-carousel-unit --></div>
+
+<div class="iroha-carousel-unit">
+<p><img src="_docfiles/pic_004.png" width="300" height="300" alt=""><br>画像タイトル4</p>
+<!-- /iroha-carousel-unit --></div>
+
+<div class="iroha-carousel-unit">
+<p><img src="_docfiles/pic_005.png" width="300" height="300" alt=""><br>画像タイトル5</p>
+<!-- /iroha-carousel-unit --></div>
+
+<!-- /iroha-carousel-group --></div>
+<!-- /iroha-carousel-viewport --></div>
+
+<ul class="iroha-carousel-btns">
+<li class="iroha-carousel-prev-btn"><a href="#">PREV</a></li>
+<li class="iroha-carousel-select-btn"><a href="#">1</a></li>
+<li class="iroha-carousel-select-btn"><a href="#">2</a></li>
+<li class="iroha-carousel-select-btn"><a href="#">3</a></li>
+<li class="iroha-carousel-select-btn"><a href="#">4</a></li>
+<li class="iroha-carousel-select-btn"><a href="#">5</a></li>
+<li class="iroha-carousel-next-btn"><a href="#">NEXT</a></li>
+<!-- /iroha-carousel-btns --></ul>
+<!-- /iroha-carousel --></div>
+
+
+
+<h2 id="definitions">コンストラクタ・メソッド・プロパティ解説</h2>
+
+<ul>
+	<li><a href="../_jsdoc/index.html">JSDoc | Necomesi JavaScript Library</a></li>
+</ul>
+
+<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2012-11-11</address>
+
+</body>
+</html>

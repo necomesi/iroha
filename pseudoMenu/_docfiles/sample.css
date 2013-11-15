@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+/* --------------------------------------------
+ *   sample styles for iroha.pseudoMenu.js
+ * -------------------------------------------- */
+
+body {
+	padding-bottom: 300px;
+}
+
+div.example {
+	position: relative;
+}
+
+div.example dl {
+	margin-left: 0;
+}
+
+div.example dt:before {
+	display: none;
+}
+
+div.example .iroha-pseudomenu ul {
+	margin-left: 0;
+}
+
+div.example > p + p  .iroha-pseudomenu li:before {
+	display: inline-block;
+	width: 12px;
+	margin-right: 5px;
+	text-align: center;
+	content: "";
+}
+
+div.example > p + p  .iroha-pseudomenu li.iroha-pseudomenu-selected-item:before {
+	content: "✔";
+}

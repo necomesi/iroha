@@ -1,0 +1,79 @@
+@charset "UTF-8";
+
+/* --------------------------------------------
+ *    sample styles for iroha.crossfader.js
+ * -------------------------------------------- */
+
+
+/* ----- base block ----- */
+
+div.iroha-crossfader {
+	width: 571px;
+}
+
+
+/* ----- crossfading unit ----- */
+
+div.iroha-crossfader-unit {
+	margin: 1em 0;
+}
+
+div.iroha-crossfader-unit p {
+	margin: 0;
+	padding: 0;
+}
+
+
+/* ----- crossfade control buttons ----- */
+
+ul.iroha-crossfader-btns {
+	margin: 10px 0 0;
+	padding: 3px 0 0;
+	border-top: 1px solid #e2dcdb;
+	text-align: center;
+}
+
+/* ----- crossfade control each buttons ----- */
+
+ul.iroha-crossfader-btns li {
+	display: inline;
+	margin: 0 0 0 0.5em;
+	padding: 0;
+	list-style-type: none;
+}
+
+ul.iroha-crossfader-btns li a,
+ul.iroha-crossfader-btns li a:link,
+ul.iroha-crossfader-btns li a:visited,
+ul.iroha-crossfader-btns li a:hover,
+ul.iroha-crossfader-btns li a:active,
+ul.iroha-crossfader-btns li a:focus {
+	color: #6e514c;
+}
+
+ul.iroha-crossfader-btns li.iroha-crossfader-selected a {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+ul.iroha-crossfader-btns li.iroha-crossfader-prev-btn a {
+	padding-left: 10px;
+	background: url(icon_prev.png) left center no-repeat;
+}
+
+ul.iroha-crossfader-btns li.iroha-crossfader-next-btn a {
+	padding-right: 10px;
+	background: url(icon_next.png) right center no-repeat;
+}
+
+ul.iroha-crossfader-btns li.iroha-crossfader-prev-btn.iroha-crossfader-disabled a {
+	color: #d3cac9;
+	background-image: url(icon_prev_d.png);
+	text-decoration: none;
+}
+
+ul.iroha-crossfader-btns li.iroha-crossfader-next-btn.iroha-crossfader-disabled a {
+	color: #d3cac9;
+	background-image: url(icon_next_d.png);
+	text-decoration: none;
+}

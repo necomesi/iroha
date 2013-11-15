@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Iroha.TabView</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="styleSheet" href="../project/Iroha/tabView/iroha.tabView.css">
+<link rel="stylesheet" href="_docfiles/sample.css">
+<script src="../assets/js/jquery.js"></script>
+<script src="../project/Iroha/iroha/iroha.js"></script>
+<script src="../project/Iroha/fontSizeObserver/iroha.fontSizeObserver.js"></script>
+<script src="../project/Iroha/tabView/iroha.tabView.js"></script>
+<script src="_docfiles/sample.js"></script>
+</head>
+<body>
+
+<h1>Iroha.TabView</h1>
+
+<ul id="to-index">
+	<li><a href="../index.html">Necomesi JavaScript Library (Iroha)</a></li>
+</ul>
+
+<h2 id="overview">概要</h2>
+
+<p>いわゆる「タブ切り替え」を提供します。</p>
+
+<h2 id="coverage">動作確認ブラウザ</h2>
+
+<p>(fixme)</p>
+
+
+<h2 id="deployment">実装ファイル配置</h2>
+
+<dl>
+	<dt>主ファイル</dt>
+	<dd>
+		<ul>
+			<li><a href="../project/Iroha/tabView/iroha.tabView.js">iroha.tabView.js</a></li>
+			<li><a href="../project/Iroha/tabView/iroha.tabView.css">iroha.tabView.css</a><span class="info">(動作のために最低限必要な基礎的スタイル)</span></li>
+		</ul>
+	</dd>
+	<dt>依存ファイル（主ファイルの動作に必要） </dt>
+	<dd>
+		<ul>
+			<li><a href="http://jquery.com/">jQuery</a><span class="info">(<a href="../assets/js/jquery.js">jquery.js</a>)</span></li>
+			<li><a href="../iroha/index.html">Iroha</a><span class="info">(<a href="../project/Iroha/iroha/iroha.js">iroha.js</a>)</span></li>
+			<li><a href="../fontSizeObserver/index.html">Iroha.FontSizeObserver</a><span class="info">(<a href="../project/Iroha/fontSizeObserver/iroha.fontSizeObserver.js">iroha.fontSizeObserver.js</a>)</span><span class="info">(タブで切り替わるブロックの高さを揃える場合に必要)</span></li>
+		</ul>
+	</dd>
+</dl>
+
+<h3>HTML への組み込み</h3>
+
+<pre>&lt;head&gt;
+    :
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;path/to/<em>iroha.tabView.css</em>&quot;&gt;
+    :
+    &lt;script src=&quot;path/to/<em>jquery.js</em>&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;path/to/<em>iroha.js</em>&quot;&gt;&lt;/script&gt;
+    <span class="optional">&lt;script src=&quot;path/to/<em>iroha.fontSizeObserver.js</em>&quot;&gt;&lt;/script&gt;</span>
+    &lt;script src=&quot;path/to/<em>iroha.tabView.js</em>&quot;&gt;&lt;/script&gt;
+    :
+&lt;/head&gt;</pre>
+
+<ul>
+	<li>jquery.js, iroha.js は、これらに依存する各種スクリプトすべてより前に読み込ませておく必要があります。</li>
+	<li>iroha.tabView.css には最低限必要なスタイルしか書かれていません。実際の案件で使えるレベルにするには、その案件でのビジュアルデザインに沿ってスタイルを作り込む必要があります。</li>
+</ul>
+
+<h2 id="examples">動作例</h2>
+
+<p><a href="../project/Iroha/tabView/iroha.tabView.css">iroha.tabView.css</a> には最低限必要なスタイルしか書かれていません。実際の案件で使えるレベルにするには、その案件でのビジュアルデザインに沿ってスタイルを作り込む必要があります。たとえば、以下の例の見た目を実現するために、追加スタイル <a href="_docfiles/sample.css">sample.css</a> が使われています。</p>
+
+<h3>例1</h3>
+
+<div class="example" id="example1">
+
+<div class="iroha-tabview iroha-tabview-test">
+
+<ul class="iroha-tabview-tabs">
+<li class="iroha-tabview-tab"><a href="#pane1-1">Pane1</a></li>
+<li class="iroha-tabview-tab"><a href="#pane1-2">Pane2</a></li>
+<li class="iroha-tabview-tab"><a href="#pane1-3">Pane3</a></li>
+<li class="iroha-tabview-tab"><a href="#pane1-4">Pane4</a></li>
+<li class="iroha-tabview-tab"><a href="#pane1-5">Pane5</a></li>
+</ul>
+
+<div class="iroha-tabview-pane" id="pane1-1">
+<h4>Pane1</h4>
+<p>
+And the beast shall come forth surrounded by a roiling <em>cloud</em> of 
+<em>vengeance</em>. The house of the unbelievers shall be <em>razed</em> 
+and they shall be <em>scorched</em> to the earth. Their tags shall <em>blink</em> 
+until the end of <em>days.</em>
+</p>
+<p><cite>from <a href="http://www.mozillazine.org/misc/about:mozilla/12:10.html"><em>The Book of Mozilla,</em> 12:10</a></cite></p>
+<!-- /iroha-tabview-pane--></div>
+
+<div class="iroha-tabview-pane" id="pane1-2">
+<h4>Pane2</h4>
+<p>
+And the beast shall be made <em>legion</em>. 
+Its numbers shall be increased a <em>thousand thousand</em> fold. 
+The din of a million keyboards like unto a great <em>storm</em> 
+shall cover the earth, and the followers of Mammon shall <em>tremble</em>.
+</p>
+<p><cite> from <a href="http://www.mozillazine.org/misc/about:mozilla/3:31.xhtml"><em>The Book of Mozilla,</em> 3:31</a><br>
+ (Red Letter Edition)</cite></p>
+<!-- /iroha-tabview-pane--></div>
+
+<div class="iroha-tabview-pane" id="pane1-3">
+<h4>Pane3</h4>
+<p>
+And so at last the beast <em>fell</em> and the unbelievers rejoiced.
+But all was not lost, for from the ash rose a <em>great bird</em>.
+The bird gazed down upon the unbelievers and cast <em>fire</em>
+and <em>thunder</em> upon them. For the beast had been
+<em>reborn</em> with its strength <em>renewed</em>, and the
+followers of <em>Mammon</em> cowered in horror.
+</p>
+<p><cite>from <a href="http://www.mozillazine.org/misc/about:mozilla/7:15.xhtml"><em>The Book of Mozilla,</em> 7:15</a></cite></p>
+<!-- /iroha-tabview-pane--></div>
+
+<div class="iroha-tabview-pane" id="pane1-4">
+<h4>About The Book of Mozilla (1/2)</h4>
+<p>There is no real book entitled <em>The Book of Mozilla</em>. However, apparent quotations hidden in Netscape and Mozilla give this impression by revealing passages similar to the <a href="http://en.wikipedia.org/wiki/Book_of_Revelation" title="Book of Revelation">Book of Revelation</a> of the <a href="http://en.wikipedia.org/wiki/Bible" title="Bible">Bible</a>. When <b>about:mozilla</b> is typed into the location bar, various versions of these browsers display a cryptic message in white text on a maroon background in the browser window.</p>
+<p>There are three official verses of <em>The Book of Mozilla</em> (official in the sense that they have been included in shipping releases), though various unofficial verses can be found on the <a href="http://en.wikipedia.org/wiki/World_Wide_Web" title="World Wide Web">World Wide Web</a>. All three official verses have biblical-looking chapter and verse references, though these are actually references to important dates in the history of Netscape and Mozilla.</p>
+<p>The three verses all refer to the activities of a fearsome-sounding "beast". In its early days, <a href="http://en.wikipedia.org/wiki/Netscape_Communications_Corporation" title="Netscape Communications Corporation">Netscape Communications Corporation</a> had a green fire-breathing <a href="http://en.wikipedia.org/wiki/Dragon" title="Dragon">dragon</a>-like <a href="http://en.wikipedia.org/wiki/Lizard" title="Lizard">lizard</a> mascot, known as <a href="http://en.wikipedia.org/wiki/Mozilla_%28mascot%29" title="Mozilla (mascot)">Mozilla</a> (after the <a href="http://en.wikipedia.org/wiki/Code_name" title="Code name">code name</a> for Netscape Navigator 1.0). From this, it can be conjectured that the "beast" referred to in <em>The Book of Mozilla</em> is a type of fire-breathing lizard, which can be viewed as a <a href="http://en.wikipedia.org/wiki/Metaphor" title="Metaphor">metaphor</a> for (or <a href="http://en.wikipedia.org/wiki/Personification" title="Personification">personification</a> of) Netscape.</p>
+<!-- /iroha-tabview-pane--></div>
+
+<div class="iroha-tabview-pane" id="pane1-5">
+<h4>About The Book of Mozilla (2/2)</h4>
+<p>While part of the appeal of <em>The Book of Mozilla</em> comes from the mysterious nature, a knowledge of the history of Netscape and Mozilla can be used to apply some meaning to the verses. Furthermore, the page <a href="http://www.mozilla.org/book/" title="http://www.mozilla.org/book/">www.mozilla.org/book</a> has annotations for each of the three verses hidden as comments in its <a href="http://en.wikipedia.org/wiki/HTML" title="HTML">HTML</a> source code. These comments were written by <a href="http://en.wikipedia.org/w/index.php?title=Valerio_Capello&amp;action=edit" title="Valerio Capello">Valerio Capello</a> in May <a href="http://en.wikipedia.org/wiki/2004" title="2004">2004</a> and were added to the <a href="http://en.wikipedia.org/wiki/Mozilla_Foundation" title="Mozilla Foundation">Mozilla Foundation</a> site by <a href="http://en.wikipedia.org/w/index.php?title=Nicholas_Bebout&amp;action=edit" title="Nicholas Bebout">Nicholas Bebout</a> in October that year. Neither Capello nor Bebout are 'core' Mozilla decision-makers; and there is no evidence that Capello's interpretations received any high-level approval from the senior management of the Mozilla Foundation.</p>
+<p>In some versions of <a href="http://en.wikipedia.org/wiki/Microsoft" title="Microsoft">Microsoft</a> <a href="http://en.wikipedia.org/wiki/Internet_Explorer" title="Internet Explorer">Internet Explorer</a>, <b>about:mozilla</b> produces a blank blue page, which some have conjectured refers to the <a href="http://en.wikipedia.org/wiki/Blue_Screen_of_Death" title="Blue Screen of Death">blue screen of death</a>.</p>
+<p>Before Netscape 1.1, <b>about:mozilla</b> produced the text "Mozilla rules!".</p>
+<!-- /iroha-tabview-pane--></div>
+
+<!-- /iroha-tabview --></div>
+
+<!-- /example#example1 --></div>
+
+<h3>例2</h3>
+
+<!--
+<p>切り替えタブに画像を使い、ロールオーバー効果を与えることもできます。その場合は、 <a href="../rollover/index.html">BAJL.Rollover</a> が追加で必要になります。ただし切り替えタブのロールオーバーの設定は rollover.js 側で行うのではなく、 bajl.tabView.js 側で行います。</p>
+
+<p>であるから、 BAJL.Rollover 側の設定が効いてしまわないよう、切り替えタブ画像とその親要素に <code>class="rollover"</code> 等をつけてはいけない事に注意。</p>
+-->
+
+<div class="example" id="example2">
+
+<div class="iroha-tabview">
+
+<ul class="iroha-tabview-tabs">
+<li class="iroha-tabview-tab"><a href="#pane2-1"><img src="_docfiles/tab_001.png" width="60" height="25" alt="Pane1"></a></li>
+<li class="iroha-tabview-tab"><a href="#pane2-2"><img src="_docfiles/tab_002.png" width="60" height="25" alt="Pane2"></a></li>
+<li class="iroha-tabview-tab iroha-tabview-tab-selected"><a href="#pane2-3"><img src="_docfiles/tab_003.png" width="60" height="25" alt="Pane3"></a></li>
+</ul>
+
+<div class="iroha-tabview-pane" id="pane2-1">
+<h4>Pane1</h4>
+<p>
+And the beast shall come forth surrounded by a roiling <em>cloud</em> of 
+<em>vengeance</em>. The house of the unbelievers shall be <em>razed</em> 
+and they shall be <em>scorched</em> to the earth. Their tags shall <em>blink</em> 
+until the end of <em>days.</em>
+</p>
+<p><cite>from <a href="http://www.mozillazine.org/misc/about:mozilla/12:10.html"><em>The Book of Mozilla,</em> 12:10</a></cite></p>
+<!-- /iroha-tabview-pane--></div>
+
+<div class="iroha-tabview-pane" id="pane2-2">
+<h4>Pane2</h4>
+<p>
+And the beast shall be made <em>legion</em>. 
+Its numbers shall be increased a <em>thousand thousand</em> fold. 
+The din of a million keyboards like unto a great <em>storm</em> 
+shall cover the earth, and the followers of Mammon shall <em>tremble</em>.
+</p>
+<p><cite> from <a href="http://www.mozillazine.org/misc/about:mozilla/3:31.xhtml"><em>The Book of Mozilla,</em> 3:31</a><br>
+ (Red Letter Edition)</cite></p>
+<!-- /iroha-tabview-pane--></div>
+
+<div class="iroha-tabview-pane" id="pane2-3">
+<h4>Pane3</h4>
+<p>
+And so at last the beast <em>fell</em> and the unbelievers rejoiced.
+But all was not lost, for from the ash rose a <em>great bird</em>.
+The bird gazed down upon the unbelievers and cast <em>fire</em>
+and <em>thunder</em> upon them. For the beast had been
+<em>reborn</em> with its strength <em>renewed</em>, and the
+followers of <em>Mammon</em> cowered in horror.
+</p>
+<p><cite>from <a href="http://www.mozillazine.org/misc/about:mozilla/7:15.xhtml"><em>The Book of Mozilla,</em> 7:15</a></cite></p>
+<!-- /iroha-tabview-pane--></div>
+
+<!-- /iroha-tabview --></div>
+
+<!-- /example#example2 --></div>
+
+<h2 id="definitions">コンストラクタ・メソッド解説</h2>
+
+<p>(fixme)</p>
+
+<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2013-03-13</address>
+
+</body>
+</html>

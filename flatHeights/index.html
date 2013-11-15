@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Iroha.FlatHeights</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="styleSheet" href="_docfiles/sample.css">
+<script src="../assets/js/jquery.js"></script>
+<script src="../project/Iroha/iroha/iroha.js"></script>
+<script src="../project/Iroha/fontSizeObserver/iroha.fontSizeObserver.js"></script>
+<script src="../project/Iroha/flatHeights/iroha.flatHeights.js"></script>
+<script src="_docfiles/sample.js"></script>
+</head>
+<body>
+
+<h1>Iroha.FlatHeights</h1>
+
+<ul id="to-index">
+	<li><a href="../index.html">Necomesi JavaScript Library (Iroha)</a></li>
+</ul>
+
+<h2 id="overview">概要</h2>
+
+<p>指定したブロックレベル要素群の高さを、そのなかでもっとも高いものに揃えます。</p>
+<p>ブラウザの表示文字サイズの変更にも追従させることが可能。</p>
+
+<h2 id="coverage">動作確認ブラウザ</h2>
+
+<p>(fixme)</p>
+
+<h2 id="deployment">実装ファイル配置</h2>
+
+<dl>
+	<dt>主ファイル</dt>
+	<dd>
+		<ul>
+			<li><a href="../project/Iroha/flatHeights/iroha.flatHeights.js">iroha.flatHeights.js</a></li>
+		</ul>
+	</dd>
+	<dt>依存ファイル（主ファイルの動作に必要） </dt>
+	<dd>
+		<ul>
+			<li><a href="http://jquery.com/">jQuery</a><span class="info">(<a href="../assets/js/jquery.js">jquery.js</a>)</span></li>
+			<li><a href="../iroha/index.html">Iroha</a><span class="info">(<a href="../project/Iroha/iroha/iroha.js">iroha.js</a>)</span></li>
+			<li><a href="../fontSizeObserver/index.html">Iroha.FontSizeObserver</a><span class="info">(<a href="../project/Iroha/fontSizeObserver/iroha.fontSizeObserver.js">iroha.fontSizeObserver.js</a>)</span><span class="info">(ブラウザの表示文字サイズの変更に追従させる場合に必要)</span></li>
+		</ul>
+	</dd>
+</dl>
+
+<h3>HTML への組み込み</h3>
+
+<pre>&lt;head&gt;
+    :
+    &lt;script type=&quot;text/javascript&quot; src=&quot;path/to/<em>jquery.js</em>&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;path/to/<em>iroha.js</em>&quot;&gt;&lt;/script&gt;
+    <span class="optional">&lt;script type=&quot;text/javascript&quot; src=&quot;path/to/<em>iroha.fontSizeObserver.js</em>&quot;&gt;&lt;/script&gt;</span>
+    &lt;script type=&quot;text/javascript&quot; src=&quot;path/to/<em>iroha.flatHeights.js</em>&quot;&gt;&lt;/script&gt;
+    :
+&lt;/head&gt;</pre>
+
+<ul>
+	<li>jquery.js, iroha.js は、これらに依存する各種スクリプトすべてより前に読み込ませておく必要があります。</li>
+</ul>
+
+<h2 id="autosetup">AutoSetup</h2>
+
+<p>プリセットされた設定を利用して、ページ読み込み時に自動適用されるしくみを Iroha では AutoSetup と呼んでいますが、この JS ではそのしくみを提供していません。</p>
+
+<h2 id="example">動作例</h2>
+
+<h3>例1：見つかった物をとにかく揃える</h3>
+
+<p>セレクタによりブロックは9つ見つかり、その中で一番高さの高いものに他の8個が揃う。</p>
+
+<pre>jQuery('#example1 p').Iroha_FlatHeights()</pre>
+<p><button>↓適用</button></p>
+<div class="example" id="example1">
+<p>あのイーハトーヴォのすきとほった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモーリオ市、郊外のぎらぎらひかる草の波。</p>
+<p>あのイーハトーヴォのすきとほった風。</p>
+<p>夏でも底に冷たさをもつ青いそら。</p>
+<p>うつくしい森で飾られたモーリオ市。</p>
+<p>郊外のぎらぎらひかる草の波。</p>
+<p>あのイーハトーヴォのすきとほった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモーリオ市、郊外のぎらぎらひかる草の波。</p>
+<p>夏でも底に冷たさをもつ青いそら。</p>
+<p>うつくしい森で飾られたモーリオ市。</p>
+<p>郊外のぎらぎらひかる草の波。</p>
+</div>
+
+<h3>例2：見つかった物を3つずつ揃える</h3>
+
+<p>セレクタによりブロックは9つ見つかるが、それを3つずつのグループに分けて、それぞれで高さを揃える。</p>
+
+<pre>jQuery('#example2 p').Iroha_FlatHeights(<em>3</em>)</pre>
+<p><button>↓適用</button></p>
+<div class="example" id="example2">
+<p>あのイーハトーヴォのすきとほった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモーリオ市、郊外のぎらぎらひかる草の波。</p>
+<p>あのイーハトーヴォのすきとほった風。</p>
+<p>夏でも底に冷たさをもつ青いそら。</p>
+<p>うつくしい森で飾られたモーリオ市。</p>
+<p>郊外のぎらぎらひかる草の波。</p>
+<p>あのイーハトーヴォのすきとほった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモーリオ市、郊外のぎらぎらひかる草の波。</p>
+<p>夏でも底に冷たさをもつ青いそら。</p>
+<p>うつくしい森で飾られたモーリオ市。</p>
+<p>郊外のぎらぎらひかる草の波。</p>
+</div>
+
+<h3>例3：見つかった物を3つずつ揃えるが対象が3の倍数ではなかった</h3>
+
+<p>特に問題なく3つずつで揃う。</p>
+
+<pre>jQuery('#example3 p').Iroha_FlatHeights(<em>3</em>)</pre>
+<p><button>↓適用</button></p>
+<div class="example" id="example3">
+<p>あのイーハトーヴォのすきとほった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモーリオ市、郊外のぎらぎらひかる草の波。</p>
+<p>あのイーハトーヴォのすきとほった風。</p>
+<p>夏でも底に冷たさをもつ青いそら。</p>
+<p>うつくしい森で飾られたモーリオ市。</p>
+<p>郊外のぎらぎらひかる草の波。</p>
+<p>あのイーハトーヴォのすきとほった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモーリオ市、郊外のぎらぎらひかる草の波。</p>
+<p>夏でも底に冷たさをもつ青いそら。</p>
+<p>うつくしい森で飾られたモーリオ市。</p>
+</div>
+
+
+<h2 id="definitions">コンストラクタ・メソッド解説</h2>
+
+<p>(fixme)</p>
+
+<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2012-04-05</address>
+
+</body>
+</html>
