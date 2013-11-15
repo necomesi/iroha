@@ -9,4 +9,4 @@
 [HTML ドキュメント]を参照。
 
 
-[HTML ドキュメント]: https://github.com/necomesi/Iroha/blob/master/Iroha/index.html
+[HTML ドキュメント]: http://necomesi.github.io/Iroha/
