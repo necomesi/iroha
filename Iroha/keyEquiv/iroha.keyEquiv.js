@@ -1,21 +1,22 @@
+/*! "iroha.keyEquiv.js" | Iroha - Necomesi JSLib : Keyboard Eqivalents | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       keyboard equivalents system.
+ *       Iroha - Necomesi JSLib : Keyboard Eqivalents
  *       (charset : "UTF-8")
  *
- *    @version 3.01.20130313
+ *    @version 3.01.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
 /* --------------- Class : Iroha.KeyEquiv --------------- */
 /**
- * @class keyboard equivalents system
+ * @class keyboard equivalents
  * @extends Iroha.Observable
  */
 Iroha.KeyEquiv = function() {
@@ -238,4 +239,4 @@ $.extend(Iroha.KeyEquiv.prototype,
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

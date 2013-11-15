@@ -1,16 +1,17 @@
+/*! "iroha.throbber.js" | Iroha - Necomesi JSLib : Throbber Balloon | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       throbber balloon.
+ *       Iroha - Necomesi JSLib : Throbber Balloon
  *
- *    @version 3.00.20120517
+ *    @version 3.00.20131015
  *    @requires jquery.js
  *    @requires iroha.js
  *    @requires iroha.balloon.js
  *    @requires iroha.throbber.css
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -201,4 +202,4 @@ Iroha.Throbber.Setting.create = function() {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

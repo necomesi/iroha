@@ -1,7 +1,8 @@
+/*! "iroha.exitCensor.js" | Iroha - Necomesi JSLib : Confirm Page Exit | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       ページ退去確認機能
+ *       Iroha - Necomesi JSLib : Confirm Page Exit
  *       (charset : "UTF-8")
  *
  *    @version 3.01.20130622
@@ -15,7 +16,7 @@
 
 /* ============================== Static class : Iroha.ExitCensor ============================== */
 /**
- * @namespace ページ退去確認機能を提供。beforeUnload のタイミングで退去確認を実施する。
+ * @namespace ページ退去確認機能。beforeUnload のタイミングで退去確認を実施する。
  * ただし Mobile Safari では beforeUnload イベントが機能しないため、ブラウザの「戻る」ボタンのみ擬似的に退去確認を再現。
  */
 Iroha.ExitCensor = {

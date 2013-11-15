@@ -1,14 +1,15 @@
+/*! "iroha.dateSelect.js" | Iroha - Necomesi JSLib : Date Selector | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       年/月/日を選択する <select> メニュー。
+ *       Iroha - Necomesi JSLib : Date Selector
  *
- *    @version 3.0.20120530
+ *    @version 3.00.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -30,17 +31,17 @@ $.fn.Iroha_DateSelect = function(setting, callback) {
 
 /* --------------- Class : Iroha.DateSelect --------------- */
 
-/** 
+/**
  * @class 年/月/日を選択する <select> メニュー
  * @extend Iroha.Observable
  */
 Iroha.DateSelect = function() {
-	/** 
+	/**
 	 * 年/月/日を選択するための <select> 要素（群）。
 	 * @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * このインスタンスの動作設定オブジェクト
 	 * @type Iroha.DateSelect.Setting
@@ -62,7 +63,7 @@ $.extend(Iroha.DateSelect.prototype,
 	init : function(nodes, setting) {
 		this.$node   = $(nodes).filter('select').slice(0, 3);
 		this.setting = $.extend(true, new Iroha.DateSelect.Setting, setting);
-		
+
 		if (!this.$node.length) {
 			throw new ReferenceError('Iroha.DateSelect#init: 第1引数によって与えられる select 要素ノードは、最低でも 1 つ以上が存在しなければなりません。');
 		} else {
@@ -70,10 +71,10 @@ $.extend(Iroha.DateSelect.prototype,
 				.addClass(this.setting.className.select)
 				.find('.' + this.setting.className.placeholder)
 					.data('iroha-dateselect-value', 0);
-			
+
 			// HTML ソースレベルでの初期選択状態 (select.value) を記憶しておく。
 			var origValue = this.$node.map(function() { return $(this).val() });
-			
+
 			// 本来の選択可能範囲を記憶しておく。（参照切断しつつコピー）
 			var origRange = {};
 			$.each(this.setting.range, function(key, date) { origRange[key] = new Date(date) });
@@ -83,18 +84,18 @@ $.extend(Iroha.DateSelect.prototype,
 			this.setting.range.from.setDate ( 1);
 			this.setting.range.end .setMonth(11);
 			this.setting.range.end .setDate (31);
-		
+
 			// メニュー再構築
 			this.fill();
 			this.$node.prop('selectedIndex', 0);
-			
+
 			// HTML ソースレベルでの初期選択状態を復元
 			this.$node.each(function(i) { $(this).val(origValue[i]) });
-			
+
 			// 本来の選択可能範囲を復帰させ、もういちど再構築して選択肢を絞る
 			this.setting.range = origRange;
 			this.fill();
-			
+
 			// イベント付与
 			this.$node
 				// メニューの「年」が操作されたら、「月」「日」のメニュー内容を再構築
@@ -108,7 +109,7 @@ $.extend(Iroha.DateSelect.prototype,
 				// 選択が変更されたことをコールバック
 				.change($.proxy(function() { this.doCallback('change', this.get()) }, this))
 		}
-		
+
 		return this;
 	},
 
@@ -140,55 +141,55 @@ $.extend(Iroha.DateSelect.prototype,
 	set : function(arg1, arg2, arg3) {
 		var recent = this.get();
 		var date;
-		
+
 		// ◆第1引数が Date オブジェクトであればそれを使用
 		if ($.type(arg1) == 'date') {
 			date = new Date(arg1);  // オブジェクト参照切断
-		
+
 		// ◆ それ以外
 		} else {
 			var menus = this.$node.length;
-			
+
 			// 引数(最大)3つ分からなる配列を作成。その配列要素すべてを 0 以上の数値に変換。
 			date = Array.prototype.slice.call(arguments, 0, menus).map(function(num) { return Math.max(0, num) || 0 });
-			
+
 			// 配列要素の数値が 1 以上のものがメニュー数と同じであれば、Date オブジェクトを作る。
 			var count = date.filter(function(num) { return num > 0 }).length;
 			if (count == menus) {
 				date = new Date(date[0] || 0, (date[1] || 1) - 1, date[2] || 1);
 			}
 		}
-		
+
 		// this.fill() で日のメニューを31日分すべてある状態へ再構築させるために。
 		this.$node.prop('selectedIndex', 0);
-		
+
 		// 選択処理は生年月日メニューを完全に再構築してから行う。
 		this.fill();
-		
+
 		// 選択処理
 		switch ($.type(date)) {
 			case 'date' :
 				// 選択可能範囲内を出ないようにする
 				var range = this.setting.range;
 				    date  = [ range.from, range.end, date ].sort(function(a, b) { return a - b })[1];
-				
+
 				this.val(this.$node.eq(0), date.getFullYear() );
 				this.val(this.$node.eq(1), date.getMonth() + 1);
 				this.val(this.$node.eq(2), date.getDate()     );
 				break;
-			case 'array' : 
+			case 'array' :
 				this.val(this.$node.eq(0), date[0]);
 				this.val(this.$node.eq(1), date[1]);
 				this.val(this.$node.eq(2), date[2]);
 				break;
 		}
-		
+
 		//  選択可能範囲を再調整
 		this.fill();
-		
+
 		// 日付の選択状態が変化していればコールバック
 		(recent != this.get()) && this.doCallback('change', this.get());
-		
+
 		return this;
 	},
 
@@ -205,7 +206,7 @@ $.extend(Iroha.DateSelect.prototype,
 		var range   = setting.range;
 		var format  = setting.format;
 		var descend = setting.descend;
-		
+
 		switch(kind) {
 			case 'year' :
 				var from = range.from.getFullYear();
@@ -225,14 +226,14 @@ $.extend(Iroha.DateSelect.prototype,
 				var month = this.val($select.eq(1));
 				var from  = (year == range.from.getFullYear() && month == range.from.getMonth() + 1) ? range.from.getDate() :  1;
 				var end   = (year == range.end .getFullYear() && month == range.end .getMonth() + 1) ? range.end .getDate() : 31;
-				
+
 				//　現在選択されている年/月に存在しうる最後の日を探す
 				if (year > 0 && month > 0) {
 					var date;
 					do { date = new Date(year, month - 1, end--) } while (month != date.getMonth() + 1);
 					end++;
 				}
-				
+
 				this.fillMenu($select.eq(2), format.date, from, end, descend.date);
 				break;
 
@@ -242,10 +243,10 @@ $.extend(Iroha.DateSelect.prototype,
 				arguments.callee.call(this, 'date' );
 				break;
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * 指定の <select> 要素の内容を再構築
 	 * @param {jQuery}          $select      select 要素
@@ -266,7 +267,7 @@ $.extend(Iroha.DateSelect.prototype,
 
 		// placeholder 項目以外の選択肢を消去
 		$select.find('option:not(.' + this.setting.className.placeholder + ')').remove();
-		
+
 		// 選択肢を追加
 		for (var i = from; i <= end; i++) {
 			var $option = $(html(i))
@@ -278,14 +279,14 @@ $.extend(Iroha.DateSelect.prototype,
 		if (descend) {
 			$select.find('.' + this.setting.className.placeholder).prependTo($select);
 		}
-		
+
 		// append() した option を val() で選択しようとするとエラーになる IE6 対策。なぜ回避できるのか理由不明。
 		$select.width();
-		
+
 		// 直前に選択していた項目か、それがなくなってしまっていれば一番末尾の項目を選択
 		this.val($select, value == 0 ? 0 : Math.min(Math.max(value, from), end));
 	},
-	
+
 	/**
 	 * 指定の <select> 要素の選択値を得る、または指定の選択値を選択状態にする
 	 * @param {jQuery} $select    select 要素。この引数のみを与えた場合は、現在の選択値(年/月/日の数字) を得る。(getter 動作)
@@ -300,7 +301,7 @@ $.extend(Iroha.DateSelect.prototype,
 		switch (arguments.length) {
 			case 1 :
 				return $select.find('option:selected').data(dataKey) || 0;
-			case 2 : 
+			case 2 :
 				return $select
 					.prop('selectedIndex', 0)
 					.find('option')
@@ -342,7 +343,7 @@ Iroha.DateSelect.Setting = function() {
 		, 'month' : '<option value="${0}">${0}</option>'
 		, 'date'  : '<option value="${0}">${0}</option>'
 	};
-	
+
 	/**
 	 * 年/月/日それぞれの選択肢の並び順を降順とするか。（通常は昇順）
 	 *   - 'year'  : {Boolean} true の場合は降順、 false は昇順で並べる
@@ -355,7 +356,7 @@ Iroha.DateSelect.Setting = function() {
 		, 'month' : false
 		, 'date'  : false
 	};
-	
+
 	/**
 	 * 関連要素ノードに付与される・付与しておくべき className の定義
 	 *   - 'select'      : {String} DateSelect の日付選択用メニューの <select> 要素であることを示す
@@ -394,4 +395,4 @@ Iroha.DateSelect.Setting.create = function() {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

@@ -1,11 +1,11 @@
-/*! "iroha.js" | Iroha - Necomesi JS Library | by Necomesi Ltd. */
+/*! "iroha.js" | Iroha - Necomesi JSLib : Base Script | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       Iroha : Necomesi JS Library - base script.
+ *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.50.20130901
+ *    @version 3.56.20131026
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -1247,7 +1247,9 @@ $.extend(Iroha.StyleSheets.prototype,
 	 */
 	add : function(sheets) {
 		$.makeArray(sheets).forEach(function(sheet, i) {
-			if (sheet.type == 'text/css') {
+			// 追加するのは "text/css" のものに限定する。（へんなのが来ても困る）
+			// しかし HTML5 で <link> や <style> の type 属性を省略しているとき、 IE8 以前では本当に type が未定義になってる。うざい。
+			if (!sheet.type || sheet.type == 'text/css') {
 				this[this.length++] = sheet;
 			}
 		}, this);
@@ -1397,11 +1399,17 @@ $.extend(Iroha.StyleSheets.prototype,
 	 * @return このインスタンス自身
 	 * @type Iroha.StyleSheets
 	 */
-	removeRule : function(index) {
+	deleteRule : function(index) {
 		var sheet = this.get(0);
-		sheet && sheet.removeRule(index);
+		if (sheet) {
+			     if (sheet.deleteRule) sheet.deleteRule(index);  // Std. DOM
+			else if (sheet.removeRule) sheet.removeRule(index);  // IE
+		}
 		return this;
-	}
+	},
+
+	/** @deprecated use #deleteRule */
+	removeRule : function() { return this.deleteRule.apply(this, arguments) }
 });
 
 /* ----- for JSDoc toolkit output ----- */
@@ -1460,10 +1468,10 @@ Iroha.Observable = function() {
  * @return Iroha.Observable の新規インスタンス
  * @type Iroha.Observable
  */
-Iroha.Observable.create = function() {
-	var instance = new this;
-	return instance.init.apply(instance, arguments);
-};
+// Iroha.Observable.create = function() {
+// 	var instance = new this;
+// 	return instance.init.apply(instance, arguments);
+// };
 
 $.extend(Iroha.Observable.prototype,
 /** @lends Iroha.Observable.prototype */
@@ -1493,9 +1501,13 @@ $.extend(Iroha.Observable.prototype,
 
 		} else {
 			var ret;
-			var args = Array.prototype.slice.call(arguments, 1);
+			var args  = Array.prototype.slice.call(arguments, 1);
+			var chain = chains[name].slice();  // 参照切断して複製
 
-			chains[name]
+			// "disposable" な callback はこの時点で掃除しておく。
+			this.removeDisposableCallback(name);
+
+			chain
 				.filter(function(delegate) {
 					var level = ignore[name] || 'none';
 					switch (level) {
@@ -1510,7 +1522,6 @@ $.extend(Iroha.Observable.prototype,
 					ret = delegate.apply(null, args);
 				});
 
-			this.removeDisposableCallback(name);
 			return ret;
 		}
 	},
@@ -1737,29 +1748,35 @@ $.extend(Iroha.Iterator.prototype,
 		}
 	},
 
-	/*
+	/**
 	 * start automatic iterating.
 	 * @param {Function} func             callback function
 	 * @param {Number}   [ms=0]           milliseconds to interval
 	 * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
-	 * @return this instance
-	 * @type Iroha.Iterator
+	 * @param {Deferred} [_dfd]           (internal use)
+	 * @return jQuery.Deferred.Promise
+	 * @type jQuery.Deferred.Promise
 	 */
-	iterate : function(func, ms, aThisObject) {
+	iterate : function(func, ms, aThisObject, _dfd) {
 		if (typeof func != 'function') {
 			throw new TypeError('Iroha.Iterator#iterate: first argument must be a function object.');
 
 		} else {
+			var dfd  = _dfd || $.Deferred();
 			var flag = !this.aborted && this.hasNext()
 				? func.apply(aThisObject, $.makeArray(this.next()))
 				: false;
-			if (flag !== false) {
+
+			if (flag === false) {
+				dfd.resolve(this.aborted ? 'aborted' : 'complete');
+
+			} else {
 				ms > 0
-					? Iroha.delay(ms, this).done(function() { this.iterate(func, ms, aThisObject) })
-					: this.iterate(func, ms, aThisObject);
+					? Iroha.delay(ms, this).done(function() { this.iterate(func, ms, aThisObject, dfd) })
+					: this.iterate(func, ms, aThisObject, dfd);
 			}
 		}
-		return this;
+		return dfd.promise();
 	},
 
 	/**
@@ -2411,8 +2428,8 @@ Iroha.getGeometry = function(e, win) {
 
 	g.density     = w.devicePixelRatio || 1;
 	g.orientation = w.orientation      || 0;
-	g.screenW     = (isAndrCrm && Math.abs(g.orientation) == 90 ? screen.height : screen.width ) / (isAndrStd ? g.density : 1);
-	g.screenH     = (isAndrCrm && Math.abs(g.orientation) == 90 ? screen.width  : screen.height) / (isAndrStd ? g.density : 1);
+	g.screenW     = Math.floor((isAndrCrm && Math.abs(g.orientation) == 90 ? screen.height : screen.width ) / (isAndrStd ? g.density : 1));
+	g.screenH     = Math.floor((isAndrCrm && Math.abs(g.orientation) == 90 ? screen.width  : screen.height) / (isAndrStd ? g.density : 1));
 	g.windowW     = w.innerWidth  || (isMacIE ? b.scrollWidth  : d.offsetWidth );
 	g.windowH     = w.innerHeight || (isMacIE ? b.scrollHeight : d.offsetHeight);
 	g.pageW       = (isMacIE) ? d.offsetWidth  : (isWinIEqm) ? b.scrollWidth  : d.scrollWidth ;
@@ -2879,18 +2896,63 @@ Iroha.setTitleFromInnerText = function(target, base) {
  * @type Iroha
  */
 Iroha.trapWheelEvent = function(node) {
-	var type = 'mousewheel.Iroha.trapWheelEvent';
-	$.type(node) == 'string'
-		? $(document).on(type, node, handler)
-		: $(node    ).on(type,       handler);
+	var ns = '.Iroha.trapWheelEvent';
 
+	var wheel       = 'mousewheel' + ns;
+	var msPointer   = navigator.msPointerEnabled;
+	var touchstart  = (msPointer ? 'MSPointerDown' : 'touchstart') + ns;
+	var touchend    = (msPointer ? 'MSPointerUp'   : 'touchend'  ) + ns;
+	var swipe       = touchstart + ' ' + touchend;
+	var postSwipe   = Iroha.Timeout ();
+
+	$.type(node) == 'string'
+		? $(document).on(wheel, node, wheelHandler).on(swipe, node, swipeHandler)
+		: $(node    ).on(wheel,       wheelHandler).on(swipe,       swipeHandler);
 	return this;
 
-	function handler(e, delta) {
-		var $node  = $(e.currentTarget);
-		var height = $node.prop('scrollHeight') - $node.height();
-		var scrTop = $node.scrollTop();
-		(delta < 0 && scrTop == height || delta > 0 && scrTop == 0) && e.preventDefault();
+	function swipeHandler(e) {
+		var $node    = $(e.currentTarget);
+		var $content = $node.children().first();
+		var padding  = 1;
+
+		switch (e.type) {
+			case 'touchstart'    :
+			case 'MSPointerDown' :
+				postSwipe.clear();
+				$content.css('padding', padding);
+
+				var scrollLeft  = $node.scrollLeft();
+				var scrollTop   = $node.scrollTop ();
+				var maxScrLeft  = $node.prop('scrollWidth' ) - $node.width ();
+				var maxScrTop   = $node.prop('scrollHeight') - $node.height();
+
+				scrollLeft == 0                            && $node.scrollLeft(scrollLeft + padding);
+				scrollTop  == 0                            && $node.scrollTop (scrollTop  + padding);
+				scrollLeft == maxScrLeft && maxScrLeft > 0 && $node.scrollLeft(scrollLeft - padding);
+				scrollTop  == maxScrTop  && maxScrTop  > 0 && $node.scrollTop (scrollTop  - padding);
+				break;
+
+			case 'touchend'    :
+			case 'MSPointerUp' :
+				postSwipe = Iroha.Timeout(function() {
+					$content.css('padding', 0);
+					$node.scrollLeft($node.scrollLeft() - 2 * padding);
+					$node.scrollTop ($node.scrollTop () - 2 * padding);
+				}, 1000);
+				break;
+		}
+	}
+
+	function wheelHandler(e, delta, deltaX, deltaY) {
+		var $node   = $(e.currentTarget);
+		var width   = $node.prop('scrollWidth' ) - $node.width ();
+		var height  = $node.prop('scrollHeight') - $node.height();
+		var scrLeft = $node.scrollLeft();
+		var scrTop  = $node.scrollTop ();
+		isNaN(deltaX) && (deltaX = 0    );
+		isNaN(deltaY) && (deltaY = delta);
+		(deltaX > 0 && scrLeft == width  || deltaX < 0 && scrLeft == 0) && e.preventDefault();
+		(deltaY < 0 && scrTop  == height || deltaY > 0 && scrTop  == 0) && e.preventDefault();
 	}
 };
 
@@ -2951,32 +3013,89 @@ Iroha.delay = function(delay, aThisObject) {
 /**
  * Weinre をつかってインスペクトを始める（そのための外部 JS を非同期で注入する）。
  * Weinre : {@link http://people.apache.org/~pmuellr/weinre/docs/latest/}
- * @param {String} [ident="anonymous"]         アプリケーション識別子。任意に設定。
- * @param {Stirng] [host=location.hostname]    Weinre が稼働しているマシンのホストネーム。無指定時は表示中の HTML と同じものが指定される。
- * @param {Stirng] [port="8080"]               Weinre が稼働している（Listenしている）ポート番号。無指定時はデフォルトの "8080"。
+ * @param {String} [ident="anonymous"]             アプリケーション識別子。任意に設定。
+ * @param {Stirng] [base="//{samedomain}:8080"]    Weinre が稼働している場所。無指定時は表示中の HTML と同じプロトコル・ドメインのポート 8080 番。
  * @return Iroha オブジェクト
  * @type Iroha
  */
-Iroha.injectWeinre = function(ident, host, port) {
-	if (!Iroha.alreadyApplied(arguments.callee)) {
-		var url   = '${protocol}//${host}:${port}/target/target-script-min.js#${ident}';
-		var param = {
-			  protocol : location.protocol
-			, ident    : ident || 'anonymous'
-			, host     : host  || location.hostname
-			, port     : port  || '8080'
-		};
-		var src = Iroha.String(url).format(param).get();
+Iroha.injectWeinre = function(ident, base) {
+	var args = arguments;
+	var self = args.callee;
 
+	// baseURL が "//" を含まない (URLっぽくない) ものの時は旧引数形式の呼び出しとみなす
+	if (base && base.indexOf('//') == -1) {
+		return self.compat.apply(self, args);
+	}
+
+	var param = {
+		  base  : base  || Iroha.String('//${0}:8080').format(location.hostname)
+		, ident : ident || 'anonymous'
+	};
+	var src = Iroha.String('${base}/target/target-script-min.js#${ident}').format(param);
+	var id  = self.SCRIPT_ID_PREFIX + param.ident;
+
+	if (!document.getElementById(id)) {
 		!Iroha.env.isDOMReady
-			? document.write('<script src="' + src + '"></scr' + 'ipt>')
+			? document.write(Iroha.String('<script src="${0}" id="${1}"></scr' + 'ipt>').format(src, id))
 			: (function(node) {
 				node.setAttribute('src', src);
+				node.setAttribute('id' , id );
 				document.body.appendChild(node);
 			})(document.createElement('script'));
 	}
-	return this;
+
+	return self.getInfo(param.ident);
 };
+
+$.extend(Iroha.injectWeinre,
+/** @lends Iroha.injectWeinre */
+{
+	/**
+	 * script 要素につける id 属性値の接頭辞
+	 * @type String
+	 * @constant
+	 */
+	SCRIPT_ID_PREFIX : 'iroha-inject-weinre-',
+
+	/**
+	 * 古い引数形式による呼び出しのための互換措置
+	 * @param {String} [ident="anonymous"]         アプリケーション識別子。任意に設定。
+	 * @param {Stirng] [host=location.hostname]    Weinre が稼働しているマシンのホストネーム。無指定時は表示中の HTML と同じものが指定される。
+	 * @param {Stirng] [port="8080"]               Weinre が稼働している（Listenしている）ポート番号。無指定時はデフォルトの "8080"。
+	 * @return Iroha オブジェクト
+	 * @type Iroha
+	 */
+	compat : function(ident, host, port) {
+		var args  = arguments;
+		var url   = '${protocol}//${host}:${port}';
+		var param = { protocol : location.protocol , host : host, port : port || '8080' };
+		this(ident, Iroha.String(url).format(param).get());
+		return Iroha;
+	},
+
+	/**
+	 * 注入した Weinre についての各種 URL 等の情報を得る
+	 * @param {String} [ident="anonymous"]    アプリケーション識別子。任意に設定。
+	 * @return 連想配列 { injected:String, weinre:String, weinreUI:String, weinreDoc:String }
+	 * @type Object
+	 */
+	getInfo : function(ident) {
+		var ident = ident || 'anonymous';
+		var node  = document.getElementById(this.SCRIPT_ID_PREFIX + ident);
+		if (!node) {
+			return undefined;
+		} else {
+			var src  = node.src;
+			var base = /^.+?:\/+[^\/]+\//.test(src) ? RegExp.lastMatch : undefined;
+			return {
+				  injected : src
+				, toppage  : base
+				, client   : base + 'client/#' + ident
+				, docs     : base + 'doc/'
+			};
+		}
+	}
+});
 
 
 
@@ -3133,6 +3252,28 @@ jQuery.fn.Iroha_trapWheelEvent = function() {
 jQuery.fn.Iroha_untrapWheelEvent = function() {
 	Iroha.untrapWheelEvent(this);
 	return this;
+};
+
+
+
+/* -------------------- jQuery.fn : Iroha_shuffleContent -------------------- */
+/**
+ * コンテキスト要素の直接子ノード群をシャッフル（ランダム並び替え）
+ * @return jQuery current context object
+ * @type jQuery
+ */
+jQuery.fn.Iroha_shuffleContent = function() {
+	return this.each(function() {
+		var $node = $(this);
+		$.each(shuffle($node.contents().get()), function() { $node.append(this) });
+	});
+
+	function shuffle(arr){
+		var len = arr.length;
+		var ret = [];
+		while(len) ret.push(arr.splice(Math.floor(Math.random() * len--), 1)[0]);
+		return ret;
+	}
 };
 
 

@@ -1,9 +1,10 @@
+/*! "iroha.textExpander.js" | Iroha - Necomesi JSLib : Text Expander | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       長い内容を途中で省略し「続きを読む」で伸張できるブロック
+ *       Iroha - Necomesi JSLib : Text Expander
  *
- *    @version 3.01.20120801
+ *    @version 3.01.20131016
  *    @requires jquery.js
  *    @requires jquery.easing.js
  *    @requires iroha.js
@@ -11,7 +12,7 @@
  *    @requires rangy-core.js (optional, for IE8 and earlier, use one of them)
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -229,4 +230,4 @@ Iroha.TextExpander.Setting.create = function() {
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

@@ -1,15 +1,16 @@
+/*! "iroha.textObserver.js" | Iroha - Necomesi JSLib : Observe Change of Texts | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       text field observer.
+ *       Iroha - Necomesi JSLib : Observe Change of Texts
  *       (charset : "UTF-8")
  *
- *    @version 3.01.20130312
+ *    @version 3.01.20131016
  *    @requires jquery.js
  *    @requires iroha.js
  */
 /* -------------------------------------------------------------------------- */
-(function($) {
+(function($, Iroha, window, document) {
 
 
 
@@ -21,7 +22,7 @@
  * @returns jQuery
  * @type jQuery
  */
-$.fn.Iroha_TextObserver = function(callback) { 
+$.fn.Iroha_TextObserver = function(callback) {
 	return this.each(function() { Iroha.TextObserver.create(this, callback) });
 };
 
@@ -39,26 +40,26 @@ Iroha.TextObserver = function() {
 	 * @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * current text of observe target
 	 * @type String
 	 * @private
 	 */
 	this.currentText = '';
-	
+
 	/**
 	 * flag of focused or not (readonly)
      *  @type Boolean
 	 */
 	this.isFocused = false;
-	
+
 	/**
 	 * validation result status (readonly)
 	 *  @type Boolean
 	 */
 	this.isValid = true;
-	
+
 	/**
 	 * store point of observing timer
 	 * @type Iroha.Interval
@@ -83,7 +84,7 @@ $.extend(Iroha.TextObserver,
 		  'target' : 'iroha-textobserver-target'
 		, 'error'  : 'iroha-textobserver-error'
 	},
-	
+
 	/**
 	 * テキストの変化を監視する間隔 (ms)
 	 * @type Number
@@ -114,10 +115,10 @@ $.extend(Iroha.TextObserver.prototype,
 		}
 
 		this.currentText = this.getText();
-		
+
 		this.$node.focus($.proxy(this.focus, this));
 		this.$node.blur ($.proxy(this.blur , this));
-		
+
 		var callback = $.extend({}, callback);
 		if (callback.onChange  ) this.addCallback ('onChange', callback.onChange  , callback.aThisObject);
 		if (callback.onValidate) this.setValidator(            callback.onValidate, callback.aThisObject);
@@ -125,7 +126,7 @@ $.extend(Iroha.TextObserver.prototype,
 
 		return this;
 	},
-	
+
 	/**
 	 * get current str of observed text field.
 	 * @return current text of observed text field
@@ -139,7 +140,7 @@ $.extend(Iroha.TextObserver.prototype,
 			return this.$node.val() || this.$node.text();
 		}
 	},
-	
+
 	/**
 	 * set text to observed text field.
 	 * @param {String} text   text to set to observed text field
@@ -148,7 +149,7 @@ $.extend(Iroha.TextObserver.prototype,
 	 */
 	setText : function(text) {
 		text = String(text);
-	
+
 		var ip;
 		if (Iroha.InputPrompt && (ip = Iroha.InputPrompt.getInstance(this.$node))) {
 			ip.setText(text);
@@ -161,11 +162,11 @@ $.extend(Iroha.TextObserver.prototype,
 			}
 			this.$node.val(text);
 		}
-	
+
 		this.observe();
 		return this;
 	},
-	
+
 	/**
 	 * set focus to observed text field
 	 * @param {Event} e    event object 不必要なイベント発生を防ぐ
@@ -180,7 +181,7 @@ $.extend(Iroha.TextObserver.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * unset focus (blur) from observed text field
 	 * @param {Event} e    event object 不必要なイベント発生を防ぐ
@@ -195,7 +196,7 @@ $.extend(Iroha.TextObserver.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * start observing.
 	 * @return this instance
@@ -208,7 +209,7 @@ $.extend(Iroha.TextObserver.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * stop observing.
 	 * @return this instance
@@ -222,7 +223,7 @@ $.extend(Iroha.TextObserver.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * observe text changing of target text field.
 	 * @return this instance
@@ -239,7 +240,7 @@ $.extend(Iroha.TextObserver.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * set validator function (as callback function).
 	 * @param {Iroha.TextObserver.callbackFuncs.onValidate} validator        validator function to validate current text
@@ -258,7 +259,7 @@ $.extend(Iroha.TextObserver.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * validate current text (when validator function was given)
 	 * @return validation result; error message or null string
@@ -270,7 +271,7 @@ $.extend(Iroha.TextObserver.prototype,
 		if (validator.length) {
 			this.setValidator(validator.shift());
 		}
-	
+
 		var errCName = this.constructor.CLASSNAME.error;
 		var errMsg   = this.doCallback('onValidate', this.currentText, this) || '';
 		if (typeof errMsg != 'string') {
@@ -285,13 +286,13 @@ $.extend(Iroha.TextObserver.prototype,
 		}
 		return errMsg;
 	},
-	
+
 	/**
 	 * このインスタンスを破棄する
 	 */
 	dispose : function() {
 		this.observeTimer && this.observeTimer.clear();
-		
+
 		this.constructor.disposeInstance(this);
 	}
 });
@@ -334,4 +335,4 @@ $.extend(Iroha.TextObserver.prototype,
 
 
 
-})(Iroha.jQuery);
+})(Iroha.$, Iroha, window, document);

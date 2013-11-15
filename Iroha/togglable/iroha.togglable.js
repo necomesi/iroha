@@ -1,7 +1,8 @@
+/*! "iroha.togglable.js" | Iroha - Necomesi JSLib : Open/Close Togglables | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       任意のブロックを閉じたり開いたりする UI
+ *       Iroha - Necomesi JSLib : Open/Close Togglables
  *       (charset : "UTF-8")
  *
  *    @version 3.04.20130314
@@ -42,32 +43,32 @@ Iroha.Togglable = function() {
 	var self = args.callee;
 	var suit = this instanceof self;
 	if (!suit || args.length) return self.create.apply(self, args);
-	
+
 	/**
 	 * element node(s) as togglable blocks which is toggled open/close
 	 *  @type jQuery
 	 */
 	this.$node = $();
-	
+
 	/**
 	 * element node(s) as toggle buttons
 	 *  @type jQuery
 	 */
 	this.$buttons = $();
-	
+
 	/**
 	 * animation duration time (ms)
 	 * @type Number
 	 * @private
 	 */
 	this.duration = 250;
-	
+
 	/**
 	 * true when the togglable blocks are opened.
 	 * type Boolean
 	 */
 	this.opened = false;
-	
+
 	/**
 	 * true during the opening/closing animation is ongoing.
 	 * type Boolean
@@ -94,14 +95,15 @@ $.extend(Iroha.Togglable,
 		, 'button' : 'iroha-togglable-button'
 		, 'opened' : 'iroha-togglable-opened'
 		, 'closed' : 'iroha-togglable-closed'
+		, 'moving' : 'iroha-togglable-moving'
 	},
-	
+
 	/**
 	 * @private
 	 * @see {@link Iroha.ViewClass#storeInstance}
 	 */
 	storeInstanceOrig : Iroha.Togglable.storeInstance,
-	
+
 	/**
 	 * クラスから生成されたインスタンスを格納する。
 	 * {@link Iroha.ViewClass#storeInstance} は instance.$node にインスタンスのインデックス番号を与えるものだが
@@ -119,7 +121,7 @@ $.extend(Iroha.Togglable,
 		instance.$buttons.data(key, value);
 		return instance;
 	},
-	
+
 	/**
 	 * 開閉ボタンの押下をトリガーにしてインスタンスを自動生成させるようにする。
 	 * @param {String} [selector="a, area"] 開閉ボタンの要素ノードを見つけるためのセレクタ文字列。
@@ -128,12 +130,12 @@ $.extend(Iroha.Togglable,
 	 */
 	autoSetup : function(selector) {
 		if (Iroha.alreadyApplied(arguments.callee)) return this;
-		
+
 		$(document).on('click', selector || 'a, area', $.proxy(function(e) {
 			var cname     = this.CLASSNAME;
 			var $button   = $(e.currentTarget);
 			var togglable = this.getInstance($button);
-			
+
 			// 開閉対象のブロックが見つかったら、インスタンスを生成し、最初の開閉を行う。
 			// 以後の開閉はインスタンス内部のイベントハンドラが行うのでこの1回のみで良い。
 			if (!togglable) {
@@ -142,7 +144,7 @@ $.extend(Iroha.Togglable,
 					togglable = this.create($target, $button).toggle();
 				}
 			}
-			
+
 			// インスタンスを生成できているなら、DOM 的デフォルトアクション、Iroha.PageScroller のスクロールアニメ発動を抑止する。
 			// （ボタンはページ内リンクだからこれらの対策は必要）
 			if (togglable) {
@@ -150,7 +152,7 @@ $.extend(Iroha.Togglable,
 				Iroha.PageScroller && Iroha.PageScroller.abort();
 			}
 		}, this));
-		
+
 		return this;
 	}
 });
@@ -169,18 +171,18 @@ $.extend(Iroha.Togglable.prototype,
 	 */
 	init : function(targets, buttons, duration) {
 		var cname     = this.constructor.CLASSNAME;
-		
+
 		this.$node    = $(targets);
 		this.$buttons = $(buttons);
 		this.duration = duration >= 0 ? duration : 250;
 		this.opened   = !this.$node.hasClass(cname.closed) && !this.$node.is(':hidden');
-		
+
 		this.addTarget(this.$node   );
 		this.addButton(this.$buttons);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * add togglable blocks which is toggled open/close
 	 * @param {jQuery|Element|Element[]|NodeList|String} targets    element node(s) as togglable blocks which is toggled open/close
@@ -197,13 +199,13 @@ $.extend(Iroha.Togglable.prototype,
 				.toggleClass(cname.closed, !this.opened)
 
 		this.$node = this.$node.add($node);
-		
+
 		// show/hide targets
 		this.$node.toggle(this.opened);
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * add toggle button(s)
 	 * @param {Element|jQuery|String} node    element node(s) as toggle buttons
@@ -222,11 +224,11 @@ $.extend(Iroha.Togglable.prototype,
 					$buttons.is('a, area') && e.preventDefault();
 					this.toggle();
 				}, this));
-		
+
 		this.$buttons = this.$buttons.add($buttons);
 		return this;
 	},
-	
+
 	/**
 	 * open the togglable block(s) with animation.
 	 * @param {Number}   [duration]       animation duration; if nonspecified, the default duration of this instance is used.
@@ -241,7 +243,7 @@ $.extend(Iroha.Togglable.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * close the togglable block(s) with animation.
 	 * @param {Number}   [duration]       animation duration; if nonspecified, the default duration of this instance is used.
@@ -256,7 +258,7 @@ $.extend(Iroha.Togglable.prototype,
 		}
 		return this;
 	},
-	
+
 	/**
 	 * toggle opened/closed with animation.
 	 * @param {Number}   [duration]       animation duration; if nonspecified, the default duration of this instance is used.
@@ -268,14 +270,17 @@ $.extend(Iroha.Togglable.prototype,
 	toggle : function(duration, aCallback, aThisObject) {
 		this.busy    = true;
 		this.opened  = !this.opened;
+
+		var baseCN   = this.constructor.CLASSNAME;
 		var duration = duration >= 0 ? duration : this.duration;
-		
+
 		if ($.isFunction(aCallback)) {
 			this.addCallback('onComplete', aCallback, aThisObject, 'disposable');
 		}
-		
+
 		this.doCallback('beforeStart', this.opened, this);
-		
+		this.addClass(baseCN.moving);
+
 		this.$node
 			.each(function() {
 				var $node = $(this);
@@ -287,29 +292,29 @@ $.extend(Iroha.Togglable.prototype,
 						.hide();
 			})
 			.slideToggle(duration, $.proxy(_postProcess, this));
-		
+
 		this.doCallback('onStart', this.opened, this);
 		return this;
-		
+
 		function _postProcess(){
 			new Iroha.Timeout(function() {
-				var cname = this.constructor.CLASSNAME;
-				
-				this.addClass   (this.opened ? cname.opened : cname.closed);
-				this.removeClass(this.opened ? cname.closed : cname.opened);
+
+				this.addClass   (this.opened ? baseCN.opened : baseCN.closed);
+				this.removeClass(this.opened ? baseCN.closed : baseCN.opened);
+				this.removeClass(baseCN.moving);
 				this.busy = false;
-				
+
 				this.$node
 					.each(function() {
 						var $node = $(this);
 						$node.css('width', $node.data('Iroha.Togglable.Panel.cssWidth'))
 					})
-				
+
 				this.doCallback('onComplete', this.opened, this);
 			}, 1, this);
 		}
 	},
-	
+
 	/**
 	 * add className to constructional element nodes of thie instance.
 	 * @param {String} [cname]    className to add.
@@ -321,7 +326,7 @@ $.extend(Iroha.Togglable.prototype,
 		this.$buttons.addClass(cname);
 		return this;
 	},
-	
+
 	/**
 	 * remove className from constructional element nodes of thie instance.
 	 * @param {String} [cname]    className to remove.

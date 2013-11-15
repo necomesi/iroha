@@ -1,0 +1,88 @@
+@charset "UTF-8";
+@import "iroha.symbols";
+
+
+/* -----------------------------------------------
+ *        style for iroha.drawer.js
+ * ----------------------------------------------- */
+
+.iroha-drawer {
+	@include iroha-reset();
+	@include box-sizing(border-box);
+	display: none;
+	position: fixed;
+	z-index: 10000;
+	left: 0;
+	top: 0;
+	width: 100%;
+	min-height: 100%;
+	min-width: 320px;
+	max-width: 640px;
+	background: #e6e4e0;
+
+	// ウンコロイド
+	body[class*="iroha-ua-isAndroid2"] & {
+		position: static;
+	}
+
+
+	// ----- スクロールエリア -----
+	// JS 処理都合上、padding-top, padding-bottom は 0 でなければならない。
+
+	& > .iroha-drawer-scrollarea {
+		@include box-sizing(border-box);
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+
+		// transition 中に overflow-scrolling: touch になってると描画が変になる iOS5 対策
+		body[class*="iroha-ua-isiOS5"] & {
+			-webkit-overflow-scrolling: auto;
+		}
+		body[class*="iroha-ua-isiOS5"].iroha-drawer-opened & {
+			-webkit-overflow-scrolling: touch;
+		}
+
+		// ウンコロイド
+		body[class*="iroha-ua-isAndroid2"] & {
+			position: static;
+			width: auto;
+			height: auto;
+			overflow: visible;
+		}
+	}
+
+	// 高さ制限をアニメーション中のみ外す。
+	// スクロール部分の全体領域を一望させつつ移動するためと
+	// そもそもそうする場合に移動距離の算出が必要のため。
+	&.iroha-drawer-moving > .iroha-drawer-scrollarea {
+		height: auto;
+	}
+
+
+	// ----- タイトル部（閉じるボタンを置いたりする） -----
+
+	.iroha-drawer-header {
+		@include iroha-reset(block);
+	}
+
+
+	// ----- 本文領域 -----
+
+	.iroha-drawer-body {
+		@include iroha-reset(block);
+	}
+
+
+	// ----- フッタ（「閉じる」ボタンを置いたりする） -----
+
+	.iroha-drawer-footer {
+		@include iroha-reset(block);
+	}
+}
+
+

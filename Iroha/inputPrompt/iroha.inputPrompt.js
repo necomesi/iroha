@@ -1,7 +1,8 @@
+/*! "iroha.inputPrompt.js" | Iroha - Necomesi JSLib : Polyfill for "placeholder" | by Necomesi Ltd. */
 /* -------------------------------------------------------------------------- */
 /**
  *    @fileoverview
- *       create text-input with prompt text.
+ *       Iroha - Necomesi JSLib : Polyfill for "placeholder"
  *       (charset : "UTF-8")
  *
  *    @version 3.04.20130622
