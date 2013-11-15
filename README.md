@@ -1,12 +1,12 @@
 # Iroha : Necomesi JS Library
 
-## �T�v
+## 概要
 
-���̔��˂́A����k�邱��15�N�O�B���Â̐̂��ȁX�A�ׁX�Ǝg���Â��Ă��Ă���A�R�W�J�Ɣ�`�� JS ���C�u�����B�N�G�̐ςݏd�˂̕ϑJ���疳�ʂɂǂ���Ƃ��Ă��āA�����g���Â炢�Ǝv���܂��B
+その発祥は、今を遡ること15年前。太古の昔より綿々、細々と使いつづけてきている、コジカ家秘伝の JS ライブラリ。年季の積み重ねの変遷から無駄にどろっとしていて、さぞ使いづらいと思います。
 
-## �ڍ�
+## 詳細
 
-[HTML �h�L�������g]���Q�ƁB
+[HTML ドキュメント]を参照。
 
 
-[HTML �h�L�������g]: https://github.com/necomesi/Iroha/blob/master/Iroha/index.html
+[HTML ドキュメント]: https://github.com/necomesi/Iroha/blob/master/Iroha/index.html
