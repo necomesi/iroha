@@ -1,4 +1,4 @@
-# Iroha : Necomeshi JS Library
+# Iroha : Necomesi JS Library
 
 ## ŠT—v
 
