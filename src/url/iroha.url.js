@@ -4,7 +4,7 @@
  *    @fileoverview
  *       Iroha - Necomesi JSLib : URL Handling Utilities
  *
- *    @version 3.00.20131016
+ *    @version 3.00.20131118
  *    @requires jquery.js
  *    @requires iroha.js
  */
@@ -18,12 +18,11 @@
  * URL handling utility.
  * @class URL handling utility.
  */
-Iroha.Url = function(url) {
+Iroha.Url = function() {
 	/**
 	 * an anchor element node to handle URL.
-	 * @type Element
+	 * @type {Element}
 	 * @private
-	 * @constant
 	 */
 	this.anchor = document.createElement('a');
 };
@@ -33,9 +32,8 @@ $.extend(Iroha.Url,
 {
 	/**
 	 * create an instance
-	 * @param {String} [url=location.href]    full URL string to set.
-	 * @return this instance itself
-	 * @type Iroha.Url
+	 * @param {string} [url=location.href]    full URL string to set.
+	 * @return {Iroha.Url} this instance itself
 	 */
 	create : function(url) {
 		return (new this).set(url);
@@ -47,8 +45,7 @@ $.extend(Iroha.Url.prototype,
 {
 	/**
 	 * get full URL string which is handled by this instance.
-	 * @return full URL string
-	 * @type String
+	 * @return {string} full URL string
 	 * @private
 	 */
 	get : function() {
@@ -57,8 +54,7 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * toString; an alias of {@link Iroha.Url#get}.
-	 * @return full URL string
-	 * @type String
+	 * @return {string} full URL string
 	 */
 	toString : function() {
 		return this.get();
@@ -66,9 +62,8 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * set full URL string.
-	 * @param {String} [url=location.href]    full URL string to set.
-	 * @return this instance itself
-	 * @type Iroha.Url
+	 * @param {string} [url=location.href]    full URL string to set.
+	 * @return {Iroha.Url} this instance itself
 	 */
 	set : function(url) {
 		this.anchor.href = String(url || location.href);
@@ -77,9 +72,8 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * getter / setter of protocol part of the URL.
-	 * @param {String} [url=location.protocol]    protocol part to set.
-	 * @return (get) protocol part of the URL / (set) this instance itself
-	 * @type String|Iroha.Url
+	 * @param {string} [protocol=location.protocol]    protocol part to set.
+	 * @return {string|Iroha.Url} (get) protocol part of the URL / (set) this instance itself
 	 */
 	protocol : function(protocol) {
 		if (!arguments.length) {
@@ -92,9 +86,8 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * getter / setter of hostname part of the URL.
-	 * @param {String} [hostname=location.hostname]    hostname to set.
-	 * @return (get) hostname part of the URL / (set) this instance itself
-	 * @type String|Iroha.Url
+	 * @param {string} [hostname=location.hostname]    hostname to set.
+	 * @return {string|Iroha.Url} (get) hostname part of the URL / (set) this instance itself
 	 */
 	hostname : function(hostname) {
 		if (!arguments.length) {
@@ -107,9 +100,8 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * getter / setter of port number of the URL.
-	 * @param {String|Number} [port=location.port]    port number to set.
-	 * @return (get) port number of the URL / (set) this instance itself
-	 * @type String|Iroha.Url
+	 * @param {string|number} [port=location.port]    port number to set.
+	 * @return {string|Iroha.Url} (get) port number of the URL / (set) this instance itself
 	 */
 	port : function(port) {
 		if (!arguments.length) {
@@ -123,9 +115,8 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * getter / setter of host string ("hostname:portnumber") of the URL.
-	 * @param {String} [host=location.host]    host string to set.
-	 * @return (get) host string ("hostname:portnumber") of the URL / (set) this instance itself
-	 * @type String|Iroha.Url
+	 * @param {string} [host=location.host]    host string to set.
+	 * @return {string|Iroha.Url} (get) host string ("hostname:portnumber") of the URL / (set) this instance itself
 	 */
 	host : function(host) {
 		if (!arguments.length) {
@@ -138,9 +129,8 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * getter / setter of pathname of the URL.
-	 * @param {String} [pathname='/']    pathname to set.
-	 * @return (get) pathname of the URL / (set) this instance itself
-	 * @type String|Iroha.Url
+	 * @param {string} [pathname='/']    pathname to set.
+	 * @return {string|Iroha.Url} (get) pathname of the URL / (set) this instance itself
 	 */
 	pathname : function(pathname) {
 		if (!arguments.length) {
@@ -154,9 +144,8 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * getter / setter of search (query string "?xxx") part of the URL.
-	 * @param {String} [search]    search (query string) part to set.
-	 * @return (get) search part of the URL / (set) this instance itself
-	 * @type String|Iroha.Url
+	 * @param {string} [search]    search (query string) part to set.
+	 * @return {string|Iroha.Url} (get) search part of the URL / (set) this instance itself
 	 */
 	search : function(search) {
 		if (!arguments.length) {
@@ -169,9 +158,8 @@ $.extend(Iroha.Url.prototype,
 
 	/**
 	 * getter / setter of hash ("#xxx") part of the URL.
-	 * @param {String} [hash]    hash part to set
-	 * @return (get) hash part of the URL / (set) this instance itself
-	 * @type String|Iroha.Url
+	 * @param {string} [hash]    hash part to set
+	 * @return {string|Iroha.Url} (get) hash part of the URL / (set) this instance itself
 	 */
 	hash : function(hash) {
 		if (!arguments.length) {
@@ -185,8 +173,7 @@ $.extend(Iroha.Url.prototype,
 	/**
 	 * getter / setter of associative array of key-value; to handle query string part.
 	 * @param {Object} [params]    an associative array to set
-	 * @return (get) associative array created from query string part / (set) this instance itself
-	 * @type String|Iroha.Url
+	 * @return {Object|Iroha.Url} (get) associative array created from query string part / (set) this instance itself
 	 */
 	param : function(params) {
 		if (!arguments.length) {
