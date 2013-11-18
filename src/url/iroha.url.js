@@ -179,14 +179,20 @@ $.extend(Iroha.Url.prototype,
 		if (!arguments.length) {
 			var ret = {};
 			this.search().substr(1).split('&').forEach(function(param) {
-				if (param) {
-					var pair  = param.split('=');
-					try {
-						var key   = Iroha.String(pair[0]).decodeURI(true).get();
-						var value = Iroha.String(pair[1]).decodeURI(true).get();
+				if (!param) return;
+				var pair  = param.split('=');
+				try {
+					var key   = Iroha.String(pair[0]).decodeURI(true).get();
+					var value = Iroha.String(pair[1]).decodeURI(true).get();
+					// "[]" で終わるキーを持つ場合、配列として格納する。
+					if (Iroha.String(key).endsWith('[]')) {
+						key = key.slice(0, -2);
+						ret[key] = ret[key] || [];
+						ret[key].push(value);
+					} else {
 						ret[key] = value;
-					} catch(err) { }  // ignore decoding error caused by invalid percent-escaped-string.
-				}
+					}
+				} catch(err) { }  // ignore decoding error caused by invalid percent-escaped-string.
 			});
 			return ret;
 		} else {
