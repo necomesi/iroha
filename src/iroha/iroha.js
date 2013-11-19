@@ -947,7 +947,7 @@ $.extend(Iroha.String.prototype,
 		if (typeof str != 'string') {
 			throw new TypeError('String.Wrapper.getAfter: first argument must be a string.');
 		} else if (str) {
-			var idx     = (!longMatch) ? this.value.indexOf(str) : this.value.lastIndexOf(str);
+			var idx     = (!longMatch) ? this.value.lastIndexOf(str) : this.value.indexOf(str);
 			this.value  = (idx == -1) ? '' : (include ? str : '') + this.value.substring(idx + str.length, this.value.length);
 			this.length = this.value.length;
 		}
