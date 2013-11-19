@@ -745,13 +745,14 @@ $.extend(Iroha.Number.prototype,
 			var sign      = (num < 0) ? '-' : '';
 			var intValue  = value.toString().split('.')[0].split('');
 
+			loop :
 			do {
 				var _value  = intValue .pop() || '';
 				var _format = intFormat.pop() || '';
 				switch (_format) {
 					case '0' : ret.push(_value  ? _value : '0');                        break;
 					case '#' : ret.push(_value  ? _value : '' );                        break;
-					case ''  : /* exit do-while loop */          intValue = [];         break;
+					case ''  :                                                          break loop;
 					default  : ret.push(_format               ); intValue.push(_value); break;
 				}
 			} while (intValue.length > 0 || intFormat.length > 0);
@@ -761,13 +762,10 @@ $.extend(Iroha.Number.prototype,
 			if (decFormat) {
 				var scale     = Math.pow(10, decFormat.length);
 				var rounded   = Math.round(value * scale) / scale;
-				if (rounded - ret == 1) {
-					ret++;
-				}
 				var decValue  = rounded.toString().split('.')[1] || '0';
 					decValue  = decValue .split('').reverse().join('');
 					decFormat = decFormat.split('').reverse().join('');
-					ret       = ret + '.' + Iroha.Number(decValue).format(decFormat).split('').reverse().join('');
+					ret       = ret + '.' + Iroha.Number(decValue).format(decFormat).get().split('').reverse().join('');
 			}
 
 			if (Iroha.String(decFormat).startsWith('#') && Iroha.String(ret).endsWith('.0')) {
