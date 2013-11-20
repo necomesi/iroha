@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Data Storages
  *       (charset : "UTF-8")
  *
- *    @version 3.02.20131003
+ *    @version 3.03.20131121
  *    @requires jquery.js
  *    @requires iroha.js
  */
@@ -84,7 +84,7 @@ $.extend(Iroha.LocalStorage.prototype,
 	 * @type Object|String|Number|Boolean
 	 */
 	get : function() {
-		var json = JSON.parse(this.storage.getItem(this.name));
+		var json = JSON.parse(this.storage.getItem(this.name) || 'null');  // 'null' のフォールダウンはウンコロイド 2.x 対策
 		if (json === null) {
 			return null;
 		} else {
