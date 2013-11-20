@@ -716,9 +716,20 @@ $.extend(Iroha.PseudoSelectMenu.prototype,
 
 		var tmpl  = this.setting.template.menuItem;
 		var items = this.$node.find('option').get().map(function(option) {
-			return Iroha.String(tmpl).format(option.text).get()
+			var $elem = $(Iroha.String(tmpl).format(option.text).get());
+			// data 属性値を複製する場合
+			var attr = {};
+			if (this.setting.replicateDataAttributes) {
+				$.each(option.attributes, function (key, val) {
+					if (val.name.indexOf('data-') == 0) {
+						attr[val.name] = val.value;
+					}
+				});
+				$elem.attr(attr)
+			}
+			return $elem[0];
 		}, this);
-		this.pseudoMenu.addItem(items.join(''));
+		this.pseudoMenu.addItem(items);
 		this.adjustMenuWidth();
 
 		this.select(this.selectedIndex());
@@ -893,7 +904,7 @@ Iroha.PseudoSelectMenu.Setting = function() {
 	};
 
 	/**
-	 * 疑似セレクトメニューの HTML 構造の特定部位を見つけるためのセレクタ文字列。t
+	 * 疑似セレクトメニューの HTML 構造の特定部位を見つけるためのセレクタ文字列。
 	 * セレクタのコンテキストは this.template.structure の最外縁の要素ノード。
 	 *   - 'menuButton' : メニューを開くボタンとなる部位
 	 *   - 'menuBody'   : メニュー本体を格納する場所
@@ -903,6 +914,14 @@ Iroha.PseudoSelectMenu.Setting = function() {
 		  'menuButton' : 'dt a'
 		, 'menuBody'   : 'dd'
 	};
+
+	/**
+	 * option 要素に付与されている data 属性を擬似セレクトメニューに複製するかどうか。
+	 *   - true  : 複製する
+	 *   - false : 複製しない（既定）
+	 * @type {boolean}
+	 */
+	this.replicateDataAttributes = false;
 };
 
 /**
