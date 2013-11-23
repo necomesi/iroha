@@ -1,39 +1,106 @@
 describe('Iroha', function () {
 
-	var $sandbox = $('#sandbox');
+	var $sandbox = $('#test-sandbox');
+
+	// Array.prototype
+	describe('Array.prototype', function () {
+
+	});
 
 	// Iroha.ViewClass
 	describe('Iroha.ViewClass', function () {
-		beforeEach(function () {
-			$sandbox.empty().append('<div id="main"/>');
-		});
-
-		it('クラスが生成できる', function () {
+		it('Iroha.ViewClass(Constructor) でクラスが生成できる', function () {
 			var Constructor = function () {
 				this.x = 0;
 				this.y = 100;
+				this.key = 'abc';
 			};
 			var ViewClass = Iroha.ViewClass(Constructor);
+			expect(ViewClass).to.be(Constructor);
 			expect(ViewClass).to.be.an('function');
+			expect(ViewClass).to.have.property('instances');
+			expect(ViewClass).to.have.property('key');
+			expect(ViewClass.key.indexOf('Iroha.ViewClass') === 0).to.be(true);
+		});
+
+		it('new Iroha.ViewClass(Constructor) でクラスが生成できる', function () {
+			var Constructor = function () {
+				this.x = 0;
+				this.y = 100;
+				this.key = 'abc';
+			};
+			var ViewClass = Iroha.ViewClass(Constructor);
+			expect(ViewClass).to.be(Constructor);
+			expect(ViewClass).to.be.an('function');
+			expect(ViewClass).to.have.property('instances');
+			expect(ViewClass).to.have.property('key');
+			expect(ViewClass.key.indexOf('Iroha.ViewClass') === 0).to.be(true);
 		});
 
 		it('Iroha.applyTo');
 
-		it('Iroha.ViewClass で生成したクラスのインスタンスは必要なプロパティを備えている', function () {
-			var Constructor = function () {
-				this.x = 0;
-				this.y = 100;
-			};
-			var ViewClass = Iroha.ViewClass(Constructor);
-			var instance = ViewClass.create($('#main'));
-			expect(ViewClass).to.have.property('instances');
-			expect(ViewClass).to.have.property('key');
-			expect(instance).to.have.property('init');
-			expect(instance).to.have.property('dispose');
-			expect(instance).to.have.property('appendTo');
-			expect(instance).to.have.property('prependTo');
-			expect(instance).to.have.property('insertBefore');
-			expect(instance).to.have.property('insertAfter');
+		describe('Iroha.ViewClass で生成されたクラス', function () {
+			var ViewClass;
+
+			beforeEach(function () {
+				function _Constructor() {
+					this.x = 0;
+					this.y = 100;
+				}
+				ViewClass = Iroha.ViewClass(_Constructor);
+				$sandbox.empty().append('<div id="test-main"/><div id="test-main2"/>');
+			});
+
+			it('ViewClass.create でインスタンス化できる', function () {
+				var instance = ViewClass.create('#test-main');
+				expect(instance).to.be.a(ViewClass);
+				expect(instance.$node[0]).to.be(document.getElementById('test-main'));
+				expect(instance.$node.length).to.be(1);
+			});
+
+			it('new ViewClass でインスタンス化できる', function () {
+				var instance = new ViewClass('#test-main');
+				expect(instance).to.be.a(ViewClass);
+				expect(instance.$node[0]).to.be(document.getElementById('test-main'));
+				expect(instance.$node.length).to.be(1);
+			});
+
+			it('文字列を引数としてインスタンス化したとき、それを queryString として解釈し取得された最初の要素を基底ノードとしてインスタンス化する', function () {
+				var instance = ViewClass.create('#test-sandbox div');
+				expect(instance).to.be.a(ViewClass);
+				expect(instance.$node[0]).to.be(document.getElementById('test-main'));
+				expect(instance.$node.length).to.be(1);
+			});
+
+			it('要素ノードを引数としてインスタンス化したとき、それを基底ノードとしてインスタンス化する', function () {
+				var instance = ViewClass.create(document.getElementById('test-main'));
+				expect(instance).to.be.a(ViewClass);
+				expect(instance.$node[0]).to.be(document.getElementById('test-main'));
+				expect(instance.$node.length).to.be(1);
+			});
+
+			it('jQuery オブジェクトを引数としてインスタンス化したとき、その最初の要素を基底ノードとしてインスタンス化する', function () {
+				var instance = ViewClass.create($sandbox.find('div'));
+				expect(instance).to.be.a(ViewClass);
+				expect(instance.$node[0]).to.be(document.getElementById('test-main'));
+				expect(instance.$node.length).to.be(1);
+			});
+
+			it('インスタンスは必要なプロパティを備えている', function () {
+				ViewClass.prototype.hoge = 1;
+				ViewClass.prototype.fuga = function () {
+					return 1;
+				};
+				var instance = ViewClass.create('#test-main');
+				expect(instance).to.have.property('init');
+				expect(instance).to.have.property('dispose');
+				expect(instance).to.have.property('appendTo');
+				expect(instance).to.have.property('prependTo');
+				expect(instance).to.have.property('insertBefore');
+				expect(instance).to.have.property('insertAfter');
+				expect(instance).to.have.property('hoge');
+				expect(instance).to.have.property('fuga');
+			});
 		});
 
 		it('Iroha.ViewClass で生成したクラスを拡張できる');
@@ -197,6 +264,441 @@ describe('Iroha', function () {
 		it('Iroha.String#encodeURI で文字列を％エスケープに変換する');
 
 		it('Iroha.String#decodeURI で％エスケープされた文字列を元に戻す');
+	});
+
+
+	// Iroha.StyleSheet
+	describe('Iroha.StyleSheet', function () {
+		it('Iroha.StyleSheet をインスタンス化できる', function () {
+			var styleSheet = Iroha.StyleSheets.create();
+			expect(styleSheet).to.be.an(Iroha.StyleSheets);
+		});
+
+		it('引数なしでインスタンス化したとき、ページのスタイルシートを自身に持つ', function () {
+			var styles = document.styleSheets;
+			var styleSheets = Iroha.StyleSheets.create();
+			expect(styleSheets[0]).to.be(styles[0]);
+		});
+	});
+
+
+	// Iroha.Observable
+	describe('Iroha.Observable', function () {
+		it('Iroha.Observable をインスタンス化できる', function () {
+			var obs = new Iroha.Observable();
+			expect(obs).to.be.an(Iroha.Observable);
+		});
+
+		it('addCallback でコールバック関数を登録でき、 doCallback で登録した関数が実行される', function (done) {
+			var obs = new Iroha.Observable();
+			obs.addCallback('hoge', function () {
+				done();
+			});
+			obs.doCallback('hoge');
+		});
+
+		it('doCallback に引数を渡すと、それが登録したコールバック関数の引数となる', function (done) {
+			var obs = new Iroha.Observable();
+			obs.addCallback('hoge', function (a, b, c) {
+				expect(a).to.be('a');
+				expect(b).to.be('b');
+				expect(c).to.be('c');
+				done();
+			});
+			obs.doCallback('hoge', 'a', 'b', 'c');
+		});
+
+		it('addCallback で複数のコールバックスを登録でき、 doCallback で登録した関数が順に実行される', function (done) {
+			var obs = new Iroha.Observable();
+			var array = [];
+			obs.addCallback('hoge', function (a, b, c) {
+				array.push('a');
+				expect(a).to.be('a');
+				expect(b).to.be('b');
+				expect(c).to.be('c');
+				expect(array.length).to.be(1);
+			});
+			obs.addCallback('hoge', function (a, b, c) {
+				array.push('b');
+				expect(a).to.be('a');
+				expect(b).to.be('b');
+				expect(c).to.be('c');
+				expect(array.length).to.be(2);
+				expect(array[0]).to.be('a');
+				done();
+			});
+			obs.doCallback('hoge', 'a', 'b', 'c');
+		});
+
+		it('addCallback の第３引数にオブジェクトを指定するとコールバック関数の実行コンテキストを指定できる', function (done) {
+			var obs = new Iroha.Observable();
+			var obj = { x : 100 };
+			obs.addCallback('hoge', function () {
+				expect(this.x).to.be(100);
+				done();
+			}, obj);
+			obs.doCallback('hoge');
+		});
+
+		it('addCallback の第４引数に \'disposable\' を指定すると一度しかコールバックされない関数を登録できる', function () {
+			var obs = new Iroha.Observable();
+			var array = [];
+			obs.addCallback('hoge', function () { array.push('a') }, null, 'disposable');
+			obs.addCallback('hoge', function () { array.push('b') }                    );
+			obs.doCallback('hoge');
+			obs.doCallback('hoge');
+			expect(array[0]).to.be('a');
+			expect(array[1]).to.be('b');
+			expect(array[2]).to.be('b');
+		});
+
+		it('removeCallback で登録したコールバック関数を除去する', function () {
+			var obs = new Iroha.Observable();
+			var func = function () {};
+			obs.addCallback('hoge', func);
+			obs.addCallback('fuga', func);
+			expect(obs.callbackChains['hoge'].length).to.be(1);
+			expect(obs.callbackChains['fuga'].length).to.be(1);
+			obs.removeCallback('hoge', func);
+			expect(obs.callbackChains['hoge']).not.to.be.ok();
+			expect(obs.callbackChains['fuga'].length).to.be(1);
+		});
+
+		it('removeCallback を第２引数を空で呼び出すことで登録したコールバック関数をすべて除去する', function () {
+			var obs = new Iroha.Observable();
+			var func = function () {};
+			obs.addCallback('hoge', func);
+			obs.addCallback('hoge', func);
+			obs.addCallback('fuga', func);
+			obs.addCallback('fuga', func);
+			expect(obs.callbackChains['hoge'].length).to.be(2);
+			expect(obs.callbackChains['fuga'].length).to.be(2);
+			obs.removeCallback('hoge');
+			expect(obs.callbackChains['hoge']).not.to.be.ok();
+			expect(obs.callbackChains['fuga'].length).to.be(2);
+		});
+
+		it('removeCallback するときは addCallback した時に指定した関数と aThisObject のペアが一致している必要がある', function () {
+			var obs = new Iroha.Observable();
+			var func = function () {};
+			var obj1 = { x : 100 };
+			var obj2 = { x : 100 };
+			obs.addCallback('hoge', func, obj1);
+			expect(obs.callbackChains['hoge'].length).to.be(1);
+			obs.removeCallback('hoge', func);
+			expect(obs.callbackChains['hoge'].length).to.be(1);
+			obs.removeCallback('hoge', func, obj2);
+			expect(obs.callbackChains['hoge'].length).to.be(1);
+			obs.removeCallback('hoge', func, obj1);
+			expect(obs.callbackChains['hoge']).not.to.be.ok();
+		});
+
+		it('ignoreCallback に \'preserved\' を渡すと disposable でないコールバック関数が無視される', function () {
+			var obs = new Iroha.Observable();
+			var count = 0;
+			obs.addCallback('hoge', function () { count++ }, null);
+			obs.addCallback('hoge', function () { count++ }, null, 'disposable');
+			obs.addCallback('hoge', function () { count++ }, null, 'disposable');
+			obs.ignoreCallback('hoge', 'preserved');
+			obs.doCallback('hoge');
+			expect(count).to.be(2);
+		});
+
+		it('ignoreCallback に \'disposable\' を渡すと disposable でなコールバック関数が無視される', function () {
+			var obs = new Iroha.Observable();
+			var count = 0;
+			obs.addCallback('hoge', function () { count++ }, null);
+			obs.addCallback('hoge', function () { count++ }, null, 'disposable');
+			obs.addCallback('hoge', function () { count++ }, null, 'disposable');
+			obs.ignoreCallback('hoge', 'disposable');
+			obs.doCallback('hoge');
+			expect(count).to.be(1);
+		});
+
+		it('ignoreCallback に \'all\' を渡すと全てのコールバック関数が無視される', function () {
+			var obs = new Iroha.Observable();
+			var count = 0;
+			obs.addCallback('hoge', function () { count++ }, null);
+			obs.addCallback('hoge', function () { count++ }, null, 'disposable');
+			obs.addCallback('hoge', function () { count++ }, null, 'disposable');
+			obs.ignoreCallback('hoge', 'all');
+			obs.doCallback('hoge');
+			expect(count).to.be(0);
+		});
+
+		it('ignoreCallback に \'none\' を渡すとコールバック関数が無視されることはない', function () {
+			var obs = new Iroha.Observable();
+			var count = 0;
+			obs.addCallback('hoge', function () { count++ }, null);
+			obs.addCallback('hoge', function () { count++ }, null, 'disposable');
+			obs.addCallback('hoge', function () { count++ }, null, 'disposable');
+			obs.ignoreCallback('hoge', 'none');
+			obs.doCallback('hoge');
+			expect(count).to.be(3);
+		});
+	});
+
+
+	// Iroha.Iterator
+	describe('Iroha.Iterator', function () {
+		it('Iroha.Iterator をインスタンス化できる', function () {
+			var obj = { a: 100 };
+			var iter1 = new Iroha.Iterator(obj);
+			var iter2 = Iroha.Iterator(obj);
+			var iter3 = Iroha.Iterator.create(obj);
+			expect(iter1).to.be.an(Iroha.Iterator);
+			expect(iter2).to.be.an(Iroha.Iterator);
+			expect(iter3).to.be.an(Iroha.Iterator);
+		});
+
+		it('次の項目があれば hasNext は true を返す', function () {
+			var obj = { a: 100, b: 200 };
+			var iter = new Iroha.Iterator(obj);
+			expect(iter.hasNext()).to.be(true);
+			iter.next();
+			expect(iter.hasNext()).to.be(true);
+			iter.next();
+			expect(iter.hasNext()).to.be(false);
+		});
+
+		it('次の項目がないのに next すると ReferenceError を出す', function () {
+			var obj = {};
+			var iter = new Iroha.Iterator(obj);
+			expect($.proxy(iter, 'next')).to.throwException(function (e) {
+				expect(e).to.be.a(ReferenceError);
+			});
+		});
+
+		it('モード未指定のとき、 value モードとなる', function () {
+			var obj = { a: 100, b: 200 };
+			var iter = new Iroha.Iterator(obj);
+			var array = [];
+			array.push(iter.next());
+			array.push(iter.next());
+			array.sort();
+			expect(array.join(',')).to.be('100,200');
+		});
+
+		it('value モードを指定すると next したときに値を返す', function () {
+			var obj = { a: 100, b: 200 };
+			var iter = new Iroha.Iterator(obj, 'value');
+			var array = [];
+			array.push(iter.next());
+			array.push(iter.next());
+			array.sort();
+			expect(array.join(',')).to.be('100,200');
+		});
+
+		it('key モードを指定すると next したときにキーを返す', function () {
+			var obj = { a: 100, b: 200 };
+			var iter = new Iroha.Iterator(obj, 'key');
+			var array = [];
+			array.push(iter.next());
+			array.push(iter.next());
+			array.sort();
+			expect(array.join(',')).to.be('a,b');
+		});
+
+		it('both モードを指定すると next した時にキーを第一要素、値を第二要素とした配列を返す', function () {
+			var obj = { a: 100, b: 200 };
+			var iter = new Iroha.Iterator(obj, 'both');
+			var array = [];
+			array.push(iter.next().join(','));
+			array.push(iter.next().join(','));
+			array.sort();
+			expect(array.join(',')).to.be('a,100,b,200');
+		});
+
+		it('iterate メソッドでコールバック関数を指定して一気にイテレートできる（valueモード）', function (done) {
+			var obj = { a: 100, b: 200 };
+			var iter = new Iroha.Iterator(obj, 'value');
+			iter.iterate(function (value) {
+				expect([100, 200].indexOf(value)).to.be.greaterThan(-1);
+			})
+				.done(function () {
+					done();
+				})
+		});
+
+		it('iterate メソッドでコールバック関数を指定して一気にイテレートできる（keyモード）', function (done) {
+			var obj = { a: 100, b: 200 };
+			var iter = new Iroha.Iterator(obj, 'key');
+			iter.iterate(function (key) {
+				expect(['a', 'b'].indexOf(key)).to.be.greaterThan(-1);
+			})
+				.done(function () {
+					done();
+				})
+		});
+
+		it('iterate メソッドでコールバック関数を指定して一気にイテレートできる（bothモード）', function (done) {
+			var obj = { a: 100, b: 200 };
+			var iter = new Iroha.Iterator(obj, 'both');
+			iter.iterate(function (key, value) {
+				expect(['a', 'b'].indexOf(key)).to.be.greaterThan(-1);
+				expect([100, 200].indexOf(value)).to.be.greaterThan(-1);
+			})
+				.done(function () {
+					done();
+				})
+		});
+
+		it('iterate の最中に abort すると途中でイテレーションを中断できる', function (done) {
+			var obj = { a: 100, b: 200, c: 300 };
+			var iter = new Iroha.Iterator(obj);
+			var count = 0;
+			iter.iterate(function () { count++ }, 100)
+				.done(function (type) {
+					expect(type).to.be('aborted');
+					expect(count).to.be(2);
+					done();
+				});
+			// 150ms 後に割り込んで abort する!
+			setTimeout(function () { iter.abort() }, 150);
+		});
+	});
+
+
+	// Iroha.Timeout
+	describe('Iroha.Timeout', function () {
+		it('Iroha.Timeout をインスタンス化できる', function () {
+			var timeout = new Iroha.Timeout(function () {});
+			expect(timeout).to.be.an(Iroha.Timeout);
+		});
+
+		it('TODO');
+	});
+
+
+	// Iroha.Interval
+	describe('Iroha.Interval', function () {
+		it('Iroha.Interval をインスタンス化できる', function () {
+			var interval = new Iroha.Interval(function () {});
+			expect(interval).to.be.an(Iroha.Interval);
+		});
+
+		it('TODO');
+	});
+
+
+	// Iroha.Timer
+	describe('Iroha.Timer', function () {
+		it('TODO');
+	});
+
+
+	// Iroha.Tag
+	describe('Iroha.Tag', function () {
+		function sanitize(str) {
+			return str
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&apos;')
+		}
+
+		it('Iroha.Tag をインスタンス化できる', function () {
+			var tag1 = Iroha.Tag('div');
+			var tag2 = new Iroha.Tag('div');
+			var tag3 = Iroha.Tag.create('div');
+			expect(tag1).to.be.an(Iroha.Tag);
+			expect(tag2).to.be.an(Iroha.Tag);
+			expect(tag3).to.be.an(Iroha.Tag);
+		});
+
+		it('toString でタグの文字列表現を得る', function () {
+			var tag = new Iroha.Tag('div');
+			expect(tag.toString()).to.be('<div />');
+		});
+
+		it('コンストラクターの第二引数で属性を指定できる', function () {
+			var tag = new Iroha.Tag('div', { id: 'hoge', 'data-fuga': 'piyo' });
+			var expectations = [
+				'<div id="hoge" data-fuga="piyo" />',
+				'<div data-fuga="piyo" id="hoge" />'
+			];
+			expect(expectations.indexOf(tag.toString())).to.be.greaterThan(-1);
+		});
+
+		it('append で Iroha.Tag のインスタンスを与えると子要素に追加される', function () {
+			var tag1 = new Iroha.Tag('div', { id: 'hoge' });
+			var tag2 = new Iroha.Tag('p',   { id: 'fuga' });
+			tag1.append(tag2);
+			expect(tag1.toString()).to.be('<div id="hoge"><p id="fuga" /></div>');
+		});
+
+		it('append で 文字列を与えると子要素に追加される', function () {
+			var tag1 = new Iroha.Tag('div', { id: 'hoge' });
+			var tag2 = new Iroha.Tag('p',   { id: 'fuga' });
+			tag2.append('piyo');
+			tag1.append(tag2);
+			expect(tag1.toString()).to.be('<div id="hoge"><p id="fuga">piyo</p></div>');
+		});
+
+		it('"<", ">", """, "\'", "&" が属性やテキストに指定されていた場合、エスケープされる', function () {
+			var text1 = 'ho<>"\'&ge';
+			var text2 = 'fu<>"\'&ga';
+			var text1Sanitized = sanitize(text1);
+			var text2Sanitized = sanitize(text2);
+			var tag1 = new Iroha.Tag('div', { 'class': text1 });
+			var tag2 = new Iroha.Tag('p');
+			tag2.append(text2);
+			tag1.append(tag2);
+			expect(tag1.toString()).to.be('<div class="' + text1Sanitized + '"><p>' + text2Sanitized + '</p></div>');
+		});
+
+		it('toString に true を渡すと HTML エンティティ文字がエンコードされる', function () {
+			var text1 = 'ho<>"\'&ge';
+			var text2 = 'fu<>"\'&ga';
+			var text1Sanitized = sanitize(text1);
+			var text2Sanitized = sanitize(text2);
+			var tag1 = new Iroha.Tag('div', { 'class': text1 });
+			var tag2 = new Iroha.Tag('p');
+			var expected = '<div class="' + text1Sanitized + '"><p>' + text2Sanitized + '</p></div>';
+			tag2.append(text2);
+			tag1.append(tag2);
+			expect(tag1.toString(true)).to.be(sanitize(expected));
+		});
+	});
+
+
+	// Iroha.setValue
+	describe('Iroha.setValue', function () {
+		it('指定したオブジェクトの指定したパスに指定した値を代入する', function () {
+			var obj = {};
+			Iroha.setValue('hoge.fuga.piyo', 'aaa', obj);
+			expect(obj.hoge.fuga.piyo).to.be('aaa');
+		});
+
+		it('オブジェクトを指定しなかった場合、グローバルオブジェクトに代入される', function () {
+			Iroha.setValue('hoge.fuga.piyo', 'aaa');
+			expect(window.hoge.fuga.piyo).to.be('aaa');
+		});
+	});
+
+
+	// Iroha.getValue
+	describe('Iroha.getValue', function () {
+		it('指定したオブジェクトの指定したパスの値を取得する', function () {
+			var obj = {
+				hoge: {
+					fuga: {
+						piyo: 'aaa'
+					}
+				}
+			};
+			expect(Iroha.getValue('hoge.fuga.piyo', obj)).to.be('aaa');
+		});
+
+		it('存在しないパスを指定すると undefined となる', function () {
+			var obj = {
+				hoge: {
+					fuga: 'aaa'
+				}
+			};
+			expect(Iroha.getValue('hoge.fuga.piyo', obj)).to.be(undefined);
+		});
 	});
 
 });
