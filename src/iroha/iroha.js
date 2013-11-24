@@ -25,7 +25,7 @@ window.undefined = window.undefined;
  * @namespace Iroha global object
  */
 var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
-	var d  = document;
+	var d = document;
 	var de = d.documentElement;
 	var di = d.implementation;
 	var ua = navigator.userAgent;
@@ -80,7 +80,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * @name Iroha.settings
 	 * @namespace default setting values of Iroha function/classes
 	 * @property {Object}  common                  common settings
-	 * @property {Boolean} common.showGeometry     show geometry values in browser's status bar
+	 * @property {boolean} common.showGeometry     show geometry values in browser's status bar
 	 */
 	this.settings        = {};
 	this.settings.common = { showGeometry : false };
@@ -89,10 +89,10 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * identifier urls of frequently used XML-Namespaces.
 	 * @name Iroha.ns
 	 * @namespace identifier urls of frequently used XML-Namespaces
-	 * @property {String} defaultNS    current default namespace of the docuemnt elmeent
-	 * @property {String} xhtml1       XHTML1 namespace
-	 * @property {String} xhtml2       XHTML2 namespace
-	 * @property {String} iroha         Iroha namespace
+	 * @property {string} defaultNS    current default namespace of the docuemnt elmeent
+	 * @property {string} xhtml1       XHTML1 namespace
+	 * @property {string} xhtml2       XHTML2 namespace
+	 * @property {string} iroha         Iroha namespace
 	 */
 	this.ns           = {};
 	this.ns.defaultNS = (!de) ? '' : de.namespaceURI || de.tagUrn || '';
@@ -104,35 +104,35 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * browser distinction results.
 	 * @name Iroha.ua
 	 * @namespace browser distinction results.
-	 * @property {String}  versionText         string form of the browser version number (ex: "1.9.0.2", "528.18.1", "7.0")
-	 * @property {Number}  version             float number of the browser version (ex: 1.9, 528.18, 7.0)
-	 * @property {String}  mbVersText          string form of Mobile OS version number (ex: "5.0.1", "2.3.3", "6.5.3.5")
-	 * @property {Number}  mbVersion           float number of Mobile OS version (ex: 5, 2.3, 6.5)
+	 * @property {string}  versionText         string form of the browser version number (ex: "1.9.0.2", "528.18.1", "7.0")
+	 * @property {number}  version             float number of the browser version (ex: 1.9, 528.18, 7.0)
+	 * @property {string}  mbVersText          string form of Mobile OS version number (ex: "5.0.1", "2.3.3", "6.5.3.5")
+	 * @property {number}  mbVersion           float number of Mobile OS version (ex: 5, 2.3, 6.5)
 	 *
-	 * @property {Boolean} isSafari            true if the browser is AppleWebKit-based (but in iOS/MacOS/Windows only, except Chrome Browser)
-	 * @property {Boolean} isWebKit            true if the browser is AppleWebKit-based any browsers
-	 * @property {Boolean} isChrome            true if the browser is Chrome Browser
-	 * @property {Boolean} isAndroidBrowser    true if the browser is Android "Standard Browser"
-	 * @property {Boolean} isGecko             true if the browser is Gecko-based.
-	 * @property {Boolean} isOpera             true if the browser is Opera
-	 * @property {Boolean} isIE                true if the browser is IE-based
-	 * @property {Boolean} isWin               true if the browser runs on Windows
-	 * @property {Boolean} isMac               true if the browser runs on MacOS(X)
+	 * @property {boolean} isSafari            true if the browser is AppleWebKit-based (but in iOS/MacOS/Windows only, except Chrome Browser)
+	 * @property {boolean} isWebKit            true if the browser is AppleWebKit-based any browsers
+	 * @property {boolean} isChrome            true if the browser is Chrome Browser
+	 * @property {boolean} isAndroidBrowser    true if the browser is Android "Standard Browser"
+	 * @property {boolean} isGecko             true if the browser is Gecko-based.
+	 * @property {boolean} isOpera             true if the browser is Opera
+	 * @property {boolean} isIE                true if the browser is IE-based
+	 * @property {boolean} isWin               true if the browser runs on Windows
+	 * @property {boolean} isMac               true if the browser runs on MacOS(X)
 	 *
-	 * @property {Boolean} isMobile            true if the browser runs on some mobile device
-	 * @property {Boolean} isiPhone            true if the browser runs on iPhone
-	 * @property {Boolean} isiPad              true if the browser runs on iPad
-	 * @property {Boolean} isiPod              true if the browser runs on iPod
-	 * @property {Boolean} isiOS               true if the browser runs on some Apple iOS device
-	 * @property {Boolean} isAndroid           true if the browser runs on Android
-	 * @property {Boolean} isWinPhone          true if the browser runs on Windows Phone
+	 * @property {boolean} isMobile            true if the browser runs on some mobile device
+	 * @property {boolean} isiPhone            true if the browser runs on iPhone
+	 * @property {boolean} isiPad              true if the browser runs on iPad
+	 * @property {boolean} isiPod              true if the browser runs on iPod
+	 * @property {boolean} isiOS               true if the browser runs on some Apple iOS device
+	 * @property {boolean} isAndroid           true if the browser runs on Android
+	 * @property {boolean} isWinPhone          true if the browser runs on Windows Phone
 	 *
-	 * @property {Boolean} isQuirksMode        true if the browser runs under 'quirks mode'
-	 * @property {Number}  documentMode        number of documentMode; this avaiable on IE, the value is 0 on other browsers.
+	 * @property {boolean} isQuirksMode        true if the browser runs under 'quirks mode'
+	 * @property {number}  documentMode        number of documentMode; this avaiable on IE, the value is 0 on other browsers.
 	 *
-	 * @property {Boolean} isTouchable         true if the browser supports touch evnets
+	 * @property {boolean} isTouchable         true if the browser supports touch evnets
 	 *
-	 * @property {Boolean} isDOMReady          true if the browser had DOM feature.
+	 * @property {boolean} isDOMReady          true if the browser had DOM feature.
 	 */
 	this.ua              = {};
 	this.ua.versionText  = $.browser.version;
@@ -163,7 +163,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	                     : d.documentMode        ? d.documentMode
 	                     : !this.ua.isQuirksMode ? this.ua.version
 	                     : 5;
-	this.ua.isTouchable  = ('ontouchstart' in document)
+	this.ua.isTouchable  = ('ontouchstart' in document);
 	this.ua.isDOMReady   = (di) ? di.hasFeature('HTML', '1.0') : (this.ua.isIE && de);
 
 	// isSafari と判別されていたとしても、iOS, Mac, Windows でないものや、Chrome の場合は false に戻す。
@@ -175,22 +175,22 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * geometry properties object; the property values are updated when {@link Iroha.getGeometry} is called.
 	 * @name Iroha.geom
 	 * @namespace geometry properties object; return value of {@link Iroha.getGeometry}
-	 * @property {Number} screenW      width  of the screen (devicePixelRatio considered, never change by orientation)
-	 * @property {Number} screenH      height of the screen (devicePixelRatio considered, never change by orientation)
-	 * @property {Number} windowW      width  of the window viewport.
-	 * @property {Number} windowH      height of the window viewport.
-	 * @property {Number} pageW        width  of the document.
-	 * @property {Number} pageH        height of the document.
-	 * @property {Number} scrollX      scrollLeft position of the document.
-	 * @property {Number} scrollY      scrollTop position of the document.
-	 * @property {Number} windowX      mouse position on X-axis (the origin is top left of the window viewport)
-	 * @property {Number} windowY      mouse position on Y-axis (the origin is topleft of the window viewport)
-	 * @property {Number} pageX        mouse position on X-axis (the origin is topleft of the document)
-	 * @property {Number} pageY        mouse position on Y-axis (the origin is topleft of the document)
-	 * @property {Number} zoom         window zoom ratio (in WinIE7).
-	 * @property {Number} scrollBar    browser's scrollbar width.
-	 * @proprety {Number} density      pixel density of the screen (devicePixelRatio).
-	 * @proprety {Number} orientation  screen orientation. (0, 90, -90, 180)
+	 * @property {number} screenW      width  of the screen (devicePixelRatio considered, never change by orientation)
+	 * @property {number} screenH      height of the screen (devicePixelRatio considered, never change by orientation)
+	 * @property {number} windowW      width  of the window viewport.
+	 * @property {number} windowH      height of the window viewport.
+	 * @property {number} pageW        width  of the document.
+	 * @property {number} pageH        height of the document.
+	 * @property {number} scrollX      scrollLeft position of the document.
+	 * @property {number} scrollY      scrollTop position of the document.
+	 * @property {number} windowX      mouse position on X-axis (the origin is top left of the window viewport)
+	 * @property {number} windowY      mouse position on Y-axis (the origin is topleft of the window viewport)
+	 * @property {number} pageX        mouse position on X-axis (the origin is topleft of the document)
+	 * @property {number} pageY        mouse position on Y-axis (the origin is topleft of the document)
+	 * @property {number} zoom         window zoom ratio (in WinIE7).
+	 * @property {number} scrollBar    browser's scrollbar width.
+	 * @proprety {number} density      pixel density of the screen (devicePixelRatio).
+	 * @proprety {number} orientation  screen orientation. (0, 90, -90, 180)
 	 */
 	this.geom = {};
 
@@ -198,8 +198,8 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * misc environment values.
 	 * @name Iroha.env
 	 * @namespace misc environment values.
-	 * @property {Boolean} isOnline      true if the browser is online.
-	 * @property {Boolean} isDOMReady    true if the document is ready for DOM manipulation
+	 * @property {boolean} isOnline      true if the browser is online.
+	 * @property {boolean} isDOMReady    true if the document is ready for DOM manipulation
 	 */
 	this.env            = {};
 	this.env.isOnline   = /^https?\:$/.test(location.protocol);
@@ -291,9 +291,8 @@ if (!Array.prototype.indexOf) {
 	 * returns the first index of an element within the array equal to the specified value, or -1 if none is found.
 	 * (implement emulation of the method defined in JavaScript1.6)
 	 * @param {Object} aSearchElement    the item to search
-	 * @param {Number} [aFromIndex]      index number to start searching
-	 * @return index number
-	 * @type Number
+	 * @param {number} [aFromIndex]      index number to start searching
+	 * @return {number} index number
 	 */
 	Array.prototype.indexOf = function(aSearchElement, aFromIndex) {
 		if (typeof aFromIndex != 'number') {
@@ -317,9 +316,8 @@ if (!Array.prototype.lastIndexOf) {
 	 * returns the last index of an element within the array equal to the specified value, or -1 if none is found.
 	 * (implement emulation of the method defined in JavaScript1.6)
 	 * @param {Object} aSearchElement    the item to search
-	 * @param {Number} [aFromIndex]      index number to start searching
-	 * @return index number
-	 * @type Number
+	 * @param {number} [aFromIndex]      index number to start searching
+	 * @return {number} index number
 	 */
 	Array.prototype.lastIndexOf = function(aSearchElement, aFromIndex) {
 		if (typeof aFromIndex != 'number') {
@@ -360,8 +358,7 @@ if (!Array.prototype.map) {
 	 * (implement emulation of the method defined in JavaScript1.6)
 	 * @param {Array.callback.iterate} aCallback        the function to exec for every element
 	 * @param {Object}                 [aThisObject]    the object that will be a global object ('this') in aCallback func.
-	 * @return array that consisted of returned values.
-	 * @type Array
+	 * @return {Array} array that consisted of returned values.
 	 */
 	Array.prototype.map = function(aCallback, aThisObject) {
 		var ret = [];
@@ -380,8 +377,7 @@ if (!Array.prototype.filter) {
 	 * (implement emulation of the method defined in JavaScript1.6)
 	 * @param {Array.callback.test} aCallback        the function to test all elements
 	 * @param {Object}              [aThisObject]    the object that will be a global object ('this') in aCallback func.
-	 * @return array that consisted of only adapted elements.
-	 * @type Array
+	 * @return {Array} array that consisted of only adapted elements.
 	 */
 	Array.prototype.filter = function(aCallback, aThisObject) {
 		var ret = [];
@@ -402,8 +398,7 @@ if (!Array.prototype.some) {
 	 * (implement emulation of the method defined in JavaScript1.6)
 	 * @param {Array.callback.test} aCallback        the function to test condition of the elements
 	 * @param {Object}              [aThisObject]    the object that will be a global object ('this') in aCallback func.
-	 * @return did some elements satisfy the condition?
-	 * @type Boolean
+	 * @return {boolean} did some elements satisfy the condition?
 	 */
 	Array.prototype.some = function(aCallback, aThisObject){
 		for (var i = 0, n = this.length; i < n; i++) {
@@ -421,8 +416,7 @@ if (!Array.prototype.every) {
 	 * (implement emulation of the method defined in JavaScript1.6)
 	 * @param {Array.callback.test} aCallback        the function to test condition of the elements
 	 * @param {Object}              [aThisObject]    the object that will be a global object ('this') in aCallback func.
-	 * @return did all elements satisfy the condition?
-	 * @type Boolean
+	 * @return {boolean} did all elements satisfy the condition?
 	 */
 	Array.prototype.every = function(aCallback, aThisObject){
 		for (var i = 0, n = this.length; i < n; i++) {
@@ -443,20 +437,18 @@ if (!Array.prototype.every) {
  * @function
  * @name Array.callback.iterate
  * @param {Object} anElement    current processing element of the Array.
- * @param {Number} anIndex      current processing index-num of the Array.
+ * @param {number} anIndex      current processing index-num of the Array.
  * @param {Array}  anArray      the Array itself.
- * @returns processing result value (any type) of this function
- * @type Object
+ * @return {Object} processing result value (any type) of this function
  */
 /**
  * higher-order function for {@link Array#filter}, {@link Array#some}, {@link Array#every}
  * @function
  * @name Array.callback.test
  * @param {Object} anElement    current processing element of the Array.
- * @param {Number} anIndex      current processing index-num of the Array.
+ * @param {number} anIndex      current processing index-num of the Array.
  * @param {Array}  anArray      the Array itself.
- * @returns processing result value (boolean) of this function
- * @type Boolean
+ * @return {boolean} processing result value (boolean) of this function
  */
 
 
@@ -481,8 +473,7 @@ $.extend(Iroha.ViewClass,
 {
 	/**
 	 * 新規インスタンスを生成して返す。
-	 * @type 新規インスタンス
-	 * @type Iroha.ViewClass
+	 * @return {Iroha.ViewClass} 新規インスタンス
 	 * @constructs
 	 */
 	create : function() {
@@ -495,8 +486,7 @@ $.extend(Iroha.ViewClass,
 	/**
 	 * 与えられたコンストラクタ（クラス）に汎用クラスプロパティ・メソッド群を与える。
 	 * @param {Function} constructor    対象のコンストラクタ関数
-	 * @return 汎用クラスプロパティ・メソッド群を与えられたコンストラクタ
-	 * @type Function
+	 * @return {Function} 汎用クラスプロパティ・メソッド群を与えられたコンストラクタ
 	 */
 	applyTo : function(constructor) {
 		$.isFunction(constructor) || (constructor = new Function);
@@ -509,26 +499,26 @@ $.extend(Iroha.ViewClass.prototype,
 {
 	/**
 	 * Iroha.ViewClass のものであることを示すフラグ
-	 * @type Boolean
+	 * @type {boolean}
 	 * @constant
 	 */
 	isIrohaViewClass : true,
 
 	/**
 	 * 生成したインスタンス群からなる配列
-	 * @type Object[]
+	 * @type {Array}
 	 */
 	instances : [],
 
 	/**
 	 * インスタンスのインデックス番号を格納するためのキー。
-	 * @type String
+	 * @type {string}
 	 */
 	key : '',
 
 	/**
 	 * コンストラクタの prototype が備えているべき「既定のメソッド」。無ければここから補われる。
-	 * @type Object
+	 * @type {{string: Function}}
 	 * @private
 	 */
 	defMethods : {
@@ -543,8 +533,7 @@ $.extend(Iroha.ViewClass.prototype,
 	/**
 	 * クラスから生成されたインスタンスを格納する
 	 * @param {Object} instance    生成したインスタンス
-	 * @return 格納したインスタンスそれ自身
-	 * @type Object
+	 * @return {Object} 格納したインスタンスそれ自身
 	 * @private
 	 */
 	storeInstance : function(instance) {
@@ -554,10 +543,9 @@ $.extend(Iroha.ViewClass.prototype,
 
 	/**
 	 * クラスから作られた既存インスタンスを得る。
-	 * @param {Number|jQuery|Element|String} [arg]    インデックス番号、またはインスタンス生成時に指定した「基底要素ノード」。
+	 * @param {number|jQuery|Element|string} [arg]    インデックス番号、またはインスタンス生成時に指定した「基底要素ノード」。
 	 *                                                引数無指定時は全ての既存インスタンスからなる配列が返る。
-	 * @return 該当のインスタンス。存在しなければ undefined が返る。引数無指定時は全ての既存インスタンスからなる配列が返る。
-	 * @type Object
+	 * @return {Object} 該当のインスタンス。存在しなければ undefined が返る。引数無指定時は全ての既存インスタンスからなる配列が返る。
 	 */
 	getInstance : function(arg) {
 		if (arguments.length == 0) {
@@ -599,19 +587,17 @@ $.extend(Iroha.ViewClass.prototype,
 	 * 最後に instance.init() が自動的に呼び出される。
 	 * instance.init() で最低限必要な処理は、第1引数として与えられる「基底要素ノード」を instance.$node に格納することである。
 	 *
-	 * @param {jQuery|Element|String} node      インスタンスが主として取扱う「基底要素ノード」。instance.init() の第1引数として渡される。
+	 * @param {jQuery|Element|string} node      インスタンスが主として取扱う「基底要素ノード」。instance.init() の第1引数として渡される。
 	 * @param {Arguments}             [args]    instance.init() に渡される2番目以降の引数。
-	 * @return 生成したインスタンス
-	 * @type Object
+	 * @return {Object} 生成したインスタンス
 	 */
 	create : function(node, args) {
 		if (!$(node).is('*')) {
 //			throw new TypeError('Iroha.ViewClass#create: 第1引数は要素ノード、要素ノードを内包した jQuery オブジェクト、要素ノードを見つけられる selector 文字列でなければなりません。');
 			console.warn('Iroha.ViewClass#create: 第1引数は要素ノード、要素ノードを内包した jQuery オブジェクト、要素ノードを見つけられる selector 文字列でなければなりません。')
 			console.trace && console.trace();
-		} else {
-			return this.getInstance(node) || this.add.apply(this, arguments);
 		}
+		return this.getInstance(node) || this.add.apply(this, arguments);
 	},
 
 	/**
@@ -623,23 +609,21 @@ $.extend(Iroha.ViewClass.prototype,
 	 * instance.init() で最低限必要な処理は、第1引数として与えられる「基底要素ノード」を instance.$node に格納することである。
 	 *
 	 * @param {Arguments} [args]      instance.init() に渡される引数（群）。
-	 * @return 生成したインスタンス
-	 * @type Object
+	 * @return {Object} 生成したインスタンス
 	 */
 	add : function(args) {
 		// 既定のメソッド群がコンストラクタの prototype になければ、補う。
 		$.each(this.defMethods, $.proxy(function(name, func) { this.prototype[name] || (this.prototype[name] = func) }, this));
 
 		var instance = new this;
-		instance.init.apply(instance, arguments)
+		instance.init.apply(instance, arguments);
 		return this.storeInstance(instance);
 	},
 
 	/**
 	 * 指定したコンストラクタ（クラス）のプロトタイプを現在のコンテキストのコンストラクタ（クラス）へ継承させる。
 	 * @param {Function} constructor    継承元のコンストラクタ（クラス）
-	 * @return コンテキストのコンストラクタ自身
-	 * @type Function
+	 * @return {Function} コンテキストのコンストラクタ自身
 	 */
 	extend : function(constructor) {
 		$.isFunction(constructor) || (constructor = new Function);
@@ -672,7 +656,7 @@ Iroha.Number = function() {
 
 	/**
 	 * 処理対象となっている数値
-	 * @type Number
+	 * @type {number}
 	 * @private
 	 */
 	this.value = 0;
@@ -680,8 +664,7 @@ Iroha.Number = function() {
 
 /**
  * Iroha.Number のインスタンスを作って返す。
- * @return Iroha.Number の新規インスタンス
- * @type Iroha.Number
+ * @return {Iroha.Number} Iroha.Number の新規インスタンス
  */
 Iroha.Number.create = function() {
 	var instance = new this;
@@ -693,9 +676,8 @@ $.extend(Iroha.Number.prototype,
 {
 	/**
 	 * 初期化
-	 * @param {Number} [value=0]    処理対象とする数値。
-	 * @return このインスタンス自身
-	 * @type Iroha.Number
+	 * @param {number} [value=0]    処理対象とする数値。
+	 * @return {Iroha.Number} このインスタンス自身
 	 */
 	init : function(value) {
 		this.value = Number(value) || 0;
@@ -704,8 +686,7 @@ $.extend(Iroha.Number.prototype,
 
 	/**
 	 * 現在の数値を文字列として取得する。
-	 * @returns 現在の数値を文字列化したもの
-	 * @type String
+	 * @return {string} 現在の数値を文字列化したもの
 	 */
 	toString : function() {
 		return String(this.value);
@@ -713,8 +694,7 @@ $.extend(Iroha.Number.prototype,
 
 	/**
 	 * 現在の数値を取得する
-	 * @returns 現在の数値
-	 * @type Number
+	 * @return {number} 現在の数値
 	 */
 	get : function() {
 		return this.value;
@@ -722,9 +702,8 @@ $.extend(Iroha.Number.prototype,
 
 	/**
 	 * 簡易フォーマッタ。現在の数値を指定形式の文字列へ整形する。
-	 * @param {String} format     整形フォーマット
-	 * @return 整形された文字列を保持している {@link Iroha.String} インスタンス
-	 * @type Iroha.String
+	 * @param {string} format     整形フォーマット
+	 * @return {Iroha.String} 整形された文字列を保持している {@link Iroha.String} インスタンス
 	 * @example
 	 *  Iroha.Number(     '56'   ).format(      '000'    ).get() ->        '056'
 	 *  Iroha.Number( '123456'   ).format(      '###'    ).get() ->        '456'
@@ -791,14 +770,14 @@ Iroha.String = function() {
 
 	/**
 	 * 処理対象となっている文字列
-	 * @type String
+	 * @type {string}
 	 * @private
 	 */
 	this.value = '';
 
 	/**
 	 * 処理対象となっている文字列の現在の長さ
-	 * @type Number
+	 * @type {number}
 	 */
 	this.length = 0;
 };
@@ -808,14 +787,13 @@ $.extend(Iroha.String,
 {
 	/**
 	 * ランダムな文字列を得る。
-	 * @param {Number} [num=24]    ランダム文字列の長さ
-	 * @param {String} [chars]     ランダム文字列を構成する文字群
-	 * @returns 作成したランダム文字列を保持している Iroha.String インスタンス
-	 * @type Iroha.String
+	 * @param {number} [num=24]    ランダム文字列の長さ
+	 * @param {string} [chars]     ランダム文字列を構成する文字群
+	 * @return {Iroha.String} 作成したランダム文字列を保持している Iroha.String インスタンス
 	 */
 	random : function(num, chars) {
-		var num   = (num > 0) ? num : 24;
-		var chars = ($.type(chars) == 'string') ? chars : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		num   = (num > 0) ? num : 24;
+		chars = ($.type(chars) == 'string') ? chars : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		var ret   = '';
 		while (num--) {
 			ret += chars.split('')[Math.floor(Math.random() * chars.length)]
@@ -825,8 +803,7 @@ $.extend(Iroha.String,
 
 	/**
 	 * グローバル一意識別子を得る。
-	 * @returns 作成したグローバル一意識別子を保持している Iroha.String インスタンス
-	 * @type Iroha.String
+	 * @return {Iroha.String} 作成したグローバル一意識別子を保持している Iroha.String インスタンス
 	 */
 	guid : function() {
 		var chars = '0123456789ABCDEF';
@@ -836,8 +813,7 @@ $.extend(Iroha.String,
 
 	/**
 	 * Iroha.String のインスタンスを作って返す。
-	 * @return Iroha.String の新規インスタンス
-	 * @type Iroha.String
+	 * @return {Iroha.String} Iroha.String の新規インスタンス
 	 */
 	create : function() {
 		var instance = new this;
@@ -850,9 +826,8 @@ $.extend(Iroha.String.prototype,
 {
 	/**
 	 * 初期化
-	 * @param {Number} [value=""]    処理対象とする文字列。
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {number} [value=""]    処理対象とする文字列。
+	 * @return {Iroha.String} このインスタンス自身
 	 */
 	init : function(value) {
 		this.value  = String(value === undefined ? '' : value);
@@ -866,8 +841,7 @@ $.extend(Iroha.String.prototype,
 	 * IE8 で、 toString メソッドをオーバーライドできない様子。
 	 * 正確には、jQuery.extend が悪さをしている可能性がある。
 	 * ともかく Iroha.String#toString を呼び出すと IE8 でエラーになるようになってしまった。
-	 * @returns 現在の文字列を取得
-	 * @type String
+	 * @return {string} 現在の文字列を取得
 	 */
 	toString : function() {
 		return this.value;
@@ -875,8 +849,7 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 現在の文字列を取得する。
-	 * @returns 現在の文字列を取得
-	 * @type String
+	 * @return {string} 現在の文字列を取得
 	 */
 	get : function() {
 		// IE8 で、 toString メソッドをオーバーライドできないようなので。
@@ -889,10 +862,9 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 簡易フォーマッタ。現在の文字列を指定の形式へ整形する。
-	 * @param {String|String[]|Object}  arg1     文字列、または文字列の入っている配列、または文字列をプロパティ値とする連想配列。
-	 * @param {String}                 [argN]    文字列（2個目以降）
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {string|string[]|Object}  arg1     文字列、または文字列の入っている配列、または文字列をプロパティ値とする連想配列。
+	 * @param {string}                 [argN]    文字列（2個目以降）
+	 * @return {Iroha.String} このインスタンス自身
 	 * @example
 	 *  Iroha.String('${0}HOGE${1}FUGA${2}').format(    'xxx', '  yyy',   'zzz'  ).get()
 	 *  Iroha.String('${0}HOGE${1}FUGA${2}').format([   'xxx',   'yyy',   'zzz' ]).get()
@@ -912,17 +884,16 @@ $.extend(Iroha.String.prototype,
 		this.replace(/\$\{(.+?)\}/g, function(_, key) {
 			var replace = $.type(data) == 'array' ? data[key] : Iroha.getValue(key, data);
 			return ($.type(replace) == 'undefined') ? '${' + key + '}' : replace;
-		})
+		});
 		return this;
 	},
 
 	/**
 	 * 指定の文字列より前の部分の文字列を得る。
-	 * @param {String}  str            検索文字列
-	 * @param {Boolean} [include]      true の場合、戻値は検索文字列自身を含む。
-	 * @param {Boolean} [longMatch]    true の場合、最長一致で探す。
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {string}  str            検索文字列
+	 * @param {boolean} [include]      true の場合、戻値は検索文字列自身を含む。
+	 * @param {boolean} [longMatch]    true の場合、最長一致で探す。
+	 * @return {Iroha.String} このインスタンス自身
 	 */
 	getBefore : function(str, include, longMatch) {
 		if (typeof str != 'string') {
@@ -937,11 +908,10 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 指定の文字列より後ろの部分の文字列を得る。
-	 * @param {String}  str            検索文字列
-	 * @param {Boolean} [include]      true の場合、戻値は検索文字列自身を含む。
-	 * @param {Boolean} [longMatch]    true の場合、最長一致で探す。
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {string}  str            検索文字列
+	 * @param {boolean} [include]      true の場合、戻値は検索文字列自身を含む。
+	 * @param {boolean} [longMatch]    true の場合、最長一致で探す。
+	 * @return {Iroha.String} このインスタンス自身
 	 */
 	getAfter : function(str, include, longMatch) {
 		if (typeof str != 'string') {
@@ -956,11 +926,10 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 指定文字数で裁ち落とし処理する。
-	 * @param {Number} [chars=this.length]    トリミング後の目標文字数。
-	 * @param {String} [from="start"]         トリミング方式。目標文字数を先頭末尾どちらから数えるかの指定。 "start":末尾側裁ち落とし, "end": 先頭側裁ち落とし, "both": 中間裁ち落とし。
-	 * @param {String} [ellipsis="\u2026"]    トリミングで文字が断ち切られる際につける省略記号。デフォルトは "…"。
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {number} [chars=this.length]    トリミング後の目標文字数。
+	 * @param {string} [from="start"]         トリミング方式。目標文字数を先頭末尾どちらから数えるかの指定。 "start":末尾側裁ち落とし, "end": 先頭側裁ち落とし, "both": 中間裁ち落とし。
+	 * @param {string} [ellipsis="\u2026"]    トリミングで文字が断ち切られる際につける省略記号。デフォルトは "…"。
+	 * @return {Iroha.String} このインスタンス自身
 	 */
 	trim : function(chars, from, ellipsis) {
 		var str = this.value;
@@ -1001,9 +970,8 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 現在の文字列が指定文字列から始まっていれば true を返す。
-	 * @param {String}  str    検索文字列
-	 * @return 現在の文字列が指定文字列から始まっていれば true。
-	 * @type Boolean
+	 * @param {string}  str    検索文字列
+	 * @return {boolean} 現在の文字列が指定文字列から始まっていれば true。
 	 */
 	startsWith : function(str) {
 		return (this.value.indexOf(str) == 0);
@@ -1011,9 +979,8 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 現在の文字列が指定文字列で終わっていれば true を返す。
-	 * @param {String}  str    検索文字列
-	 * @return 現在の文字列が指定文字列で終わっていれば true。
-	 * @type Boolean
+	 * @param {string}  str    検索文字列
+	 * @return {boolean} 現在の文字列が指定文字列で終わっていれば true。
 	 */
 	endsWith : function(str) {
 		var idx = this.value.lastIndexOf(str);
@@ -1022,9 +989,8 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 現在の文字列が指定文字列を含んでいれば true を返す。
-	 * @param {String}  str    検索文字列
-	 * @return 現在の文字列が指定文字列を含んでいれば true。
-	 * @type Boolean
+	 * @param {string}  str    検索文字列
+	 * @return {boolean} 現在の文字列が指定文字列を含んでいれば true。
 	 */
 	contains : function(str) {
 		return (this.value.indexOf(str) != -1);
@@ -1032,9 +998,8 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 現在の文字列が指定文字列と完全に一致するなら true を返す。
-	 * @param {String}  str    検索文字列
-	 * @return 現在の文字列が指定文字列と完全に一致するなら true。
-	 * @type Boolean
+	 * @param {string}  str    検索文字列
+	 * @return {boolean} 現在の文字列が指定文字列と完全に一致するなら true。
 	 */
 	isMatch : function(str) {
 		return (this.value === str);
@@ -1042,9 +1007,8 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 相対パス(URL)を絶対パス(URL)へ変換する。
-	 * @param {String} base    相対パス(URL)の起点となる場所を絶対パス(URL)で示したもの
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {string} base    相対パス(URL)の起点となる場所を絶対パス(URL)で示したもの
+	 * @return {Iroha.String} このインスタンス自身
 	 * @example
 	 *  Iroha.String('../target/').rel2abs('/path/to/base/'      ).get() -> '/path/to/target/'
 	 *  Iroha.String('../target/').rel2abs('http://path/to/base/').get() -> 'http://path/to/target/'
@@ -1071,9 +1035,8 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 絶対パス(URL)を相対パス(URL)へ変換する。
-	 * @param {String} base    相対パス(URL)の起点となる場所を絶対パス(URL)で示したもの
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {string} base    相対パス(URL)の起点となる場所を絶対パス(URL)で示したもの
+	 * @return {Iroha.String} このインスタンス自身
 	 * @example
 	 *  Iroha.String(      '/path/to/target/').abs2rel('/path/to/base/'      ).get() -> '../target/'
 	 *  Iroha.String('http://path/to/target/').abs2rel('http://path/to/base/').get() -> '../target/'
@@ -1111,10 +1074,9 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 文字列置換。 String#replace をインスタンス内で実施。
-	 * @param {String|RegExp} find       検索文字列、または正規表現
-	 * @param {String}        replace    置換文字列
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {string|RegExp} find       検索文字列、または正規表現
+	 * @param {string|Function}        replace    置換文字列
+	 * @return {Iroha.String} このインスタンス自身
 	 */
 	replace : function(find, replace) {
 		this.value  = this.value.replace(find, replace);
@@ -1124,8 +1086,7 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * 文字列を「サニタイズ」する。
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @return {Iroha.String} このインスタンス自身
 	 */
 	sanitize : function() {
 		var pairs = {
@@ -1136,16 +1097,17 @@ $.extend(Iroha.String.prototype,
 			, '\u0027' : '&apos;'
 		};
 		for (var key in pairs) {
-			this.replace(new RegExp(key, 'g'), pairs[key]);
+			if (pairs.hasOwnProperty(key)) {
+				this.replace(new RegExp(key, 'g'), pairs[key]);
+			}
 		}
 		return this;
 	},
 
 	/**
 	 * 文字列を％エスケープに変換する。"encodeURI" か "encodeURIComponent" を使用している。
-	 * @param {Boolean} [bool=false]    true の場合, "encodeURIComponent" で変換。それ以外は "encodeURI" で変換。
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {boolean} [bool=false]    true の場合, "encodeURIComponent" で変換。それ以外は "encodeURI" で変換。
+	 * @return {Iroha.String} このインスタンス自身
 	 */
 	encodeURI : function(bool) {
 		this.value  = bool ? encodeURIComponent(this.value) : encodeURI(this.value);
@@ -1155,9 +1117,8 @@ $.extend(Iroha.String.prototype,
 
 	/**
 	 * ％エスケープされた文字列を元に戻す。"decodeURI" か "decodeURIComponent" を使用している。
-	 * @param {Boolean} [bool=false]    true の場合, "decodeURIComponent" で変換。それ以外は "decodeURI" で変換。
-	 * @return このインスタンス自身
-	 * @type Iroha.String
+	 * @param {boolean} [bool=false]    true の場合, "decodeURIComponent" で変換。それ以外は "decodeURI" で変換。
+	 * @return {Iroha.String} このインスタンス自身
 	 */
 	decodeURI : function(bool) {
 		this.value  = bool ? decodeURIComponent(this.value) : decodeURI(this.value);
@@ -1184,15 +1145,14 @@ Iroha.StyleSheets = function() {
 
 	/**
 	 * このインスタンスが保持しているスタイルシートオブジェクトの数。
-	 * @type Number
+	 * @type {number}
 	 */
 	this.length = 0;
 };
 
 /**
  * Iroha.StyleSheets のインスタンスを作って返す。
- * @return Iroha.StyleSheets の新規インスタンス
- * @type Iroha.StyleSheets
+ * @return {Iroha.StyleSheets} Iroha.StyleSheets の新規インスタンス
  */
 Iroha.StyleSheets.create = function() {
 	var instance = new this;
@@ -1204,9 +1164,8 @@ $.extend(Iroha.StyleSheets.prototype,
 {
 	/**
 	 * 初期化（指定番号、あるいは直接与えられたスタイルシート(群)を保持）
-	 * @param {Number|StyleSheet|StyleSheet[]} [arg]    保持するスタイルシート。インデックス番号で指定、またはスタイルシートオブジェクト(群)を指定。
-	 * @return このインスタンス自身
-	 * @type Iroha.StyleSheets
+	 * @param {number|CSSStyleSheet|CSSStyleSheet[]} [arg]    保持するスタイルシート。インデックス番号で指定、またはスタイルシートオブジェクト(群)を指定。
+	 * @return {Iroha.StyleSheets} このインスタンス自身
 	 */
 	init : function(arg) {
 		var sheets = arg;
@@ -1239,12 +1198,11 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * このインスタンスが保持しているスタイルシートのコレクションに新たにスタイルシートを追加する。
-	 * @param {StyleSheet|StyleSheet[]} [arg]    追加するスタイルシートオブジェクト(群)
-	 * @return このインスタンス自身
-	 * @type Iroha.StyleSheets
+	 * @param {CSSStyleSheet|CSSStyleSheet[]} [sheets]    追加するスタイルシートオブジェクト(群)
+	 * @return {Iroha.StyleSheets} このインスタンス自身
 	 */
 	add : function(sheets) {
-		$.makeArray(sheets).forEach(function(sheet, i) {
+		$.makeArray(sheets).forEach(function(sheet) {
 			// 追加するのは "text/css" のものに限定する。（へんなのが来ても困る）
 			// しかし HTML5 で <link> や <style> の type 属性を省略しているとき、 IE8 以前では本当に type が未定義になってる。うざい。
 			if (!sheet.type || sheet.type == 'text/css') {
@@ -1257,9 +1215,8 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群のうち指定番号に該当する物を取り出し、それを保持した新規インスタンスを得る
-	 * @param {Number} [index]    インデックス番号
-	 * @return 該当スタイルシートオブジェクトを保持した新規インスタンス
-	 * @type Iroha.StyleSheets
+	 * @param {number} [index]    インデックス番号
+	 * @return {Iroha.StyleSheets} 該当スタイルシートオブジェクトを保持した新規インスタンス
 	 */
 	eq : function(index) {
 		var sheet = (typeof index == 'number') ? this[index] : null;
@@ -1268,8 +1225,7 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群のうち1番目のものを取り出し、それを保持した新規インスタンスを得る
-	 * @return new instance that has a styleSheet
-	 * @type Iroha.StyleSheets.Wrapper
+	 * @return {Iroha.StyleSheets} new instance that has a styleSheet
 	 */
 	first : function() {
 		return new this.constructor(this[0]);
@@ -1277,8 +1233,7 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群のうち最後のものを取り出し、それを保持した新規インスタンスを得る
-	 * @return new instance that has a styleSheet
-	 * @type Iroha.StyleSheets.Wrapper
+	 * @return {Iroha.StyleSheets} new instance that has a styleSheet
 	 */
 	last : function() {
 		return new this.constructor(this[this.length - 1]);
@@ -1286,9 +1241,8 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群のうち指定番号のもの、あるいはすべてを取り出す。
-	 * @param {Number} [index]    番号指定。
-	 * @return 単体のスタイルシートオブジェクト (DOM StyleSheet) 、または保持しているスタイルシートオブジェクトすべてからなる配列。
-	 * @type StyleSheet|StyleSheet[]
+	 * @param {number} [index]    番号指定。
+	 * @return {CSSStyleSheet|CSSStyleSheet[]} 単体のスタイルシートオブジェクト (DOM StyleSheet) 、または保持しているスタイルシートオブジェクトすべてからなる配列。
 	 */
 	get : function(index) {
 		return (typeof index == 'number') ? this[index] : Array.prototype.slice.call(this);
@@ -1296,9 +1250,8 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群の "ownerNode" を得る。
-	 * @param {Number} [index]    番号指定。
-	 * @return 番号指定時はコレクション中の特定スタイルシートのもの、無指定時はコレクションすべての分を収めた配列。
-	 * @type Element|Element[]
+	 * @param {number} [index]    番号指定。
+	 * @return {Element|Element[]} 番号指定時はコレクション中の特定スタイルシートのもの、無指定時はコレクションすべての分を収めた配列。
 	 */
 	getOwnerNode : function(index) {
 		if (typeof index == 'number') {
@@ -1310,8 +1263,7 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシートの個数を得る。
-	 * @return number of styleSheets owned by this instance.
-	 * @type Number
+	 * @return {number} number of styleSheets owned by this instance.
 	 */
 	size : function() {
 		return this.length;
@@ -1320,8 +1272,7 @@ $.extend(Iroha.StyleSheets.prototype,
 	/**
 	 * 現在保持しているスタイルシート群それぞれに対して処理を実施（イテレーション）。jQuery(selector).each(aCallback) に相似。
 	 * @param {Iroha.StyleSheets.Callback.each} aCallback    実施する処理（コールバック関数）。この関数が false を返したらそこでイテレーションを止める。
-	 * @return このインスタンス自身
-	 * @type Iroha.StyleSheets
+	 * @return {Iroha.StyleSheets} このインスタンス自身
 	 */
 	each : function(aCallback) {
 		$.each(this.get(), aCallback);
@@ -1331,8 +1282,7 @@ $.extend(Iroha.StyleSheets.prototype,
 	/**
 	 * 現在保持しているスタイルシート群の絞り込み処理を実施。jQuery(selector).filterh(aCallback) に相似。
 	 * @param {Iroha.StyleSheets.Callback.filter} aCallback    絞り込み処理（コールバック関数）。この関数が true を返したスタイルシートが残る。
-	 * @return 絞り込まれたスタイルシート群のみを保持する新規インスタンス
-	 * @type Iroha.StyleSheets
+	 * @return {Iroha.StyleSheets} 絞り込まれたスタイルシート群のみを保持する新規インスタンス
 	 */
 	filter : function(aCallback) {
 		return new this.constructor(this.get().filter(function(s, i) { return aCallback.call(s, i, s) }));
@@ -1340,9 +1290,8 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * スタイルルールを追加する。現在保持しているスタイルシート群のうち1番目のものに追加される。
-	 * @param {String} cssText    追加するスタイルルールのテキスト。
-	 * @return このインスタンス自身
-	 * @type Iroha.StyleSheets
+	 * @param {string} cssText    追加するスタイルルールのテキスト。
+	 * @return {Iroha.StyleSheets} このインスタンス自身
 	 */
 	insertRule : function(cssText) {
 		var expr  = /([^\{]+)(\{.+\})/;
@@ -1383,8 +1332,7 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群のうち最初の物が持つ、スタイルルール群を得る
-	 * @return スタイルルールオブジェクト群
-	 * @type CSSRuleList
+	 * @return {CSSRuleList} スタイルルールオブジェクト群
 	 */
 	getRules : function() {
 		var sheet = this.get(0);
@@ -1393,9 +1341,8 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群のうち最初の物の中の、指定インデックス番号にあるスタイルルールを削除する。
-	 * @param {Number} index    削除対象のスタイルルールインデックス番号。非負整数。
-	 * @return このインスタンス自身
-	 * @type Iroha.StyleSheets
+	 * @param {number} index    削除対象のスタイルルールインデックス番号。非負整数。
+	 * @return {Iroha.StyleSheets} このインスタンス自身
 	 */
 	deleteRule : function(index) {
 		var sheet = this.get(0);
@@ -1419,19 +1366,17 @@ $.extend(Iroha.StyleSheets.prototype,
  * {@link Iroha.StyleSheets#each} に与えるコールバック関数。
  * @function
  * @name Iroha.StyleSheets.Callback.each
- * @param {Number}      anIndex      ループカウンタ。0 始まり正整数。
- * @param {StyleSheet}  anSheet      スタイルシートオブジェクト
- * @returns false を返した場合、イテレーション（ループ）がそこで停止される。
- * @type Boolean
+ * @param {number}      anIndex      ループカウンタ。0 始まり正整数。
+ * @param {CSSStyleSheet}  anSheet      スタイルシートオブジェクト
+ * @return {boolean} false を返した場合、イテレーション（ループ）がそこで停止される。
  */
 /**
  * {@link Iroha.StyleSheets#filter} に与えるコールバック関数。
  * @function
  * @name Iroha.StyleSheets.Callback.filter
- * @param {Number}      anIndex      ループカウンタ。0 始まり正整数。
- * @param {StyleSheet}  anSheet      スタイルシートオブジェクト
- * @returns true を返したスタイルシートオブジェクトだけが残される。
- * @type Boolean
+ * @param {number}      anIndex      ループカウンタ。0 始まり正整数。
+ * @param {CSSStyleSheet}  anSheet      スタイルシートオブジェクト
+ * @return {boolean} true を返したスタイルシートオブジェクトだけが残される。
  */
 
 
@@ -1448,14 +1393,14 @@ Iroha.Observable = function() {
 
 	/**
 	 * callback function chain, pair of key name and function.
-	 * @type Object
+	 * @type {Object}
 	 * @private
 	 */
 	this.callbackChains = null;
 
 	/**
 	 * callback ignoring level - pairs of callback name and level string; 'all', 'preserved', 'disposable', 'none'.
-	 * @type Object
+	 * @type {Object}
 	 * @private
 	 */
 	this.callbackIgnoreLevel = null;
@@ -1463,8 +1408,7 @@ Iroha.Observable = function() {
 
 /**
  * Iroha.Observable のインスタンスを作って返す。
- * @return Iroha.Observable の新規インスタンス
- * @type Iroha.Observable
+ * @return {Iroha.Observable} Iroha.Observable の新規インスタンス
  */
 // Iroha.Observable.create = function() {
 // 	var instance = new this;
@@ -1476,8 +1420,7 @@ $.extend(Iroha.Observable.prototype,
 {
 	/**
 	 * 初期化（なにもしない）
-	 * @return このインスタンス自身
-	 * @type Iroha.Observable
+	 * @return {Iroha.Observable} このインスタンス自身
 	 */
 	init : function() {
 		return this;
@@ -1485,10 +1428,9 @@ $.extend(Iroha.Observable.prototype,
 
 	/**
 	 * process callback functions.
-	 * @param {String} name      callback name
+	 * @param {string} name      callback name
 	 * @param {Object} [args]    arguments for callback function
-	 * @return result value of last one of the callback functions chain.
-	 * @type Object
+	 * @return {Object} result value of last one of the callback functions chain.
 	 */
 	doCallback : function(name, /* arg1, arg2, ... */ args) {
 		var chains = this.callbackChains      || {};  // 内容を参照するだけだし、インスタンスに紐づかない空オブジェクトでもOK
@@ -1499,7 +1441,7 @@ $.extend(Iroha.Observable.prototype,
 
 		} else {
 			var ret;
-			var args  = Array.prototype.slice.call(arguments, 1);
+			args  = Array.prototype.slice.call(arguments, 1);
 			var chain = chains[name].slice();  // 参照切断して複製
 
 			// "disposable" な callback はこの時点で掃除しておく。
@@ -1526,12 +1468,11 @@ $.extend(Iroha.Observable.prototype,
 
 	/**
 	 * add callback function.
-	 * @param {String}   name             callback name
+	 * @param {string}   name             callback name
 	 * @param {Function} func             callback function/method
 	 * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
-	 * @param {String}   [disposable]     if 'disposable' specified, the callback function is treated as 'disposable'.
-	 * @return this instance
-	 * @type Iroha.Observable
+	 * @param {string}   [disposable]     if 'disposable' specified, the callback function is treated as 'disposable'.
+	 * @return {Iroha.Observable} this instance
 	 */
 	addCallback : function(name, func, aThisObject, disposable) {
 		if (typeof name != 'string' || name == '') {
@@ -1563,11 +1504,10 @@ $.extend(Iroha.Observable.prototype,
 
 	/**
 	 * remove callback function.
-	 * @param {String}   name             callback name
+	 * @param {string}   name             callback name
 	 * @param {Function} [func]           callback function/method to remove, if no funcs given, all callback funcs will be removed.
 	 * @param {Object}   [aThisObject]    object that will be a global object ('this') in func
-	 * @return this instance
-	 * @type Iroha.Observable
+	 * @return {Iroha.Observable} this instance
 	 */
 	removeCallback : function(name, func, aThisObject) {
 		var chains = this.callbackChains      || {};  // 内容を削除するだけだし、インスタンスに紐づかない空オブジェクトでもOK
@@ -1592,9 +1532,8 @@ $.extend(Iroha.Observable.prototype,
 
 	/**
 	 * remove 'disposable' callback function.
-	 * @param {String} name    callback name
-	 * @return this instance
-	 * @type Iroha.Observable
+	 * @param {string} name    callback name
+	 * @return {Iroha.Observable} this instance
 	 */
 	removeDisposableCallback : function(name) {
 		var chains = this.callbackChains;
@@ -1606,10 +1545,9 @@ $.extend(Iroha.Observable.prototype,
 
 	/**
 	 * set callback ignoring level.
-	 * @param {String} name             callback name
-	 * @param {String} [level="all"]    ignoring level - 'all', 'preserved', 'disposable', 'none'
-	 * @return this instance
-	 * @type Iroha.Observable
+	 * @param {string} name             callback name
+	 * @param {string} [level="all"]    ignoring level - 'all', 'preserved', 'disposable', 'none'
+	 * @return {Iroha.Observable} this instance
 	 */
 	ignoreCallback : function(name, level) {
 		var chains = this.callbackChains      || {};  // 参照するだけだから、インスタンスに紐づかない空オブジェクトでもOK
@@ -1633,7 +1571,7 @@ $.extend(Iroha.Observable.prototype,
 
 /* --------------- Class : Iroha.Iterator --------------- */
 /**
- * @class iterator
+ * @class Iterator
  */
 Iroha.Iterator = function() {
 	var args = arguments;
@@ -1643,35 +1581,35 @@ Iroha.Iterator = function() {
 
 	/**
 	 * iterated elements; an associative array, an array, or an object like those.
-	 * @type Object
+	 * @type {Object}
 	 * @private
 	 */
 	this.targets = undefined;
 
 	/**
 	 * an array of keys in iterated elements.
-	 * @type String[]
+	 * @type {string[]}
 	 * @private
 	 */
 	this.keys = [];
 
 	/**
 	 * a number of current position of the iterator.
-	 * @type Number
+	 * @type {number}
 	 * @private
 	 */
 	this.counter = 0;
 
 	/**
 	 * element getting mode; "key", "value", or "both".
-	 * @type String
+	 * @type {string}
 	 * @private
 	 */
 	this.mode = 'value';
 
 	/**
 	 * flag to abort automatic iterating
-	 * @type Boolean
+	 * @type {boolean}
 	 * @private
 	 */
 	this.aborted = false;
@@ -1679,8 +1617,7 @@ Iroha.Iterator = function() {
 
 /**
  * Iroha.Iterator のインスタンスを作って返す。
- * @return Iroha.Iterator の新規インスタンス
- * @type Iroha.Iterator
+ * @return {Iroha.Iterator} Iroha.Iterator の新規インスタンス
  */
 Iroha.Iterator.create = function() {
 	var instance = new this;
@@ -1694,8 +1631,7 @@ $.extend(Iroha.Iterator.prototype,
 	 * initialize
 	 * @param {Object} targets           iterated elements; an associative array, an array, or an object like those.
 	 * @param {Object} [mode="value"]    element getting mode; 'key', 'value', or 'both'
-	 * @return this instance
-	 * @type Iroha.Iterator
+	 * @return {Iroha.Iterator} this instance
 	 */
 	init : function(targets, mode) {
 		var modes = [ 'key', 'value', 'both' ];
@@ -1718,8 +1654,7 @@ $.extend(Iroha.Iterator.prototype,
 
 	/**
 	 * does the iterator has next element?
-	 * @return true if the iterator has next element.
-	 * @type Boolean
+	 * @return {boolean} true if the iterator has next element.
 	 */
 	hasNext : function() {
 		return (this.counter < this.keys.length);
@@ -1727,8 +1662,7 @@ $.extend(Iroha.Iterator.prototype,
 
 	/**
 	 * get next element in the iteration; the form of an acquired element depends on "element getting mode"
-	 * @return next element in the iteration
-	 * @type Object
+	 * @return {Object} next element in the iteration
 	 */
 	next : function() {
 		if (!this.hasNext()) {
@@ -1749,11 +1683,10 @@ $.extend(Iroha.Iterator.prototype,
 	/**
 	 * start automatic iterating.
 	 * @param {Function} func             callback function
-	 * @param {Number}   [ms=0]           milliseconds to interval
+	 * @param {number}   [ms=0]           milliseconds to interval
 	 * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
 	 * @param {Deferred} [_dfd]           (internal use)
-	 * @return jQuery.Deferred.Promise
-	 * @type jQuery.Deferred.Promise
+	 * @return {jQuery.Deferred.Promise} jQuery.Deferred.Promise
 	 */
 	iterate : function(func, ms, aThisObject, _dfd) {
 		if (typeof func != 'function') {
@@ -1779,8 +1712,7 @@ $.extend(Iroha.Iterator.prototype,
 
 	/**
 	 * abort automatic iterating
-	 * @return this instance
-	 * @type Iroha.Iterator
+	 * @return {Iroha.Iterator} this instance
 	 */
 	abort : function() {
 		this.aborted = true;
@@ -1802,14 +1734,14 @@ Iroha.Timeout = function() {
 
 	/**
 	 * timer ID.
-	 * @type Number
+	 * @type {number}
 	 * @private
 	 */
 	this.id = 0;
 
 	/**
 	 * native timer function name.
-	 * @type String
+	 * @type {string}
 	 * @private
 	 * @constant
 	 */
@@ -1818,8 +1750,7 @@ Iroha.Timeout = function() {
 
 /**
  * Iroha.Timeout のインスタンスを作って返す。
- * @return Iroha.Timeout の新規インスタンス
- * @type Iroha.Timeout
+ * @return {Iroha.Timeout} Iroha.Timeout の新規インスタンス
  */
 Iroha.Timeout.create = function() {
 	var instance = new this;
@@ -1832,14 +1763,13 @@ $.extend(Iroha.Timeout.prototype,
 	/**
 	 * initialize.
 	 * @param {Function} func             callback function
-	 * @param {Number}   [ms=0]           milliseconds to timeout
+	 * @param {number}   [ms=0]           milliseconds to timeout
 	 * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the func
-	 * @param {Boolean}  [immediate]      if true, do immediate callback at start
-	 * @return this instance
-	 * @type Iroha.Timeout
+	 * @param {boolean}  [immediate]      if true, do immediate callback at start
+	 * @return {Iroha.Timeout} this instance
 	 */
 	init : function(func, ms, aThisObject, immediate) {
-		var func  = $.proxy($.isFunction(func) ? func : new Function, aThisObject);
+		func  = $.proxy($.isFunction(func) ? func : new Function, aThisObject);
 		var timer = window[this.timerFunc];
 		if (ms > 0) {
 			this.id = (Iroha.ua.isIE)
@@ -1856,8 +1786,7 @@ $.extend(Iroha.Timeout.prototype,
 
 	/**
 	 * clear timer.
-	 * @return this instance
-	 * @type Iroha.Timeout
+	 * @return {Iroha.Timeout} this instance
 	 */
 	clear : function() {
 		clearTimeout (this.id);
@@ -1867,8 +1796,7 @@ $.extend(Iroha.Timeout.prototype,
 
 	/**
 	 * @deprecated use {@link #clear} method instead of this method.
-	 * @return this instance
-	 * @type Iroha.Timeout
+	 * @return {Iroha.Timeout} this instance
 	 */
 	clearTimer : function() {
 		return this.clear.apply(this, arguments);
@@ -1890,14 +1818,14 @@ Iroha.Interval = function() {
 
 	/**
 	 * timer ID.
-	 * @type Number
+	 * @type {number}
 	 * @private
 	 */
 	this.id = 0;
 
 	/**
 	 * native timer function name.
-	 * @type String
+	 * @type {string}
 	 * @private
 	 * @constant
 	 */
@@ -1906,8 +1834,7 @@ Iroha.Interval = function() {
 
 /**
  * Iroha.Interval のインスタンスを作って返す。
- * @return Iroha.Interval の新規インスタンス
- * @type Iroha.Interval
+ * @return {Iroha.Interval} Iroha.Interval の新規インスタンス
  */
 Iroha.Interval.create = function() {
 	var instance = new this;
@@ -1929,8 +1856,7 @@ Iroha.Timer = function() {
 
 /**
  * Iroha.Timer のインスタンスを作って返す。
- * @return Iroha.Timer の新規インスタンス
- * @type Iroha.Timer
+ * @return {Iroha.Timer} Iroha.Timer の新規インスタンス
  */
 Iroha.Timer.create = function() {
 	return new this;
@@ -1941,15 +1867,14 @@ $.extend(Iroha.Timer.prototype,
 {
 	/**
 	 * started time of this timer.
-	 * @type Date
+	 * @type {Date}
 	 * @private
 	 */
 	started : undefined,
 
 	/**
 	 * initialize
-	 * @return this instance
-	 * @type Iroha.Timer
+	 * @return {Iroha.Timer} this instance
 	 */
 	init : function() {
 		return this.reset();
@@ -1957,8 +1882,7 @@ $.extend(Iroha.Timer.prototype,
 
 	/**
 	 * reset timer.
-	 * @return this instance
-	 * @type Iroha.Timer
+	 * @return {Iroha.Timer} this instance
 	 */
 	reset : function() {
 		this.started = new Date;
@@ -1967,8 +1891,7 @@ $.extend(Iroha.Timer.prototype,
 
 	/**
 	 * get acquire time progress in milisecond.
-	 * @return acquire time progress in milisecond.
-	 * @type Number
+	 * @return {number} acquire time progress in milisecond.
 	 */
 	getTime : function() {
 		return (new Date) - this.started;
@@ -1976,8 +1899,7 @@ $.extend(Iroha.Timer.prototype,
 
 	/**
 	 * get acquire time progress in second.
-	 * @return acquire time progress in second.
-	 * @type Number
+	 * @return {number} acquire time progress in second.
 	 */
 	getSeconds : function() {
 		return this.getTime() / 1000;
@@ -1998,27 +1920,26 @@ Iroha.Tag = function() {
 
 	/**
 	 * tag name (element name) to create.
-	 * @type String
+	 * @type {string}
 	 */
 	this.tagName = '';
 
 	/**
 	 * associative array of attributes { name1 : value1, name2 : value2 ... }
-	 * @type Object
+	 * @type {Object}
 	 */
 	this.attributes = {};
 
 	/**
 	 * array of {@link Iroha.Tag} instances
-	 * @type Iroha.Tag[]
+	 * @type {Iroha.Tag}
 	 */
 	this.childNodes = [];
 };
 
 /**
  * Iroha.Tag のインスタンスを作って返す。
- * @return Iroha.Tag の新規インスタンス
- * @type Iroha.Tag
+ * @return {Iroha.Tag} Iroha.Tag の新規インスタンス
  */
 Iroha.Tag.create = function() {
 	var instance = new this;
@@ -2030,10 +1951,9 @@ $.extend(Iroha.Tag.prototype,
 {
 	/**
 	 * initialize
-	 * @param {String} tagName    element name to create
+	 * @param {string} tagName    element name to create
 	 * @param {Object} [attrs]    associative array of attributes { name1 : value1, name2 : value2 ... }
-	 * @return このインスタンス自身
-	 * @type Iroha.Tag
+	 * @return {Iroha.Tag} このインスタンス自身
 	 */
 	init : function(tagName, attrs) {
 		if (typeof tagName != 'string') {
@@ -2049,10 +1969,9 @@ $.extend(Iroha.Tag.prototype,
 
 	/**
 	 * 属性値を設定する／読み出す
-	 * @param {String} name       対象とする属性の名前
-	 * @param {String} [value]    その属性に値を設定する場合は、その値。（無指定時は属性値の読み出しとなる）
-	 * @return 指定された属性の現在の値、または今セットした値そのもの、
-	 * @type String
+	 * @param {string} name       対象とする属性の名前
+	 * @param {string} [value]    その属性に値を設定する場合は、その値。（無指定時は属性値の読み出しとなる）
+	 * @return {string} 指定された属性の現在の値、または今セットした値そのもの、
 	 */
 	attr : function(name, value) {
 		if (typeof name != 'string') {
@@ -2066,9 +1985,8 @@ $.extend(Iroha.Tag.prototype,
 
 	/**
 	 * append child instance.
-	 * @param {Iroha.Tag|String} arg 　　instance to append
-	 * @return このインスタンス自身
-	 * @type Iroha.Tag
+	 * @param {Iroha.Tag|string} arg 　　instance to append
+	 * @return {Iroha.Tag} このインスタンス自身
 	 */
 	append : function(arg) {
 		if (arg == undefined || arg == null) {
@@ -2084,9 +2002,8 @@ $.extend(Iroha.Tag.prototype,
 
 	/**
 	 * output instance data as tag string. typically to use document.write().
-	 * @param {Boolean} [debug=false]    debug mode - escaped output
-	 * @return HTML tag string
-	 * @type String
+	 * @param {boolean} [debug=false]    debug mode - escaped output
+	 * @return {string} HTML tag string
 	 */
 	toString : function(debug) {
 		var tagOpen    = (debug) ? '&lt;' : '<';
@@ -2097,7 +2014,9 @@ $.extend(Iroha.Tag.prototype,
 			content += this.childNodes[i].toString(debug);
 		}
 		for (var attr in this.attributes) {
-			tag += ' ' + attr + '="' + this.attributes[attr] + '"';
+			if (this.attributes.hasOwnProperty(attr)) {
+				tag += ' ' + attr + '="' + this.attributes[attr] + '"';
+			}
 		}
 		tag += (content != null) ?
 			tagClose + content + tagOpen + '/' + this.tagName + tagClose :
@@ -2113,18 +2032,17 @@ $.extend(Iroha.Tag.prototype,
 /* --------------- Function : Iroha.setValue --------------- */
 /**
  * set value to deep object directly.
- * @param {String} expr            object expression string to set value
+ * @param {string} expr            object expression string to set value
  * @param {Object} [value]         value to set
  * @param {Object} [obj=window]    base object of expr
- * @returns value that set
- * @type Object
+ * @return {Object} value that set
  */
 Iroha.setValue = function(expr, value, obj) {
 	if (typeof expr != 'string' || !expr) {
 		throw new TypeError('Iroha.setValue: first argument type must be string (expr).');
 	} else if (obj !== null) {
 		var props = expr.split('.');
-		var obj   = (obj === undefined) ? window : obj
+		obj   = (obj === undefined) ? window : obj
 		if (props.length == 1) {
 			return (obj[expr] = value);
 		} else {
@@ -2142,17 +2060,16 @@ Iroha.setValue = function(expr, value, obj) {
 /* --------------- Function : Iroha.getValue --------------- */
 /**
  * get value from deep object directly.
- * @param {String} expr            object expression string to get value
+ * @param {string} expr            object expression string to get value
  * @param {Object} [obj=window]    base object of expr
- * @returns any type of value
- * @type Object
+ * @return {Object} any type of value
  */
 Iroha.getValue = function(expr, obj) {
 	if (typeof expr != 'string' || !expr) {
 		throw new TypeError('Iroha.getValue: first argument type must be string (expr).');
 	} else {
-		var expr = ('this.' + expr).replace(/\b\.?(\d+)\b/g, '[$1]').replace(/\[\[/g, '[').replace(/\]\]/g, ']');
-		var obj  = $.type(obj) != 'object' ? window : obj;
+		expr = ('this.' + expr).replace(/\b\.?(\d+)\b/g, '[$1]').replace(/\[\[/g, '[').replace(/\]\]/g, ']');
+		obj  = $.type(obj) != 'object' ? window : obj;
 		var get  = new Function('try { return ' + expr + ' }catch(e){}');
 		return get.call(obj);
 	}
@@ -2165,8 +2082,7 @@ Iroha.getValue = function(expr, obj) {
  * create object as single instance. or put existing instance.
  * @param {Function} _constructor    constructor
  * @param {Object}   [_arguments]    arguments for constructor
- * @return single instance.
- * @type Object
+ * @return {Object} single instance.
  */
 Iroha.singleton = function(_constructor, /* arg1, arg2, ... */ _arguments) {
 	if (typeof _constructor != 'function') {
@@ -2183,7 +2099,7 @@ Iroha.singleton = function(_constructor, /* arg1, arg2, ... */ _arguments) {
 /**
  * 指定した時間に1度しか実行されない関数を生成する。
  * @param {Function} func           対象となる関数。
- * @param {Number} wait             制限時間。単位 ms 。
+ * @param {number} wait             制限時間。単位 ms 。
  * @param {Object} [aThisObject]    関数内で "this" が指し示すことになるもの
  * @return {Function} 実行間隔が制限された関数
  */
@@ -2214,7 +2130,7 @@ Iroha.throttle = function (func, wait, aThisObject) {
 /**
  * 指定した時間呼ばれなかったら初めて実行される関数を生成する。
  * @param  {Function} func          対象となる関数。
- * @param {Number} delay            最後に呼んでから実行までの時間。単位 ms。
+ * @param {number} delay            最後に呼んでから実行までの時間。単位 ms。
  * @param {Object} [aThisObject]    関数内で "this" が指し示すことになるもの
  * @return {Function} 指定した時間呼ばれなかったら初めて実行される関数
  */
@@ -2239,10 +2155,9 @@ Iroha.debounce = function (func, delay, aThisObject) {
 /**
  * create wrapper function which ignores and unify barraged-function-calls.
  * @param {Function} func             a function which has possibility to be barraged function-calls
- * @param {Number}   [delay=1]        delay time to ignore barraged function-calls
+ * @param {number}   [delay=1]        delay time to ignore barraged function-calls
  * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the function
- * @return wrapper function.
- * @type Function
+ * @return {Function} wrapper function.
  * @deprecated use Iroha.debounce
  */
 Iroha.barrageShield = function(func, delay, aThisObject) {
@@ -2264,8 +2179,7 @@ Iroha.barrageShield = function(func, delay, aThisObject) {
 /**
  * return 'true' if the function is already applied.
  * @param {Function} func    typically 'arguments.callee'
- * @return boolean
- * @type Boolean
+ * @return {boolean} boolean
  */
 Iroha.alreadyApplied = function(func) {
 	if (typeof func != 'function') {
@@ -2280,9 +2194,8 @@ Iroha.alreadyApplied = function(func) {
 /* --------------- Function : Iroha.preloadImage --------------- */
 /**
  * create Image object (load image).
- * @param {String} src     image url to load
- * @return image object
- * @type Image
+ * @param {string} src     image url to load
+ * @return {HTMLImageElement} image object
  */
 Iroha.preloadImage = function(src) {
 	if (typeof src != 'string' || !src) {
@@ -2300,14 +2213,13 @@ Iroha.preloadImage = function(src) {
 /**
  * get an element which is linked from given anchor element in same page.
  * @see jQuery.fn.Iroha_getLinkTarget
- * @param {Element|jQuery|String}  anchor             anchor element (a, area).
- * @param {String}                [target="_self"]    target name to assume that given anchor is inner-page link.
- * @return jQuery indicating an element which is linked from given anchor element.
- * @type jQuery
+ * @param {Element|jQuery|string}  anchor             anchor element (a, area).
+ * @param {string}                [target="_self"]    target name to assume that given anchor is inner-page link.
+ * @return {jQuery} jQuery indicating an element which is linked from given anchor element.
  */
 Iroha.getLinkTarget = function(anchor, target) {
-	var anchor = $(anchor).filter('a, area').get(0);
-	var target = target ? String(target) : '_self';
+	anchor = $(anchor).filter('a, area').get(0);
+	target = target ? String(target) : '_self';
 	var $ret   = $();
 	if (anchor) {
 		var _target = anchor.target || '_self';
@@ -2333,14 +2245,13 @@ Iroha.getLinkTarget = function(anchor, target) {
  * IE8 を含むそれより古い IE では以下のいずれかが必要。（ちなみに、この2つは同居できない）
  *   - <a href="http://code.google.com/p/ierange/">W3C DOM Ranges for IE</a>
  *   - <a href="http://code.google.com/p/rangy/">Rangy</a>
- * @param {jQuery|Element|String} node      処理対象（起点）の要素ノード
- * @param {String}                [tmpl]    URL をリンクにするとき雛形とする a 要素の HTML 文字列
- * @return 与えた要素ノード（を内包した jQuery オブジェクト）
- * @type jQuery
+ * @param {jQuery|Element|string} node      処理対象（起点）の要素ノード
+ * @param {string}                [tmpl]    URL をリンクにするとき雛形とする a 要素の HTML 文字列
+ * @return {jQuery} 与えた要素ノード（を内包した jQuery オブジェクト）
  */
 Iroha.urlToAnchor = function(node, tmpl) {
 	var range = document.createRange();
-	var tmpl  = tmpl || '<a href="${0}">${0}</a>';
+	tmpl  = tmpl || '<a href="${0}">${0}</a>';
 	var regex = /(h?ttps?:\/\/[^\s]+)/;
 
 	return $(node)
@@ -2365,7 +2276,7 @@ Iroha.urlToAnchor = function(node, tmpl) {
 								// 現在のテキストノードは分割されたので、同一の親ノードの下にぶら下がった次のテキストノードを探す
 								// 存在していればそれを次の処理対象にする。
 								var next = this.nextSibling;
-								while (next && next.nodeType != 3) { next = next.nextSibling };
+								while (next && next.nodeType != 3) { next = next.nextSibling }
 								next && arguments.callee.call(next);
 							}
 							break;
@@ -2380,9 +2291,8 @@ Iroha.urlToAnchor = function(node, tmpl) {
 /* --------------- Function : Iroha.getQuery --------------- */
 /**
  * クエリ文字列を連想配列化したものを得る。
- * @param {String} [serialized]    "serialized" の場合、{ name, value } の連想配列を、クエリ文字列の並び順に収めたシリアライズド配列を得る。
- * @return クエリ文字列を連想配列化したオブジェクト、または { name, value } の連想配列をクエリ文字列の並び順に収めたシリアライズド配列。
- * @type Object|Object[]
+ * @param {string} [serialized]    "serialized" の場合、{ name, value } の連想配列を、クエリ文字列の並び順に収めたシリアライズド配列を得る。
+ * @return {Object|Object[]} クエリ文字列を連想配列化したオブジェクト、または { name, value } の連想配列をクエリ文字列の並び順に収めたシリアライズド配列。
  */
 Iroha.getQuery = function(serialized) {
 	var pairs = [];
@@ -2408,8 +2318,7 @@ Iroha.getQuery = function(serialized) {
  * get window geometry and mouse position.
  * @param {Event} e       event object - this param exists when this function is called as an event handler.
  * @param {Window} win    window object - specify this param to alter window object.
- * @returns an associative array of geometry properties
- * @type Iroha.geom
+ * @return {Iroha.geom} an associative array of geometry properties
  */
 Iroha.getGeometry = function(e, win) {
 	var w = win || window;
@@ -2462,8 +2371,7 @@ Iroha.getGeometry = function(e, win) {
 
 /**
  * get window zoom ratio for IE7+
- * @returns window zoom ratio on IE7+ / always 1 on other browsers.
- * @type Number
+ * @return {number} window zoom ratio on IE7+ / always 1 on other browsers.
  * @private
  */
 Iroha.getGeometry.getZoomRatio = function() {
@@ -2501,8 +2409,7 @@ Iroha.getGeometry.getZoomRatio = function() {
 
 /**
  * get scrollbar width
- * @return scrollbar width in px unit
- * @type Number
+ * @return {number} scrollbar width in px unit
  * @private
  */
 Iroha.getGeometry.getScrollBarWidth = function() {
@@ -2544,9 +2451,8 @@ Iroha.getGeometry.continuously = function() {
 /* --------------- Function : Iroha.getCommonDir --------------- */
 /**
  * get URL of common directory.
- * @param {String} dirName     name of common directory
- * @return absolute URL of common directory.
- * @type String
+ * @param {string} dirName     name of common directory
+ * @return {string} absolute URL of common directory.
  */
 Iroha.getCommonDir = function(dirName) {
 	if (typeof dirName != 'string' || !dirName) {
@@ -2580,12 +2486,11 @@ Iroha.getCommonDir = function(dirName) {
 /* --------------- Function : Iroha.watchFor --------------- */
 /**
  * watch existing of the specified object.
- * @param {String} expr              string-expression of watching target object.
- * @param {Number} [timeout=3000]    time to giving up (ms, positive number)
+ * @param {string} expr              string-expression of watching target object.
+ * @param {number} [timeout=3000]    time to giving up (ms, positive number)
  * @param {Object} [base=window]     base object of expr
- * @param {Number} [interval=96]     watching interval (ms, positive number)
- * @return a Deferred's Promise object.
- * @type jQuery.Deferred.Promise
+ * @param {number} [interval=96]     watching interval (ms, positive number)
+ * @return {jQuery.Deferred.Promise} a Deferred's Promise object.
  */
 Iroha.watchFor = function(expr, timeout, base, interval) {
 	var deferred = $.Deferred();
@@ -2598,9 +2503,9 @@ Iroha.watchFor = function(expr, timeout, base, interval) {
 		}
 	};
 	var terminate = function() {
-		observe.clear()
-		deferred.reject()
-	}
+		observe.clear();
+		deferred.reject();
+	};
 	var observe = new Iroha.Interval(observer , Math.max(0, interval) ||   96);
 	var giveup  = new Iroha.Timeout (terminate, Math.max(0, timeout ) || 3000);
 	observer();
@@ -2614,16 +2519,15 @@ Iroha.watchFor = function(expr, timeout, base, interval) {
 /**
  * open new window.
  * @namespace window opener
- * @param {String}        url               url to open in new window
- * @param {String}        [target="_blank"] window target name
- * @param {Object|String} [option]          window options (in string form, or an associative array)
- * @return new window object
- * @type Window
+ * @param {string}        url               url to open in new window
+ * @param {string}        [target="_blank"] window target name
+ * @param {Object|string} [option]          window options (in string form, or an associative array)
+ * @return {Window} new window object
  */
 Iroha.openWindow = function(url, target, option) {
 	var _this    = arguments.callee;
-	var target   = target || '_blank';
-	var option  = $.type(option) == 'string' ? _this.parse(option) : option;
+	target   = target || '_blank';
+	option  = $.type(option) == 'string' ? _this.parse(option) : option;
 		option  = $.extend(null, _this.DEF_OPTIONS, option);
 
 	option.width  || delete option.width ;
@@ -2667,15 +2571,14 @@ $.extend(Iroha.openWindow,
 		, 'menubar'      : true
 		, 'scrollbars'   : true
 		, 'resizable'    : true
-		, 'moveToOrigin' : true  // additional option affects in Iroha.openWindow() only, @type {Boolean}
-		, 'autoResizeTo' : ''    // additional option affects in Iroha.openWindow() only, @type {String|Boolean}
+		, 'moveToOrigin' : true  // additional option affects in Iroha.openWindow() only, @type {boolean}
+		, 'autoResizeTo' : ''    // additional option affects in Iroha.openWindow() only, @type {string|boolean}
 	},
 
 	/**
 	 * 連想配列からオプション指定用の文字列を作り出す。またはオプション指定用文字列を連想配列に変換したものを得る。
-	 * @param {String|Object}    オプション指定用文字列、またはオプション指定の連想配列表現
-	 * @return 引数が String のときは連想配列、引数が Object のときは文字列。
-	 * @type Object|String;
+	 * @param {string|Object} option    オプション指定用文字列、またはオプション指定の連想配列表現
+	 * @return {Object|string} 引数が String のときは連想配列、引数が Object のときは文字列。
 	 */
 	parse : function(option) {
 		switch ($.type(option)) {
@@ -2704,11 +2607,10 @@ $.extend(Iroha.openWindow,
 
 	/**
 	 * open new fullscreen window.
-	 * @param {String}        url               url to open in new window
-	 * @param {String}        [target="_blank"] window target name
-	 * @param {Object|String} [option]          window options (in string form, or an associative array)
-	 * @return new window object
-	 * @type Window
+	 * @param {string}        url               url to open in new window
+	 * @param {string}        [target="_blank"] window target name
+	 * @param {Object|string} [option]          window options (in string form, or an associative array)
+	 * @return {Window} new window object
 	 */
 	full : function(url, target, option) {
 		var def = {};
@@ -2725,10 +2627,9 @@ $.extend(Iroha.openWindow,
 	/**
 	 * 新しいウインドウサイズ（というよりビューポートサイズ）を指定のサイズに合わせる。
 	 * @param {Window}        newWin    新しいウインドウのウインドウオブジェクト
-	 * @param {Number|String} [arg1]    横幅を数値で指定。または、リサイズの基準にする要素ノードのセレクタ。
-	 * @param {Number}        [arg2]    縦幅を数値で指定。
-	 * @return 与えたウインドウオブジェクト自身
-	 * @type Window
+	 * @param {number|string} [arg1]    横幅を数値で指定。または、リサイズの基準にする要素ノードのセレクタ。
+	 * @param {number}        [arg2]    縦幅を数値で指定。
+	 * @return {Window} 与えたウインドウオブジェクト自身
 	 */
 	autoResize : function(newWin, arg1, arg2) {
 		var watchFor = Iroha.watchFor;
@@ -2749,7 +2650,7 @@ $.extend(Iroha.openWindow,
 					destW += Iroha.ua.isIE && Iroha.ua.documentMode <= 8 ? 4 : 0;
 					destH += Iroha.ua.isIE && Iroha.ua.documentMode <= 8 ? 4 : 0;
 					if (destW > 0 && destH > 0) {
-						var diffW = 0
+						var diffW = 0;
 						var diffH = 0;
 						var retry = 10;
 						var timer = setInterval(function() {
@@ -2773,8 +2674,7 @@ $.extend(Iroha.openWindow,
 /* --------------- Function : Iroha.addUserAgentCName --------------- */
 /**
  * ブラウザ別の className を <body> 要素に付加する。
- * @return Iroha オブジェクト
- * @type Iroha
+ * @return {Iroha} Iroha オブジェクト
  */
 Iroha.addUserAgentCName = function() {
 	var cnames  = [];
@@ -2803,9 +2703,8 @@ Iroha.addUserAgentCName = function() {
 /* --------------- Function : Iroha.removeComments --------------- */
 /**
  * コメントノードを削除 (for IE7 only)
- * @param {jQuery|Element|String} [base=document.body]    処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
- * @return Iroha オブジェクト
- * @type Iroha
+ * @param {jQuery|Element|string} [base=document.body]    処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
+ * @return {Iroha} Iroha オブジェクト
  */
 Iroha.removeComments = function(base) {
 	if (Iroha.ua.isIE && Iroha.ua.documentMode == 7) {
@@ -2823,10 +2722,9 @@ Iroha.removeComments = function(base) {
 /* --------------- Function : Iroha.setTitleFromAlt --------------- */
 /**
  * img 要素などの alt 属性値を title 属性に設定する。 (IE7とそれ以前のブラウザを除く）
- * @param {jQuery|Element|String} [target="img, :image, area"]    処理対象とする（img 要素などの）要素ノード。
- * @param {jQuery|Element|String} [base=document.body]            処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
- * @return Iroha オブジェクト
- * @type Iroha
+ * @param {jQuery|Element|string} [target="img, :image, area"]    処理対象とする（img 要素などの）要素ノード。
+ * @param {jQuery|Element|string} [base=document.body]            処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
+ * @return {Iroha} Iroha オブジェクト
  */
 Iroha.setTitleFromAlt = function(target, base) {
 	if (!Iroha.ua.isIE || Iroha.ua.documentMode >= 8) {
@@ -2836,14 +2734,14 @@ Iroha.setTitleFromAlt = function(target, base) {
 		var dataKey = 'Iroha.setTitleFromAlt.origTitle';
 
 		$(base)
-			.on('mouseenter', target, function(e) {
+			.on('mouseenter', target, function() {
 				var title = this.getAttribute('title');
 				if (title == null && this.alt) {
 					this.title = this.alt;
 				}
 				$(this).data(dataKey, title);
 			})
-			.on('mouseleave', target, function(e) {
+			.on('mouseleave', target, function() {
 				var title = $(this).data(dataKey);
 				if (title) {
 					this.title = title;
@@ -2858,23 +2756,22 @@ Iroha.setTitleFromAlt = function(target, base) {
 /* --------------- Function : Iroha.setTitleFromInnerText --------------- */
 /**
  * マイナスインデントで隠したテキストを title 属性に設定する
- * @param {jQuery|Element|String} [target]                処理対象とする要素ノード。
- * @param {jQuery|Element|String} [base=document.body]    処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
- * @return Iroha オブジェクト
- * @type Iroha
+ * @param {jQuery|Element|string} [target]                処理対象とする要素ノード。
+ * @param {jQuery|Element|string} [base=document.body]    処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
+ * @return {Iroha} Iroha オブジェクト
  */
 Iroha.setTitleFromInnerText = function(target, base) {
 	var dataKey = 'Nisoc.setTitleFromInnerText.origTitle';
 
 	$(base || document.body)
-		.on('mouseenter', target, function(e) {
+		.on('mouseenter', target, function() {
 			var title = this.getAttribute('title');
 			if (title == null) {
 				this.title = $(this).Iroha_getInnerText().replace(/\s+/g, ' ');
 			}
 			$(this).data(dataKey, title);
 		})
-		.on('mouseleave', target, function(e) {
+		.on('mouseleave', target, function() {
 			var title = $(this).data(dataKey);
 			if (title) {
 				this.title = title;
@@ -2889,9 +2786,8 @@ Iroha.setTitleFromInnerText = function(target, base) {
 /* --------------- Function : Iroha.trapWheelEvent --------------- */
 /**
  * マウスホイールイベントを指定要素ノードの領域内にがんばって閉じ込める。これにより領域内のホイール操作ではページスクロールが（ほぼ）発生しなくなる。
- * @param {jQuery|Element|String}  node    対象要素ノード。単にセレクタ文字列を与えるのを推奨、その瞬間存在しない要素ノードでも有効に機能させることができるため。
- * @return Iroha オブジェクト
- * @type Iroha
+ * @param {jQuery|Element|string}  node    対象要素ノード。単にセレクタ文字列を与えるのを推奨、その瞬間存在しない要素ノードでも有効に機能させることができるため。
+ * @return {Iroha} Iroha オブジェクト
  */
 Iroha.trapWheelEvent = function(node) {
 	var ns = '.Iroha.trapWheelEvent';
@@ -2959,9 +2855,8 @@ Iroha.trapWheelEvent = function(node) {
 /* --------------- Function : Iroha.untrapWheelEvent --------------- */
 /**
  * マウスホイールイベントの閉じ込め処理を止める。
- * @param {jQuery|Element|String}  node    対象要素ノード。 {@link Iroha.trapWheelEvent} で指定したものと同形式のもの。例えば、セレクタ文字列で指定していたならセレクタ文字列。
- * @return Iroha オブジェクト
- * @type Iroha
+ * @param {jQuery|Element|string}  node    対象要素ノード。 {@link Iroha.trapWheelEvent} で指定したものと同形式のもの。例えば、セレクタ文字列で指定していたならセレクタ文字列。
+ * @return {Iroha} Iroha オブジェクト
  */
 Iroha.untrapWheelEvent = function(node) {
 	var type = 'mousewheel.Iroha.trapWheelEvent';
@@ -2977,9 +2872,8 @@ Iroha.untrapWheelEvent = function(node) {
 /* --------------- Function : Iroha.fireShigekix --------------- */
 /**
  * シゲキックス発動
- * @param {jQuery|Element|String}    シゲキックスを与える要素ノード
- * @return Iroha オブジェクト
- * @type Iroha
+ * @param {jQuery|Element|string} target    シゲキックスを与える要素ノード
+ * @return {Iroha} Iroha オブジェクト
  */
 Iroha.fireShigekix = function(target) {
 	$(target).css('border', '1px solid red').css('border', 'none');
@@ -2991,10 +2885,9 @@ Iroha.fireShigekix = function(target) {
 /* --------------- Function : Iroha.delay --------------- */
 /**
  * 指定時間のディレイをかける（ Deferred 。指定時間が経過すると resolve される Promise を返す）。
- * @param {Number} delay            ディレイする時間。非負整数。単位 ms 。
+ * @param {number} delay            ディレイする時間。非負整数。単位 ms 。
  * @param {Object} [aThisObject]    deferred.done() などの関数内で "this" が指し示すことになるもの
- * @return jQuery.Deferred.Promise オブジェクト
- * @type jQuery.Deferred.Promise
+ * @return {jQuery.Deferred.Promise} jQuery.Deferred.Promise オブジェクト
  */
 Iroha.delay = function(delay, aThisObject) {
 	var dfd     = $.Deferred();
@@ -3011,10 +2904,9 @@ Iroha.delay = function(delay, aThisObject) {
 /**
  * Weinre をつかってインスペクトを始める（そのための外部 JS を非同期で注入する）。
  * Weinre : {@link http://people.apache.org/~pmuellr/weinre/docs/latest/}
- * @param {String} [ident="anonymous"]             アプリケーション識別子。任意に設定。
- * @param {Stirng] [base="//{samedomain}:8080"]    Weinre が稼働している場所。無指定時は表示中の HTML と同じプロトコル・ドメインのポート 8080 番。
- * @return Iroha オブジェクト
- * @type Iroha
+ * @param {string} [ident="anonymous"]             アプリケーション識別子。任意に設定。
+ * @param {string} [base="//{samedomain}:8080"]    Weinre が稼働している場所。無指定時は表示中の HTML と同じプロトコル・ドメインのポート 8080 番。
+ * @return {Iroha} Iroha オブジェクト
  */
 Iroha.injectWeinre = function(ident, base) {
 	var args = arguments;
@@ -3050,21 +2942,19 @@ $.extend(Iroha.injectWeinre,
 {
 	/**
 	 * script 要素につける id 属性値の接頭辞
-	 * @type String
+	 * @type {string}
 	 * @constant
 	 */
 	SCRIPT_ID_PREFIX : 'iroha-inject-weinre-',
 
 	/**
 	 * 古い引数形式による呼び出しのための互換措置
-	 * @param {String} [ident="anonymous"]         アプリケーション識別子。任意に設定。
-	 * @param {Stirng] [host=location.hostname]    Weinre が稼働しているマシンのホストネーム。無指定時は表示中の HTML と同じものが指定される。
-	 * @param {Stirng] [port="8080"]               Weinre が稼働している（Listenしている）ポート番号。無指定時はデフォルトの "8080"。
-	 * @return Iroha オブジェクト
-	 * @type Iroha
+	 * @param {string} [ident="anonymous"]         アプリケーション識別子。任意に設定。
+	 * @param {string} [host=location.hostname]    Weinre が稼働しているマシンのホストネーム。無指定時は表示中の HTML と同じものが指定される。
+	 * @param {string} [port="8080"]               Weinre が稼働している（Listenしている）ポート番号。無指定時はデフォルトの "8080"。
+	 * @return {Iroha} Iroha オブジェクト
 	 */
 	compat : function(ident, host, port) {
-		var args  = arguments;
 		var url   = '${protocol}//${host}:${port}';
 		var param = { protocol : location.protocol , host : host, port : port || '8080' };
 		this(ident, Iroha.String(url).format(param).get());
@@ -3073,12 +2963,11 @@ $.extend(Iroha.injectWeinre,
 
 	/**
 	 * 注入した Weinre についての各種 URL 等の情報を得る
-	 * @param {String} [ident="anonymous"]    アプリケーション識別子。任意に設定。
-	 * @return 連想配列 { injected:String, weinre:String, weinreUI:String, weinreDoc:String }
-	 * @type Object
+	 * @param {string} [ident="anonymous"]    アプリケーション識別子。任意に設定。
+	 * @return {Object} 連想配列 { injected:String, weinre:String, weinreUI:String, weinreDoc:String }
 	 */
 	getInfo : function(ident) {
-		var ident = ident || 'anonymous';
+		ident = ident || 'anonymous';
 		var node  = document.getElementById(this.SCRIPT_ID_PREFIX + ident);
 		if (!node) {
 			return undefined;
@@ -3103,14 +2992,13 @@ $.extend(Iroha.injectWeinre,
 /**
  * get computed style value.
  * @exports $.fn.Iroha_getComputedStyle as jQuery.fn.Iroha_getComputedStyle
- * @param {String}  prop          style property name to get value
- * @param {String} [pseudo=""]    pseudo element/class name (effective in standard browsers only)
- * @return conputed style value string
- * @type String
+ * @param {string}  prop          style property name to get value
+ * @param {string} [pseudo=""]    pseudo element/class name (effective in standard browsers only)
+ * @return {string} conputed style value string
  */
 $.fn.Iroha_getComputedStyle = function(prop, pseudo) {
-	var prop   = String(prop || '');
-	var pseudo = String(pseudo   || '');
+	prop   = String(prop || '');
+	pseudo = String(pseudo   || '');
 	var node   = this.get(0);
 	if (!prop || !node) {
 		return '';
@@ -3126,9 +3014,8 @@ $.fn.Iroha_getComputedStyle = function(prop, pseudo) {
  * get an element which is linked from given anchor element in same page.
  * @exports $.fn.Iroha_getLinkTarget as jQuery.fn.Iroha_getLinkTarget
  * @see Iroha.getLinkTarget
- * @param {String} [target="_self"]    target name to assume that given anchor is inner-page link.
- * @return jQuery indicating an element which is linked from given anchor element.
- * @type jQuery
+ * @param {string} [target="_self"]    target name to assume that given anchor is inner-page link.
+ * @return {jQuery} jQuery indicating an element which is linked from given anchor element.
  */
 $.fn.Iroha_getLinkTarget = function(target) {
 	return Iroha.getLinkTarget(this, target);
@@ -3141,12 +3028,11 @@ $.fn.Iroha_getLinkTarget = function(target) {
  * 内包しているすべてのテキスト中の URL らしき文字列をリンクにする。
  * @exports $.fn.Iroha_urlToAnchor as jQuery.fn.Iroha_urlToAnchor
  * @see Iroha.urlToAnchor
- * @param {String} [tmpl]    URL をリンクにするとき雛形とする a 要素の HTML 文字列
- * @return jQuery current context object
- * @type jQuery
+ * @param {string} [tmpl]    URL をリンクにするとき雛形とする a 要素の HTML 文字列
+ * @return {jQuery} jQuery current context object
  */
-$.fn.Iroha_urlToAnchor = function(target) {
-	return Iroha.urlToAnchor(this, target);
+$.fn.Iroha_urlToAnchor = function(tmpl) {
+	return Iroha.urlToAnchor(this, tmpl);
 };
 
 
@@ -3155,9 +3041,8 @@ $.fn.Iroha_urlToAnchor = function(target) {
 /**
  * remove text nodes that have only white spaces, and normalize space of each text nodes.
  * @exports $.fn.Iroha_normalizeTextNode as jQuery.fn.Iroha_normalizeTextNode
- * @param {Boolean} [deep]    process recursive node tree?
- * @return jQuery current context object
- * @type jQuery
+ * @param {boolean} [deep]    process recursive node tree?
+ * @return {jQuery} jQuery current context object
  */
 $.fn.Iroha_normalizeTextNode = function(deep) {
 	this.contents().each(function() {
@@ -3178,9 +3063,8 @@ $.fn.Iroha_normalizeTextNode = function(deep) {
 /**
  * get whole inner texts in the node.
  * @exports $.fn.Iroha_getInnerText as jQuery.fn.Iroha_getInnerText
- * @param {Boolean} includeAlt    if true, alt texts of <img> elements are included.
- * @return whole inner texts.
- * @type String
+ * @param {boolean} includeAlt    if true, alt texts of <img> elements are included.
+ * @return {string} whole inner texts.
  */
 $.fn.Iroha_getInnerText = function(includeAlt) {
 	var ret = [];
@@ -3204,9 +3088,8 @@ $.fn.Iroha_getInnerText = function(includeAlt) {
  * "change" event handler helper for "select" elements;
  * fire "change" event when "keyup" or "mousewheel" event comes.
  * @exports $.fn.Iroha_assistSelectEvent as jQuery.fn.Iroha_assistSelectEvent
- * @param {Number} [wait=100]    wait for preventing multiple fire (nonnegative integer in ms)
- * @return jQuery current context object
- * @type jQuery
+ * @param {number} [wait=100]    wait for preventing multiple fire (nonnegative integer in ms)
+ * @return {jQuery} jQuery current context object
  */
 $.fn.Iroha_assistSelectEvent = function(wait) {
 	wait = Math.max(wait, 0) || 100;
@@ -3228,8 +3111,7 @@ $.fn.Iroha_assistSelectEvent = function(wait) {
  * その瞬間存在しない要素に対して適用したい場合は {@link Iroha.trapWheelEvent} を用いる。その第1引数に対象要素を見つけるためのセレクタ文字列を与える。
  * @exports $.fn.Iroha_trapWheelEvent as jQuery.fn.Iroha_trapWheelEvent
  * @see Iroha.trapWheelEvent
- * @return jQuery current context object
- * @type jQuery
+ * @return {jQuery} jQuery current context object
  */
 jQuery.fn.Iroha_trapWheelEvent = function() {
 	Iroha.trapWheelEvent(this);
@@ -3244,8 +3126,7 @@ jQuery.fn.Iroha_trapWheelEvent = function() {
  * {@link Iroha.trapWheelEvent} を使ってセレクタ文字列指定で適用していたものは、{@link Iroha.untrapWheelEvent} を使って解除する必要がある。
  * @exports $.fn.Iroha_untrapWheelEvent as jQuery.fn.Iroha_untrapWheelEvent
  * @see Iroha.untrapWheelEvent
- * @return jQuery current context object
- * @type jQuery
+ * @return {jQuery} jQuery current context object
  */
 jQuery.fn.Iroha_untrapWheelEvent = function() {
 	Iroha.untrapWheelEvent(this);
@@ -3257,8 +3138,7 @@ jQuery.fn.Iroha_untrapWheelEvent = function() {
 /* -------------------- jQuery.fn : Iroha_shuffleContent -------------------- */
 /**
  * コンテキスト要素の直接子ノード群をシャッフル（ランダム並び替え）
- * @return jQuery current context object
- * @type jQuery
+ * @return {jQuery} jQuery current context object
  */
 jQuery.fn.Iroha_shuffleContent = function() {
 	return this.each(function() {
@@ -3282,8 +3162,7 @@ jQuery.fn.Iroha_shuffleContent = function() {
  * @exports $.fn.Iroha_addBeforeUnload as jQuery.fn.Iroha_addBeforeUnload
  * @param {Function} listener         an event listener function
  * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the listener func.
- * @return jQuery current context object
- * @type jQuery
+ * @return {jQuery} jQuery current context object
  */
 $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 	if (this.get(0) === window) {
