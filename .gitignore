@@ -11,3 +11,5 @@
 *.sublime-workspace
 
 
+# Node.js modules
+node_modules

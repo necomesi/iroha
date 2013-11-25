@@ -1,0 +1,21 @@
+{
+  "name": "Iroha",
+  "version": "0.0.0",
+  "description": "Necomesi JS Library",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/necomesi/Iroha.git"
+  },
+  "author": "Necomesi ltd.",
+  "bugs": {
+    "url": "https://github.com/necomesi/Iroha/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-jsdoc": "~0.4.2"
+  }
+}
