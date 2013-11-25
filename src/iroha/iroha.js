@@ -284,7 +284,7 @@ if (typeof window.console != 'object') {
 /* =============== custom / shortage methods for built-in objects =============== */
 
 /**
- * The built in string object.
+ * The built in array object.
  * @external Array
  * @see {@link https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array Array}
  */
@@ -456,6 +456,75 @@ if (!Array.prototype.every) {
  * @return {boolean} processing result value (boolean) of this function
  */
 
+
+
+/**
+ * The built in string object.
+ * @external String
+ * @see {@link https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String String}
+ */
+
+/* ----- String.startsWith() ----- */
+
+if (!String.prototype.startsWith) {
+	/**
+	 * @see {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith startsWith}
+	 * @function external:String#startsWith
+	 * @param {string} searchString
+	 * @param {number} [position=0]
+	 * @returns {boolean}
+	 */
+	String.prototype.startsWith = function (searchString, position) {
+		position = position || 0;
+		return this.indexOf(searchString, position) === position;
+	};
+}
+
+/* ----- String.endsWith() ----- */
+
+if (!String.prototype.endsWith) {
+	/**
+	 * @see {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith}
+	 * @function external:String#endsWith
+	 * @param {string} searchString
+	 * @param {number} [position=searchString.length]
+	 * @returns {boolean}
+	 */
+	String.prototype.endsWith = function (searchString, position) {
+		position = position || this.length;
+		position = position - searchString.length;
+		var lastIndex = this.lastIndexOf(searchString);
+		return lastIndex !== -1 && lastIndex === position;
+	};
+}
+
+/* ----- String.contains() ----- */
+
+if (!String.prototype.contains) {
+	/**
+	 * {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/contains}
+	 * @function external:String#contains
+	 * @param {string} searchString
+	 * @param {number} [position=0]
+	 * @returns {boolean}
+	 */
+	String.prototype.contains = function (searchString, position) {
+		return String.prototype.indexOf.call(this, searchString, position) !== -1;
+	};
+}
+
+/* ----- String.trim() ----- */
+
+if (!String.prototype.trim) {
+	/**
+	 * @see {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/trim}
+	 * @function external:String#trim
+	 * @returns {string}
+	 */
+	String.prototype.trim = function () {
+		return this.replace(/^\s+|\s+$/g,'');
+	};
+}
 
 
 
@@ -939,7 +1008,7 @@ $.extend(Iroha.String.prototype,
 	 * @param {string} [ellipsis="\u2026"]    トリミングで文字が断ち切られる際につける省略記号。デフォルトは "…"。
 	 * @return {Iroha.String} このインスタンス自身
 	 */
-	trim : function(chars, from, ellipsis) {
+	ellipsis : function(chars, from, ellipsis) {
 		var str = this.value;
 		var len = this.length;
 
@@ -977,9 +1046,22 @@ $.extend(Iroha.String.prototype,
 	},
 
 	/**
+	 * 指定文字数で裁ち落とし処理する。
+	 * @param {number} [chars=this.length]    トリミング後の目標文字数。
+	 * @param {string} [from="start"]         トリミング方式。目標文字数を先頭末尾どちらから数えるかの指定。 "start":末尾側裁ち落とし, "end": 先頭側裁ち落とし, "both": 中間裁ち落とし。
+	 * @param {string} [ellipsis="\u2026"]    トリミングで文字が断ち切られる際につける省略記号。デフォルトは "…"。
+	 * @return {Iroha.String} このインスタンス自身
+	 * @deprecated Use {@link Iroha.String#ellipsis} or {@link external:String#trim}
+	 */
+	trim : function(chars, from, ellipsis) {
+		return this.ellipsis.apply(this, arguments);
+	},
+
+	/**
 	 * 現在の文字列が指定文字列から始まっていれば true を返す。
 	 * @param {string}  str    検索文字列
 	 * @return {boolean} 現在の文字列が指定文字列から始まっていれば true。
+	 * @deprecated Use {@link external:String#startsWith}
 	 */
 	startsWith : function(str) {
 		return (this.value.indexOf(str) == 0);
@@ -989,6 +1071,7 @@ $.extend(Iroha.String.prototype,
 	 * 現在の文字列が指定文字列で終わっていれば true を返す。
 	 * @param {string}  str    検索文字列
 	 * @return {boolean} 現在の文字列が指定文字列で終わっていれば true。
+	 * @deprecated Use {@link external:String#endsWith}
 	 */
 	endsWith : function(str) {
 		var idx = this.value.lastIndexOf(str);
@@ -999,6 +1082,7 @@ $.extend(Iroha.String.prototype,
 	 * 現在の文字列が指定文字列を含んでいれば true を返す。
 	 * @param {string}  str    検索文字列
 	 * @return {boolean} 現在の文字列が指定文字列を含んでいれば true。
+	 * @deprecated Use {@link external:String#contains}
 	 */
 	contains : function(str) {
 		return (this.value.indexOf(str) != -1);
