@@ -2025,7 +2025,7 @@ Iroha.Tag = function() {
 
 	/**
 	 * array of {@link Iroha.Tag} instances
-	 * @type {Iroha.Tag}
+	 * @type {Iroha.Tag[]|string[]}
 	 */
 	this.childNodes = [];
 };
@@ -2099,22 +2099,22 @@ $.extend(Iroha.Tag.prototype,
 	 * @return {string} HTML tag string
 	 */
 	toString : function(debug) {
-		var tagOpen    = (debug) ? '&lt;' : '<';
-		var tagClose   = (debug) ? '&gt;' : '>';
-		var tag        = tagOpen + this.tagName;
+		var tag        = '<' + this.tagName;
 		var content    = (this.childNodes.length) ? '' : null;
+		var instanceFlag;
 		for (var i = 0, n = this.childNodes.length; i < n; i++) {
-			content += this.childNodes[i].toString(debug);
+			instanceFlag = this.childNodes[i] instanceof this.constructor;
+			content += instanceFlag ? this.childNodes[i].toString() : Iroha.String(this.childNodes[i]).sanitize().get();
 		}
 		for (var attr in this.attributes) {
 			if (this.attributes.hasOwnProperty(attr)) {
-				tag += ' ' + attr + '="' + this.attributes[attr] + '"';
+				tag += ' ' + attr + '="' + Iroha.String(this.attributes[attr]).sanitize().get() + '"';
 			}
 		}
 		tag += (content != null) ?
-			tagClose + content + tagOpen + '/' + this.tagName + tagClose :
-			' /' + tagClose;
-		return tag;
+			'>' + content + '</' + this.tagName + '>' :
+			' />';
+		return debug ? Iroha.String(tag).sanitize().get() : tag;
 	}
 });
 
