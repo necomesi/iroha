@@ -22,7 +22,7 @@ window.undefined = window.undefined;
 /**
  * Iroha global object.
  * @name Iroha
- * @namespace Iroha global object
+ * @namespace
  */
 var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	var d = document;
@@ -62,23 +62,22 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	})();
 
 	/**
-	 * @namespace stored jQuery (or Zepto) object, considering conflict.
+	 * stored jQuery (or Zepto) object, considering conflict.
+	 * @namespace
 	 * @name Iroha.$
-	 * @constant
 	 */
 	this.$ = $;
 
 	/**
 	 * @deprecated use {@link Iroha.$}
 	 * @name Iroha.jQuery
-	 * @constant
 	 */
 	this.jQuery = $;
 
 	/**
 	 * default setting values of Iroha function/classes
 	 * @name Iroha.settings
-	 * @namespace default setting values of Iroha function/classes
+	 * @namespace
 	 * @property {Object}  common                  common settings
 	 * @property {boolean} common.showGeometry     show geometry values in browser's status bar
 	 */
@@ -88,7 +87,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	/**
 	 * identifier urls of frequently used XML-Namespaces.
 	 * @name Iroha.ns
-	 * @namespace identifier urls of frequently used XML-Namespaces
+	 * @namespace
 	 * @property {string} defaultNS    current default namespace of the docuemnt elmeent
 	 * @property {string} xhtml1       XHTML1 namespace
 	 * @property {string} xhtml2       XHTML2 namespace
@@ -103,7 +102,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	/**
 	 * browser distinction results.
 	 * @name Iroha.ua
-	 * @namespace browser distinction results.
+	 * @namespace
 	 * @property {string}  versionText         string form of the browser version number (ex: "1.9.0.2", "528.18.1", "7.0")
 	 * @property {number}  version             float number of the browser version (ex: 1.9, 528.18, 7.0)
 	 * @property {string}  mbVersText          string form of Mobile OS version number (ex: "5.0.1", "2.3.3", "6.5.3.5")
@@ -174,7 +173,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	/**
 	 * geometry properties object; the property values are updated when {@link Iroha.getGeometry} is called.
 	 * @name Iroha.geom
-	 * @namespace geometry properties object; return value of {@link Iroha.getGeometry}
+	 * @namespace
 	 * @property {number} screenW      width  of the screen (devicePixelRatio considered, never change by orientation)
 	 * @property {number} screenH      height of the screen (devicePixelRatio considered, never change by orientation)
 	 * @property {number} windowW      width  of the window viewport.
@@ -197,7 +196,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	/**
 	 * misc environment values.
 	 * @name Iroha.env
-	 * @namespace misc environment values.
+	 * @namespace
 	 * @property {boolean} isOnline      true if the browser is online.
 	 * @property {boolean} isDOMReady    true if the document is ready for DOM manipulation
 	 */
@@ -430,7 +429,7 @@ if (!Array.prototype.every) {
 /**
  * higher-order functions for member methods of {@link Array}
  * @name Array.callback
- * @namespace higher-order functions for member methods of {@link Array}
+ * @namespace
  */
 /**
  * higher-order function for {@link Array#forEach}, {@link Array#map}
@@ -461,6 +460,7 @@ if (!Array.prototype.every) {
 /* -------------------- Class : Iroha.ViewClass -------------------- */
 /**
  * @class DOM要素ノードを取扱う典型的なクラスのためのクラスメソッドを提供
+ * @name Iroha.ViewClass
  * @param {Function} [constructor]    対象のコンストラクタ関数
  * @return 汎用クラスプロパティ・メソッド群を与えられたコンストラクタ
  */
@@ -647,6 +647,7 @@ $.extend(Iroha.ViewClass.prototype,
 /* --------------- Class : Iroha.Number --------------- */
 /**
  * @class 数値をいろいろ操作
+ * @name Iroha.Number
  */
 Iroha.Number = function() {
 	var args = arguments;
@@ -761,6 +762,7 @@ $.extend(Iroha.Number.prototype,
 /* --------------- Class : Iroha.String --------------- */
 /**
  * @class 文字列をいろいろ操作
+ * @name Iroha.String
  */
 Iroha.String = function() {
 	var args = arguments;
@@ -1133,6 +1135,7 @@ $.extend(Iroha.String.prototype,
 
 /**
  * @class スタイルシートコレクションをいろいろ操作
+ * @name Iroha.StyleSheets
  * @example
  *  Iroha.StyleSheets().insertRule('body { color: red }');          // set font color to red
  *  Iroha.StyleSheets().each(function() { this.disabled = true });  // diable all style
@@ -1359,7 +1362,8 @@ $.extend(Iroha.StyleSheets.prototype,
 
 /* ----- for JSDoc toolkit output ----- */
 /**
- * @namespace {@link Iroha.StyleSheets} のメンバーメソッドに与えることができるコールバック関数群。
+ * {@link Iroha.StyleSheets} のメンバーメソッドに与えることができるコールバック関数群。
+ * @namespace
  * @name Iroha.StyleSheets.Callback
  */
 /**
@@ -1384,6 +1388,7 @@ $.extend(Iroha.StyleSheets.prototype,
 /* -------------------- Class : Iroha.Observable -------------------- */
 /**
  * @class observable object
+ * @name Iroha.Observable
  */
 Iroha.Observable = function() {
 	var args = arguments;
@@ -1572,6 +1577,7 @@ $.extend(Iroha.Observable.prototype,
 /* --------------- Class : Iroha.Iterator --------------- */
 /**
  * @class Iterator
+ * @name Iroha.Iterator
  */
 Iroha.Iterator = function() {
 	var args = arguments;
@@ -1725,6 +1731,7 @@ $.extend(Iroha.Iterator.prototype,
 /* --------------- Class : Iroha.Timeout --------------- */
 /**
  * @class a wrapper of 'setTimeout()'.
+ * @name Iroha.Timeout
  */
 Iroha.Timeout = function() {
 	var args = arguments;
@@ -1808,6 +1815,7 @@ $.extend(Iroha.Timeout.prototype,
 /* --------------- Class : Iroha.Interval --------------- */
 /**
  * @class a wrapper of 'setInterval()'.
+ * @name Iroha.Interval
  * @extends Iroha.Timeout
  */
 Iroha.Interval = function() {
@@ -1848,6 +1856,7 @@ Iroha.Interval.prototype = new Iroha.Timeout;
 /* --------------- Class : Iroha.Timer --------------- */
 /**
  * @class simple elapsed timer.
+ * @name Iroha.Timer
  */
 Iroha.Timer = function() {
 	var self = arguments.callee;
@@ -1911,6 +1920,7 @@ $.extend(Iroha.Timer.prototype,
 /* --------------- Class : Iroha.Tag --------------- */
 /**
  * @class tag-string as element object.
+ * @name Iroha.Tag
  */
 Iroha.Tag = function() {
 	var args = arguments;
@@ -2316,6 +2326,7 @@ Iroha.getQuery = function(serialized) {
 /* --------------- Function : Iroha.getGeometry --------------- */
 /**
  * get window geometry and mouse position.
+ * @name Iroha.getGetmetry
  * @param {Event} e       event object - this param exists when this function is called as an event handler.
  * @param {Window} win    window object - specify this param to alter window object.
  * @return {Iroha.geom} an associative array of geometry properties
@@ -2518,7 +2529,7 @@ Iroha.watchFor = function(expr, timeout, base, interval) {
 /* --------------- Function : Iroha.openWindow --------------- */
 /**
  * open new window.
- * @namespace window opener
+ * @name Iroha.openWindow
  * @param {string}        url               url to open in new window
  * @param {string}        [target="_blank"] window target name
  * @param {Object|string} [option]          window options (in string form, or an associative array)
@@ -2673,7 +2684,7 @@ $.extend(Iroha.openWindow,
 
 /* --------------- Function : Iroha.addUserAgentCName --------------- */
 /**
- * ブラウザ別の className を <body> 要素に付加する。
+ * ブラウザ別の className を &lt;body&gt; 要素に付加する。
  * @return {Iroha} Iroha オブジェクト
  */
 Iroha.addUserAgentCName = function() {
@@ -3063,7 +3074,7 @@ $.fn.Iroha_normalizeTextNode = function(deep) {
 /**
  * get whole inner texts in the node.
  * @exports $.fn.Iroha_getInnerText as jQuery.fn.Iroha_getInnerText
- * @param {boolean} includeAlt    if true, alt texts of <img> elements are included.
+ * @param {boolean} includeAlt    if true, alt texts of &lt;img&gt; elements are included.
  * @return {string} whole inner texts.
  */
 $.fn.Iroha_getInnerText = function(includeAlt) {
@@ -3185,12 +3196,12 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 /**
  * jQuery object, contains jQuery static methods.
  * @name jQuery
- * @namespace contains jQuery methods.
+ * @namespace
  */
 /**
  * jQuery instance methods.
  * @name jQuery.fn
- * @namespace jQuery instance methods.
+ * @namespace
  */
 
 
