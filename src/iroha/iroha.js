@@ -23,6 +23,7 @@ window.undefined = window.undefined;
  * Iroha global object.
  * @name Iroha
  * @namespace
+ * @global
  */
 var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	var d = document;
@@ -63,7 +64,6 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 
 	/**
 	 * stored jQuery (or Zepto) object, considering conflict.
-	 * @namespace
 	 * @name Iroha.$
 	 */
 	this.$ = $;
@@ -283,12 +283,19 @@ if (typeof window.console != 'object') {
 
 /* =============== custom / shortage methods for built-in objects =============== */
 
+/**
+ * The built in string object.
+ * @external Array
+ * @see {@link https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array Array}
+ */
+
 /* ----- Array.indexOf() ----- */
 
 if (!Array.prototype.indexOf) {
 	/**
 	 * returns the first index of an element within the array equal to the specified value, or -1 if none is found.
 	 * (implement emulation of the method defined in JavaScript1.6)
+	 * @function external:Array#indexOf
 	 * @param {Object} aSearchElement    the item to search
 	 * @param {number} [aFromIndex]      index number to start searching
 	 * @return {number} index number
@@ -314,6 +321,7 @@ if (!Array.prototype.lastIndexOf) {
 	/**
 	 * returns the last index of an element within the array equal to the specified value, or -1 if none is found.
 	 * (implement emulation of the method defined in JavaScript1.6)
+	 * @function external:Array#lastIndexOf
 	 * @param {Object} aSearchElement    the item to search
 	 * @param {number} [aFromIndex]      index number to start searching
 	 * @return {number} index number
@@ -339,8 +347,9 @@ if (!Array.prototype.forEach) {
 	/**
 	 * calls a function for each element in the array.
 	 * (implement emulation of the method defined in JavaScript1.6)
-	 * @param {Array.callback.iterate} aCallback        the function to exec for every element
-	 * @param {Object}                 [aThisObject]    the object that will be a global object ('this') in aCallback func.
+	 * @function external:Array#forEach
+	 * @param {external:Array~cbIterate} aCallback        the function to exec for every element
+	 * @param {Object}        [aThisObject]    the object that will be a global object ('this') in aCallback func.
 	 */
 	Array.prototype.forEach = function(aCallback, aThisObject) {
 		for (var i = 0, n = this.length; i < n; i++) {
@@ -355,8 +364,9 @@ if (!Array.prototype.map) {
 	/**
 	 * creates a new array with the results of calling a provided function on every element in this array.
 	 * (implement emulation of the method defined in JavaScript1.6)
-	 * @param {Array.callback.iterate} aCallback        the function to exec for every element
-	 * @param {Object}                 [aThisObject]    the object that will be a global object ('this') in aCallback func.
+	 * @function external:Array#map
+	 * @param {external:Array~cbIterate} aCallback        the function to exec for every element
+	 * @param {Object}        [aThisObject]    the object that will be a global object ('this') in aCallback func.
 	 * @return {Array} array that consisted of returned values.
 	 */
 	Array.prototype.map = function(aCallback, aThisObject) {
@@ -374,8 +384,9 @@ if (!Array.prototype.filter) {
 	/**
 	 * creates a new array with all of the elements of this array for which the provided filtering function returns true.
 	 * (implement emulation of the method defined in JavaScript1.6)
-	 * @param {Array.callback.test} aCallback        the function to test all elements
-	 * @param {Object}              [aThisObject]    the object that will be a global object ('this') in aCallback func.
+	 * @function external:Array#filter
+	 * @param {external:Array~cbTest} aCallback        the function to test all elements
+	 * @param {Object}     [aThisObject]    the object that will be a global object ('this') in aCallback func.
 	 * @return {Array} array that consisted of only adapted elements.
 	 */
 	Array.prototype.filter = function(aCallback, aThisObject) {
@@ -395,8 +406,9 @@ if (!Array.prototype.some) {
 	/**
 	 * returns true if at least one element in this array satisfies the provided testing function.
 	 * (implement emulation of the method defined in JavaScript1.6)
-	 * @param {Array.callback.test} aCallback        the function to test condition of the elements
-	 * @param {Object}              [aThisObject]    the object that will be a global object ('this') in aCallback func.
+	 * @function external:Array#some
+	 * @param {external:Array~cbTest} aCallback        the function to test condition of the elements
+	 * @param {Object}     [aThisObject]    the object that will be a global object ('this') in aCallback func.
 	 * @return {boolean} did some elements satisfy the condition?
 	 */
 	Array.prototype.some = function(aCallback, aThisObject){
@@ -413,8 +425,9 @@ if (!Array.prototype.every) {
 	/**
 	 * returns true if every element in this array satisfies the provided testing function.
 	 * (implement emulation of the method defined in JavaScript1.6)
-	 * @param {Array.callback.test} aCallback        the function to test condition of the elements
-	 * @param {Object}              [aThisObject]    the object that will be a global object ('this') in aCallback func.
+	 * @function external:Array#every
+	 * @param {external:Array~cbTest} aCallback        the function to test condition of the elements
+	 * @param {Object}     [aThisObject]    the object that will be a global object ('this') in aCallback func.
 	 * @return {boolean} did all elements satisfy the condition?
 	 */
 	Array.prototype.every = function(aCallback, aThisObject){
@@ -425,16 +438,10 @@ if (!Array.prototype.every) {
 	}
 }
 
-/* ----- for JSDoc toolkit output ----- */
-/**
- * higher-order functions for member methods of {@link Array}
- * @name Array.callback
- * @namespace
- */
+/* ----- for JSDoc output ----- */
 /**
  * higher-order function for {@link Array#forEach}, {@link Array#map}
- * @function
- * @name Array.callback.iterate
+ * @callback external:Array~cbIterate
  * @param {Object} anElement    current processing element of the Array.
  * @param {number} anIndex      current processing index-num of the Array.
  * @param {Array}  anArray      the Array itself.
@@ -442,8 +449,7 @@ if (!Array.prototype.every) {
  */
 /**
  * higher-order function for {@link Array#filter}, {@link Array#some}, {@link Array#every}
- * @function
- * @name Array.callback.test
+ * @callback external:Array~cbTest
  * @param {Object} anElement    current processing element of the Array.
  * @param {number} anIndex      current processing index-num of the Array.
  * @param {Array}  anArray      the Array itself.
@@ -459,7 +465,7 @@ if (!Array.prototype.every) {
 
 /* -------------------- Class : Iroha.ViewClass -------------------- */
 /**
- * @class DOM要素ノードを取扱う典型的なクラスのためのクラスメソッドを提供
+ * @constructor DOM要素ノードを取扱う典型的なクラスのためのクラスメソッドを提供
  * @name Iroha.ViewClass
  * @param {Function} [constructor]    対象のコンストラクタ関数
  * @return 汎用クラスプロパティ・メソッド群を与えられたコンストラクタ
@@ -646,7 +652,7 @@ $.extend(Iroha.ViewClass.prototype,
 
 /* --------------- Class : Iroha.Number --------------- */
 /**
- * @class 数値をいろいろ操作
+ * @constructor 数値をいろいろ操作
  * @name Iroha.Number
  */
 Iroha.Number = function() {
@@ -761,7 +767,7 @@ $.extend(Iroha.Number.prototype,
 
 /* --------------- Class : Iroha.String --------------- */
 /**
- * @class 文字列をいろいろ操作
+ * @constructor 文字列をいろいろ操作
  * @name Iroha.String
  */
 Iroha.String = function() {
@@ -1134,7 +1140,7 @@ $.extend(Iroha.String.prototype,
 /* --------------- Class : Iroha.StyleSheets --------------- */
 
 /**
- * @class スタイルシートコレクションをいろいろ操作
+ * @constructor スタイルシートコレクションをいろいろ操作
  * @name Iroha.StyleSheets
  * @example
  *  Iroha.StyleSheets().insertRule('body { color: red }');          // set font color to red
@@ -1274,7 +1280,7 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群それぞれに対して処理を実施（イテレーション）。jQuery(selector).each(aCallback) に相似。
-	 * @param {Iroha.StyleSheets.Callback.each} aCallback    実施する処理（コールバック関数）。この関数が false を返したらそこでイテレーションを止める。
+	 * @param {Iroha.StyleSheets~cbEach} aCallback    実施する処理（コールバック関数）。この関数が false を返したらそこでイテレーションを止める。
 	 * @return {Iroha.StyleSheets} このインスタンス自身
 	 */
 	each : function(aCallback) {
@@ -1284,7 +1290,7 @@ $.extend(Iroha.StyleSheets.prototype,
 
 	/**
 	 * 現在保持しているスタイルシート群の絞り込み処理を実施。jQuery(selector).filterh(aCallback) に相似。
-	 * @param {Iroha.StyleSheets.Callback.filter} aCallback    絞り込み処理（コールバック関数）。この関数が true を返したスタイルシートが残る。
+	 * @param {Iroha.StyleSheets~cbFilter} aCallback    絞り込み処理（コールバック関数）。この関数が true を返したスタイルシートが残る。
 	 * @return {Iroha.StyleSheets} 絞り込まれたスタイルシート群のみを保持する新規インスタンス
 	 */
 	filter : function(aCallback) {
@@ -1360,24 +1366,17 @@ $.extend(Iroha.StyleSheets.prototype,
 	removeRule : function() { return this.deleteRule.apply(this, arguments) }
 });
 
-/* ----- for JSDoc toolkit output ----- */
-/**
- * {@link Iroha.StyleSheets} のメンバーメソッドに与えることができるコールバック関数群。
- * @namespace
- * @name Iroha.StyleSheets.Callback
- */
+/* ----- for JSDoc output ----- */
 /**
  * {@link Iroha.StyleSheets#each} に与えるコールバック関数。
- * @function
- * @name Iroha.StyleSheets.Callback.each
+ * @callback Iroha.StyleSheets~cbEach
  * @param {number}      anIndex      ループカウンタ。0 始まり正整数。
  * @param {CSSStyleSheet}  anSheet      スタイルシートオブジェクト
  * @return {boolean} false を返した場合、イテレーション（ループ）がそこで停止される。
  */
 /**
  * {@link Iroha.StyleSheets#filter} に与えるコールバック関数。
- * @function
- * @name Iroha.StyleSheets.Callback.filter
+ * @callback Iroha.StyleSheets~cbFilter
  * @param {number}      anIndex      ループカウンタ。0 始まり正整数。
  * @param {CSSStyleSheet}  anSheet      スタイルシートオブジェクト
  * @return {boolean} true を返したスタイルシートオブジェクトだけが残される。
@@ -1387,7 +1386,7 @@ $.extend(Iroha.StyleSheets.prototype,
 
 /* -------------------- Class : Iroha.Observable -------------------- */
 /**
- * @class observable object
+ * @constructor observable object
  * @name Iroha.Observable
  */
 Iroha.Observable = function() {
@@ -1576,7 +1575,7 @@ $.extend(Iroha.Observable.prototype,
 
 /* --------------- Class : Iroha.Iterator --------------- */
 /**
- * @class Iterator
+ * @constructor Iterator
  * @name Iroha.Iterator
  */
 Iroha.Iterator = function() {
@@ -1730,7 +1729,7 @@ $.extend(Iroha.Iterator.prototype,
 
 /* --------------- Class : Iroha.Timeout --------------- */
 /**
- * @class a wrapper of 'setTimeout()'.
+ * @constructor a wrapper of 'setTimeout()'.
  * @name Iroha.Timeout
  */
 Iroha.Timeout = function() {
@@ -1814,7 +1813,7 @@ $.extend(Iroha.Timeout.prototype,
 
 /* --------------- Class : Iroha.Interval --------------- */
 /**
- * @class a wrapper of 'setInterval()'.
+ * @constructor a wrapper of 'setInterval()'.
  * @name Iroha.Interval
  * @extends Iroha.Timeout
  */
@@ -1855,7 +1854,7 @@ Iroha.Interval.prototype = new Iroha.Timeout;
 
 /* --------------- Class : Iroha.Timer --------------- */
 /**
- * @class simple elapsed timer.
+ * @constructor simple elapsed timer.
  * @name Iroha.Timer
  */
 Iroha.Timer = function() {
@@ -1919,7 +1918,7 @@ $.extend(Iroha.Timer.prototype,
 
 /* --------------- Class : Iroha.Tag --------------- */
 /**
- * @class tag-string as element object.
+ * @constructor tag-string as element object.
  * @name Iroha.Tag
  */
 Iroha.Tag = function() {
@@ -2042,6 +2041,7 @@ $.extend(Iroha.Tag.prototype,
 /* --------------- Function : Iroha.setValue --------------- */
 /**
  * set value to deep object directly.
+ * @function Iroha.setValue
  * @param {string} expr            object expression string to set value
  * @param {Object} [value]         value to set
  * @param {Object} [obj=window]    base object of expr
@@ -2070,6 +2070,7 @@ Iroha.setValue = function(expr, value, obj) {
 /* --------------- Function : Iroha.getValue --------------- */
 /**
  * get value from deep object directly.
+ * @function Iroha.getValue
  * @param {string} expr            object expression string to get value
  * @param {Object} [obj=window]    base object of expr
  * @return {Object} any type of value
@@ -2090,6 +2091,7 @@ Iroha.getValue = function(expr, obj) {
 /* --------------- Function : Iroha.singleton --------------- */
 /**
  * create object as single instance. or put existing instance.
+ * @function Iroha.singleton
  * @param {Function} _constructor    constructor
  * @param {Object}   [_arguments]    arguments for constructor
  * @return {Object} single instance.
@@ -2108,9 +2110,10 @@ Iroha.singleton = function(_constructor, /* arg1, arg2, ... */ _arguments) {
 /* --------------- Function : Iroha.throttle --------------- */
 /**
  * 指定した時間に1度しか実行されない関数を生成する。
- * @param {Function} func           対象となる関数。
- * @param {number} wait             制限時間。単位 ms 。
- * @param {Object} [aThisObject]    関数内で "this" が指し示すことになるもの
+ * @function Iroha.throttle
+ * @param {Function} func             対象となる関数。
+ * @param {number}   wait             制限時間。単位 ms 。
+ * @param {Object}   [aThisObject]    関数内で "this" が指し示すことになるもの
  * @return {Function} 実行間隔が制限された関数
  */
 Iroha.throttle = function (func, wait, aThisObject) {
@@ -2139,6 +2142,7 @@ Iroha.throttle = function (func, wait, aThisObject) {
 /* --------------- Function : Iroha.debounce --------------- */
 /**
  * 指定した時間呼ばれなかったら初めて実行される関数を生成する。
+ * @function Iroha.debounce
  * @param  {Function} func          対象となる関数。
  * @param {number} delay            最後に呼んでから実行までの時間。単位 ms。
  * @param {Object} [aThisObject]    関数内で "this" が指し示すことになるもの
@@ -2164,6 +2168,7 @@ Iroha.debounce = function (func, delay, aThisObject) {
 /* --------------- Function : Iroha.barrageShield --------------- */
 /**
  * create wrapper function which ignores and unify barraged-function-calls.
+ * @function Iroha.barrageShield
  * @param {Function} func             a function which has possibility to be barraged function-calls
  * @param {number}   [delay=1]        delay time to ignore barraged function-calls
  * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the function
@@ -2188,6 +2193,7 @@ Iroha.barrageShield = function(func, delay, aThisObject) {
 /* --------------- Function : Iroha.alreadyApplied --------------- */
 /**
  * return 'true' if the function is already applied.
+ * @function Iroha.alreadyApplied
  * @param {Function} func    typically 'arguments.callee'
  * @return {boolean} boolean
  */
@@ -2204,6 +2210,7 @@ Iroha.alreadyApplied = function(func) {
 /* --------------- Function : Iroha.preloadImage --------------- */
 /**
  * create Image object (load image).
+ * @function Iroha.preloadImage
  * @param {string} src     image url to load
  * @return {HTMLImageElement} image object
  */
@@ -2222,7 +2229,8 @@ Iroha.preloadImage = function(src) {
 /* --------------- Function : Iroha.getLinkTarget --------------- */
 /**
  * get an element which is linked from given anchor element in same page.
- * @see jQuery.fn.Iroha_getLinkTarget
+ * @function Iroha.getLinkTarget
+ * @see external:jQuery.fn.Iroha_getLinkTarget
  * @param {Element|jQuery|string}  anchor             anchor element (a, area).
  * @param {string}                [target="_self"]    target name to assume that given anchor is inner-page link.
  * @return {jQuery} jQuery indicating an element which is linked from given anchor element.
@@ -2255,6 +2263,7 @@ Iroha.getLinkTarget = function(anchor, target) {
  * IE8 を含むそれより古い IE では以下のいずれかが必要。（ちなみに、この2つは同居できない）
  *   - <a href="http://code.google.com/p/ierange/">W3C DOM Ranges for IE</a>
  *   - <a href="http://code.google.com/p/rangy/">Rangy</a>
+ * @function Iroha.urlToAnchor
  * @param {jQuery|Element|string} node      処理対象（起点）の要素ノード
  * @param {string}                [tmpl]    URL をリンクにするとき雛形とする a 要素の HTML 文字列
  * @return {jQuery} 与えた要素ノード（を内包した jQuery オブジェクト）
@@ -2301,6 +2310,7 @@ Iroha.urlToAnchor = function(node, tmpl) {
 /* --------------- Function : Iroha.getQuery --------------- */
 /**
  * クエリ文字列を連想配列化したものを得る。
+ * @function Iroha.getQuery
  * @param {string} [serialized]    "serialized" の場合、{ name, value } の連想配列を、クエリ文字列の並び順に収めたシリアライズド配列を得る。
  * @return {Object|Object[]} クエリ文字列を連想配列化したオブジェクト、または { name, value } の連想配列をクエリ文字列の並び順に収めたシリアライズド配列。
  */
@@ -2326,10 +2336,11 @@ Iroha.getQuery = function(serialized) {
 /* --------------- Function : Iroha.getGeometry --------------- */
 /**
  * get window geometry and mouse position.
- * @name Iroha.getGetmetry
+ * @function Iroha.getGeometry
  * @param {Event} e       event object - this param exists when this function is called as an event handler.
  * @param {Window} win    window object - specify this param to alter window object.
  * @return {Iroha.geom} an associative array of geometry properties
+ * @todo Iroha.getGeometry にいくつかメソッドがぶら下がっているがドキュメント化できないため構造を検討
  */
 Iroha.getGeometry = function(e, win) {
 	var w = win || window;
@@ -2462,6 +2473,7 @@ Iroha.getGeometry.continuously = function() {
 /* --------------- Function : Iroha.getCommonDir --------------- */
 /**
  * get URL of common directory.
+ * @function Iroha.getCommonDir
  * @param {string} dirName     name of common directory
  * @return {string} absolute URL of common directory.
  */
@@ -2497,6 +2509,7 @@ Iroha.getCommonDir = function(dirName) {
 /* --------------- Function : Iroha.watchFor --------------- */
 /**
  * watch existing of the specified object.
+ * @function Iroha.watchFor
  * @param {string} expr              string-expression of watching target object.
  * @param {number} [timeout=3000]    time to giving up (ms, positive number)
  * @param {Object} [base=window]     base object of expr
@@ -2529,11 +2542,12 @@ Iroha.watchFor = function(expr, timeout, base, interval) {
 /* --------------- Function : Iroha.openWindow --------------- */
 /**
  * open new window.
- * @name Iroha.openWindow
+ * @function Iroha.openWindow
  * @param {string}        url               url to open in new window
  * @param {string}        [target="_blank"] window target name
  * @param {Object|string} [option]          window options (in string form, or an associative array)
  * @return {Window} new window object
+ * @todo Iroha.openWindow にいくつかメソッドがぶら下がっているがドキュメント化できないため構造を検討
  */
 Iroha.openWindow = function(url, target, option) {
 	var _this    = arguments.callee;
@@ -2685,6 +2699,7 @@ $.extend(Iroha.openWindow,
 /* --------------- Function : Iroha.addUserAgentCName --------------- */
 /**
  * ブラウザ別の className を &lt;body&gt; 要素に付加する。
+ * @function Iroha.addUserAgentCName
  * @return {Iroha} Iroha オブジェクト
  */
 Iroha.addUserAgentCName = function() {
@@ -2714,6 +2729,7 @@ Iroha.addUserAgentCName = function() {
 /* --------------- Function : Iroha.removeComments --------------- */
 /**
  * コメントノードを削除 (for IE7 only)
+ * @function Iroha.removeComments
  * @param {jQuery|Element|string} [base=document.body]    処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
  * @return {Iroha} Iroha オブジェクト
  */
@@ -2733,6 +2749,7 @@ Iroha.removeComments = function(base) {
 /* --------------- Function : Iroha.setTitleFromAlt --------------- */
 /**
  * img 要素などの alt 属性値を title 属性に設定する。 (IE7とそれ以前のブラウザを除く）
+ * @function Iroha.setTitleFromAlt
  * @param {jQuery|Element|string} [target="img, :image, area"]    処理対象とする（img 要素などの）要素ノード。
  * @param {jQuery|Element|string} [base=document.body]            処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
  * @return {Iroha} Iroha オブジェクト
@@ -2767,6 +2784,7 @@ Iroha.setTitleFromAlt = function(target, base) {
 /* --------------- Function : Iroha.setTitleFromInnerText --------------- */
 /**
  * マイナスインデントで隠したテキストを title 属性に設定する
+ * @function Iroha.setTitleFromInnerText
  * @param {jQuery|Element|string} [target]                処理対象とする要素ノード。
  * @param {jQuery|Element|string} [base=document.body]    処理の対象範囲とする（DOMツリー的に最上位の）要素ノード。
  * @return {Iroha} Iroha オブジェクト
@@ -2797,6 +2815,7 @@ Iroha.setTitleFromInnerText = function(target, base) {
 /* --------------- Function : Iroha.trapWheelEvent --------------- */
 /**
  * マウスホイールイベントを指定要素ノードの領域内にがんばって閉じ込める。これにより領域内のホイール操作ではページスクロールが（ほぼ）発生しなくなる。
+ * @function Iroha.trapWheelEvent
  * @param {jQuery|Element|string}  node    対象要素ノード。単にセレクタ文字列を与えるのを推奨、その瞬間存在しない要素ノードでも有効に機能させることができるため。
  * @return {Iroha} Iroha オブジェクト
  */
@@ -2866,6 +2885,7 @@ Iroha.trapWheelEvent = function(node) {
 /* --------------- Function : Iroha.untrapWheelEvent --------------- */
 /**
  * マウスホイールイベントの閉じ込め処理を止める。
+ * @function Iroha.untrapWheelEvent
  * @param {jQuery|Element|string}  node    対象要素ノード。 {@link Iroha.trapWheelEvent} で指定したものと同形式のもの。例えば、セレクタ文字列で指定していたならセレクタ文字列。
  * @return {Iroha} Iroha オブジェクト
  */
@@ -2883,6 +2903,7 @@ Iroha.untrapWheelEvent = function(node) {
 /* --------------- Function : Iroha.fireShigekix --------------- */
 /**
  * シゲキックス発動
+ * @function Iroha.fireShigekix
  * @param {jQuery|Element|string} target    シゲキックスを与える要素ノード
  * @return {Iroha} Iroha オブジェクト
  */
@@ -2896,6 +2917,7 @@ Iroha.fireShigekix = function(target) {
 /* --------------- Function : Iroha.delay --------------- */
 /**
  * 指定時間のディレイをかける（ Deferred 。指定時間が経過すると resolve される Promise を返す）。
+ * @function Iroha.delay
  * @param {number} delay            ディレイする時間。非負整数。単位 ms 。
  * @param {Object} [aThisObject]    deferred.done() などの関数内で "this" が指し示すことになるもの
  * @return {jQuery.Deferred.Promise} jQuery.Deferred.Promise オブジェクト
@@ -2915,9 +2937,11 @@ Iroha.delay = function(delay, aThisObject) {
 /**
  * Weinre をつかってインスペクトを始める（そのための外部 JS を非同期で注入する）。
  * Weinre : {@link http://people.apache.org/~pmuellr/weinre/docs/latest/}
+ * @function Iroha.injectWeinre
  * @param {string} [ident="anonymous"]             アプリケーション識別子。任意に設定。
  * @param {string} [base="//{samedomain}:8080"]    Weinre が稼働している場所。無指定時は表示中の HTML と同じプロトコル・ドメインのポート 8080 番。
  * @return {Iroha} Iroha オブジェクト
+ * @todo Iroha.injectWeinre にいくつかメソッドがぶら下がっているがドキュメント化できないため構造を検討
  */
 Iroha.injectWeinre = function(ident, base) {
 	var args = arguments;
@@ -3002,10 +3026,10 @@ $.extend(Iroha.injectWeinre,
 /* -------------------- jQuery.fn : Iroha_getComputedStyle -------------------- */
 /**
  * get computed style value.
- * @exports $.fn.Iroha_getComputedStyle as jQuery.fn.Iroha_getComputedStyle
+ * @function external:jQuery#Iroha_getComputedStyle
  * @param {string}  prop          style property name to get value
  * @param {string} [pseudo=""]    pseudo element/class name (effective in standard browsers only)
- * @return {string} conputed style value string
+ * @return {string} computed style value string
  */
 $.fn.Iroha_getComputedStyle = function(prop, pseudo) {
 	prop   = String(prop || '');
@@ -3023,7 +3047,7 @@ $.fn.Iroha_getComputedStyle = function(prop, pseudo) {
 /* -------------------- jQuery.fn : Iroha_getLinkTarget -------------------- */
 /**
  * get an element which is linked from given anchor element in same page.
- * @exports $.fn.Iroha_getLinkTarget as jQuery.fn.Iroha_getLinkTarget
+ * @function external:jQuery#Iroha_getLinkTarget
  * @see Iroha.getLinkTarget
  * @param {string} [target="_self"]    target name to assume that given anchor is inner-page link.
  * @return {jQuery} jQuery indicating an element which is linked from given anchor element.
@@ -3037,7 +3061,7 @@ $.fn.Iroha_getLinkTarget = function(target) {
 /* -------------------- jQuery.fn : Iroha_urlToAnchor -------------------- */
 /**
  * 内包しているすべてのテキスト中の URL らしき文字列をリンクにする。
- * @exports $.fn.Iroha_urlToAnchor as jQuery.fn.Iroha_urlToAnchor
+ * @function external:jQuery#Iroha_urlToAnchor
  * @see Iroha.urlToAnchor
  * @param {string} [tmpl]    URL をリンクにするとき雛形とする a 要素の HTML 文字列
  * @return {jQuery} jQuery current context object
@@ -3051,7 +3075,7 @@ $.fn.Iroha_urlToAnchor = function(tmpl) {
 /* -------------------- jQuery.fn : Iroha_normalizeTextNode -------------------- */
 /**
  * remove text nodes that have only white spaces, and normalize space of each text nodes.
- * @exports $.fn.Iroha_normalizeTextNode as jQuery.fn.Iroha_normalizeTextNode
+ * @function external:jQuery#Iroha_normalizeTextNode
  * @param {boolean} [deep]    process recursive node tree?
  * @return {jQuery} jQuery current context object
  */
@@ -3073,7 +3097,7 @@ $.fn.Iroha_normalizeTextNode = function(deep) {
 /* -------------------- jQuery.fn : Iroha_getInnerText -------------------- */
 /**
  * get whole inner texts in the node.
- * @exports $.fn.Iroha_getInnerText as jQuery.fn.Iroha_getInnerText
+ * @function external:jQuery#Iroha_getInnerText
  * @param {boolean} includeAlt    if true, alt texts of &lt;img&gt; elements are included.
  * @return {string} whole inner texts.
  */
@@ -3098,7 +3122,7 @@ $.fn.Iroha_getInnerText = function(includeAlt) {
 /**
  * "change" event handler helper for "select" elements;
  * fire "change" event when "keyup" or "mousewheel" event comes.
- * @exports $.fn.Iroha_assistSelectEvent as jQuery.fn.Iroha_assistSelectEvent
+ * @function external:jQuery#Iroha_assistSelectEvent
  * @param {number} [wait=100]    wait for preventing multiple fire (nonnegative integer in ms)
  * @return {jQuery} jQuery current context object
  */
@@ -3120,11 +3144,11 @@ $.fn.Iroha_assistSelectEvent = function(wait) {
 /**
  * マウスホイールイベントをコンテキスト要素ノードの領域内にがんばって閉じ込める。これにより領域内のホイール操作ではページスクロールが（ほぼ）発生しなくなる。
  * その瞬間存在しない要素に対して適用したい場合は {@link Iroha.trapWheelEvent} を用いる。その第1引数に対象要素を見つけるためのセレクタ文字列を与える。
- * @exports $.fn.Iroha_trapWheelEvent as jQuery.fn.Iroha_trapWheelEvent
+ * @function external:jQuery#Iroha_trapWheelEvent
  * @see Iroha.trapWheelEvent
  * @return {jQuery} jQuery current context object
  */
-jQuery.fn.Iroha_trapWheelEvent = function() {
+$.fn.Iroha_trapWheelEvent = function() {
 	Iroha.trapWheelEvent(this);
 	return this;
 };
@@ -3135,11 +3159,11 @@ jQuery.fn.Iroha_trapWheelEvent = function() {
 /**
  * マウスホイールイベントの閉じ込め処理を解除する。
  * {@link Iroha.trapWheelEvent} を使ってセレクタ文字列指定で適用していたものは、{@link Iroha.untrapWheelEvent} を使って解除する必要がある。
- * @exports $.fn.Iroha_untrapWheelEvent as jQuery.fn.Iroha_untrapWheelEvent
+ * @function external:jQuery#Iroha_untrapWheelEvent
  * @see Iroha.untrapWheelEvent
  * @return {jQuery} jQuery current context object
  */
-jQuery.fn.Iroha_untrapWheelEvent = function() {
+$.fn.Iroha_untrapWheelEvent = function() {
 	Iroha.untrapWheelEvent(this);
 	return this;
 };
@@ -3149,9 +3173,10 @@ jQuery.fn.Iroha_untrapWheelEvent = function() {
 /* -------------------- jQuery.fn : Iroha_shuffleContent -------------------- */
 /**
  * コンテキスト要素の直接子ノード群をシャッフル（ランダム並び替え）
+ * @function external:jQuery#Iroha_shuffleContent
  * @return {jQuery} jQuery current context object
  */
-jQuery.fn.Iroha_shuffleContent = function() {
+$.fn.Iroha_shuffleContent = function() {
 	return this.each(function() {
 		var $node = $(this);
 		$.each(shuffle($node.contents().get()), function() { $node.append(this) });
@@ -3170,7 +3195,7 @@ jQuery.fn.Iroha_shuffleContent = function() {
 /* -------------------- jQuery.fn : Iroha_addBeforeUnload -------------------- */
 /**
  * temporary wrapper for adding event listener of "window.onBeforeUnload".
- * @exports $.fn.Iroha_addBeforeUnload as jQuery.fn.Iroha_addBeforeUnload
+ * @function external:jQuery#Iroha_addBeforeUnload
  * @param {Function} listener         an event listener function
  * @param {Object}   [aThisObject]    the object that will be a global object ('this') in the listener func.
  * @return {jQuery} jQuery current context object
@@ -3192,16 +3217,11 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 
 
 
-/* =============== for JSDoc toolkit output =============== */
+/* =============== for JSDoc output =============== */
 /**
- * jQuery object, contains jQuery static methods.
- * @name jQuery
- * @namespace
- */
-/**
- * jQuery instance methods.
- * @name jQuery.fn
- * @namespace
+ * The jQuery namespace.
+ * @external jQuery
+ * @see {@link http://jquery.com/ jQuery}
  */
 
 
