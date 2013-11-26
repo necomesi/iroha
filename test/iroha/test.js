@@ -701,4 +701,99 @@ describe('Iroha', function () {
 		});
 	});
 
+
+	// Iroha.singleton
+	describe('Iroha.singleton', function () {
+		it('シングルトンなインスタンスを返す', function () {
+			var Constructor = function (x, y) {
+				this.x = x === undefined ? 100 : x ;
+				this.y = y === undefined ? 200 : y ;
+			};
+			var instance1 = Iroha.singleton(Constructor, 300, 400);
+			var instance2 = Iroha.singleton(Constructor, 500, 600);
+			expect(instance1).to.be(instance2);
+		});
+
+		it('引数には対応していない', function () {
+			var Constructor = function (x, y) {
+				this.x = x === undefined ? 100 : x ;
+				this.y = y === undefined ? 200 : y ;
+			};
+			var instance1 = Iroha.singleton(Constructor, 300, 400);
+			var instance2 = Iroha.singleton(Constructor, 500, 600);
+			expect(instance1.x).not.to.be(300);
+			expect(instance1.y).not.to.be(400);
+		});
+	});
+
+
+	// Iroha.throttle
+	describe('Iroha.throttle', function () {
+		it('短時間に大量に関数を呼ばれたときに間引く', function (done) {
+			var count = 0;
+			var func = function () { count++ };
+			// 100msに１度しか呼ばれない関数
+			var throttled = Iroha.throttle(func, 100);
+			var timer;
+			// 1秒のあいだ大量に呼び出す
+			timer = setInterval(throttled, 20);
+			setTimeout(function () {
+				clearTimeout(timer);
+				// この時点で約50回呼ばれているはず
+				// カウンターが15未満であればオウケイとする
+				expect(count).to.be.lessThan(15);
+				done();
+			}, 1000);
+		});
+	});
+
+
+	// Iroha.debounce
+	describe('Iroha.debounce', function () {
+		it('短時間に大量に関数を呼ばれているときは何もせず、おさまったあとに発動する', function (done) {
+			var count = 0;
+			var func = function () { count++ };
+			// 100msの間を空けないと呼ばれない関数
+			var debounced = Iroha.debounce(func, 100);
+			var timer;
+			// 1秒のあいだ大量に呼び出す
+			timer = setInterval(debounced, 20);
+			setTimeout(function () {
+				clearTimeout(timer);
+				// この時点で約50回呼ばれているはず
+				expect(count).to.be(0);
+				setTimeout(function () {
+					expect(count).to.be(1);
+					done();
+				}, 200);
+			}, 1000);
+		});
+	});
+
+
+	// Iroha.barrageShield
+	describe('Iroha.barrageShield', function () {
+		it('短時間に大量に関数を呼ばれているときは何もせず、おさまったあとに発動する', function (done) {
+			var count = 0;
+			var func = function () { count++ };
+			var barrage1 = Iroha.barrageShield(func, 150);
+			var barrage2 = Iroha.barrageShield(func, 150);
+			var timer1, timer2;
+			// 片方は75msずらして発動する
+			timer1 = setInterval(barrage1, 200);
+			setTimeout(function () { setInterval(barrage2, 200) }, 75);
+
+			setTimeout(function () {
+				clearTimeout(timer1);
+				clearTimeout(timer2);
+				// この時点で約50回呼ばれているはず
+				expect(count).to.be(0);
+				setTimeout(function () {
+					expect(count).to.be(1);
+					done();
+				}, 200);
+			}, 1000);
+		});
+	});
+
 });
