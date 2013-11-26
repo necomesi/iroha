@@ -2177,10 +2177,10 @@ Iroha.getValue = function(expr, obj) {
  * create object as single instance. or put existing instance.
  * @function Iroha.singleton
  * @param {Function} _constructor    constructor
- * @param {Object}   [_arguments]    arguments for constructor
+ * @param {...*}     [args]    arguments for constructor
  * @return {Object} single instance.
  */
-Iroha.singleton = function(_constructor, /* arg1, arg2, ... */ _arguments) {
+Iroha.singleton = function(_constructor, args) {
 	if (typeof _constructor != 'function') {
 		throw new TypeError('Iroha.singleton: first argument must be a constructor function.');
 	} else {
