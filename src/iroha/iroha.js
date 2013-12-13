@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.56.20131026
+ *    @version 3.57.20131213
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -2287,6 +2287,38 @@ Iroha.alreadyApplied = function(func) {
 	} else {
 		return func.__Iroha_alreadyApplied__ || !(func.__Iroha_alreadyApplied__ = true);
 	}
+};
+
+
+
+/* --------------- Function : Iroha.contextBound --------------- */
+/**
+ * コンテキストが固定された関数をつくって返す。
+ * 第2引数に与えたオブジェクトに固定された関数インスタンスは単一であることが保証されている。
+ * @function Iroha.contextBound
+ * @param {Function} func  コンテキストを固定したい関数
+ * @return {Object} obj    固定したいコンテキスト
+ */
+Iroha.contextBound = function(func, obj) {
+	if (typeof func != 'function') {
+		throw new TypeError('Iroha.contextBound: first argument must be a function object.');
+	} if (typeof obj != 'object') {
+		throw new TypeError('Iroha.contextBound: second argument must be an object.');
+	}
+	var map, matched, bound;
+	map = func.__Iroha_contextBound_contexts__ || (func.__Iroha_contextBound_contexts__ = []);
+	map.forEach(function (val) {
+		if (val.context === obj) matched = val;
+	});
+	if (matched) {
+		return matched.bound;
+	}
+	bound = $.proxy(func, obj);
+	map.push({
+		context: obj,
+		bound: bound
+	});
+	return bound;
 };
 
 
