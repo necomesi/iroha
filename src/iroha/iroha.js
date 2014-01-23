@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.57.20131213
+ *    @version 3.57.20140123
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -3330,6 +3330,49 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 	}
 	return this;
 };
+
+
+
+/* -------------------- jQuery.expr : Iroha_focusable -------------------- */
+// Fetch focusable elementsnippet from jQuery UI
+// http://jqueryui.com
+!function () {
+	function visible(element) {
+		return $.expr.filters.visible(element) && !$(element).parents().addBack().filter(function () {
+			return $.css(this, "visibility") === "hidden";
+		}).length;
+	}
+	function focusable(element, isTabIndexNotNaN) {
+		var map, mapName, img,
+			nodeName = element.nodeName.toLowerCase();
+		if ('area' === nodeName) {
+			map = element.parentNode;
+			mapName = map.name;
+			if (!element.href || !mapName || map.nodeName.toLowerCase() !== 'map') {
+				return false;
+			}
+			img = $('img[usemap=#' + mapName + ']')[0];
+			return !!img && visible(img);
+		}
+		return (/input|select|textarea|button|object/.test(nodeName) ?
+			!element.disabled :
+			'a' === nodeName ?
+				element.href || isTabIndexNotNaN :
+				isTabIndexNotNaN) &&
+			// the element and all of its ancestors must be visible
+			visible(element);
+	}
+	$.extend($.expr[':'], {
+		Iroha_focusable : function (element) {
+			return focusable(element, !isNaN($.attr(element, 'tabindex')));
+		},
+		Iroha_tabbable : function (element) {
+			var tabIndex = $.attr(element, 'tabindex'),
+				isTabIndexNaN = isNaN(tabIndex);
+			return ( isTabIndexNaN || tabIndex >= 0 ) && focusable(element, !isTabIndexNaN);
+		}
+	});
+}();
 
 
 
