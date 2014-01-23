@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.57.20140123
+ *    @version 3.58.20140123
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
