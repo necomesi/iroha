@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.58.20140123
+ *    @version 3.59.20140217
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -41,6 +41,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 				/(webkit)[ \/]([\w.]+)/.exec(ua) ||
 				/(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
 				/(msie) ([\w.]+)/.exec(ua) ||
+				/(trident)(?:.*?rv:)([\w.]+)/.exec(ua) ||
 				ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) || [];
 			return {
 				browser: match[1] || "",
@@ -142,7 +143,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	this.ua.isWebKit     = !!$.browser.webkit;
 	this.ua.isGecko      = !!$.browser.mozilla;
 	this.ua.isOpera      = !!$.browser.opera;
-	this.ua.isIE         = !!$.browser.msie;
+	this.ua.isIE         = !!($.browser.msie || $.browser.trident);
 	this.ua.isiPhone     = /iPhone/          .test(ua);
 	this.ua.isiPad       = /iPad/            .test(ua);
 	this.ua.isiPod       = /iPod/            .test(ua);
@@ -3376,7 +3377,7 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 
 
 
-/* =============== for JSDoc output =============== */
+	/* =============== for JSDoc output =============== */
 /**
  * The jQuery namespace.
  * @external jQuery
