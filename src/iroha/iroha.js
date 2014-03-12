@@ -3377,7 +3377,7 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 
 
 
-	/* =============== for JSDoc output =============== */
+/* =============== for JSDoc output =============== */
 /**
  * The jQuery namespace.
  * @external jQuery
