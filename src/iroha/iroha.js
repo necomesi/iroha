@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.59.20140217
+ *    @version 3.59.20140410
  *    @requires jquery.js
  */
 /* -------------------------------------------------------------------------- */
@@ -705,8 +705,10 @@ $.extend(Iroha.ViewClass.prototype,
 		$.isFunction(constructor) || (constructor = new Function);
 		$.extend(this.prototype, new constructor);
 
-		// コンストラクタ関数に直接取り付けられたプロパティ・メソッドを継承させる。ただし一部を除外しつつ。
-		var except = 'isIrohaViewClass,instances,key,defMethods,extend'.split(',');
+		// コンストラクタ関数に直接取り付けられたプロパティ・メソッドを継承させる。
+		// ただし一部プロパティは除外しなければならない。
+		// "prototype" を除外リストに含めるのは Android2.x 対策。
+		var except = 'isIrohaViewClass,instances,key,defMethods,extend,prototype'.split(',');
 		$.each(constructor, $.proxy(function(key, value) {
 			value.isIrohaViewClass    ||  // Iroha.ViewClass なコンストラクタなら除外（サブクラス的なもの）
 			this[key] === value       ||  // 完全同値なら除外
