@@ -5,11 +5,12 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.59.20140410
- *    @requires jquery.js
+ *    @version 3.60.20140923
+ *    @requires jquery.js (or zepto.js)
+ *    @requires underscore.js (or lodash.js)
  */
 /* -------------------------------------------------------------------------- */
-(function($, window, document) {
+;(function($, _, Iroha) {
 
 
 
@@ -18,14 +19,14 @@ window.undefined = window.undefined;
 
 
 
-/* =============== create Iroha global object and prepartions =============== */
+/* ============================== "Iroha" global object and prepartions ============================== */
 /**
  * Iroha global object.
  * @name Iroha
  * @namespace
  * @global
  */
-var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
+$.extend(Iroha, new (function() {
 	var d = document;
 	var de = d.documentElement;
 	var di = d.implementation;
@@ -48,7 +49,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 				version: match[2] || "0"
 			};
 		}
-		matched = uaMatch(navigator.userAgent);
+		matched = uaMatch(ua);
 		browser = {};
 		if (matched.browser) {
 			browser[matched.browser] = true;
@@ -67,23 +68,22 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * stored jQuery (or Zepto) object, considering conflict.
 	 * @name Iroha.$
 	 */
-	this.$ = $;
+	this.$ = $.isFunction($.noConflict) ? $.noConflict() : $;
 
 	/**
-	 * @deprecated use {@link Iroha.$}
-	 * @name Iroha.jQuery
+	 * stored Underscore (or Lo-Dash) object, considering conflict.
+	 * @name Iroha._
 	 */
-	this.jQuery = $;
+	this._ = $.isFunction(_.noConflict) ? _.noConflict() : _;
 
 	/**
 	 * default setting values of Iroha function/classes
 	 * @name Iroha.settings
 	 * @namespace
-	 * @property {Object}  common                  common settings
-	 * @property {boolean} common.showGeometry     show geometry values in browser's status bar
+	 * @property {Object} common    common settings
 	 */
 	this.settings        = {};
-	this.settings.common = { showGeometry : false };
+	this.settings.common = {};
 
 	/**
 	 * identifier urls of frequently used XML-Namespaces.
@@ -143,7 +143,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	this.ua.isWebKit     = !!$.browser.webkit;
 	this.ua.isGecko      = !!$.browser.mozilla;
 	this.ua.isOpera      = !!$.browser.opera;
-	this.ua.isIE         = !!($.browser.msie || $.browser.trident);
+	this.ua.isIE         = !!($.browser.ie || $.browser.msie || $.browser.trident);
 	this.ua.isiPhone     = /iPhone/          .test(ua);
 	this.ua.isiPad       = /iPad/            .test(ua);
 	this.ua.isiPod       = /iPod/            .test(ua);
@@ -168,8 +168,15 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 
 	// isSafari と判別されていたとしても、iOS, Mac, Windows でないものや、Chrome の場合は false に戻す。
 	this.ua.isSafari = this.ua.isSafari && !this.ua.isChrome && (this.ua.isiOS || this.ua.isMac || this.ua.isWin);
+
 	// Android 標準ブラウザを判別
 	this.ua.isAndroidBrowser = this.ua.isAndroid && this.ua.isWebKit && !this.ua.isChrome;
+
+	// iOS Simulator の Mobile Safari 8.0 の UA 文字列がおかしい（？）件
+	// こんなの "Mozilla/5.0 (iPhone; CPU iPhone OS 10_9_5 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12A365 Safari/600.1.4"
+	if (this.ua.mbVersion >= 10.9 && /Version\/(8[\d\.]+)/.test(ua)) {
+		this.ua.mbVersion = parseFloat(this.ua.mbVersText = RegExp.$1);
+	}
 
 	/**
 	 * geometry properties object; the property values are updated when {@link Iroha.getGeometry} is called.
@@ -202,7 +209,7 @@ var Iroha = window.Iroha = $.extend(window.Iroha, new (function() {
 	 * @property {boolean} isDOMReady    true if the document is ready for DOM manipulation
 	 */
 	this.env            = {};
-	this.env.isOnline   = /^https?\:$/.test(location.protocol);
+	this.env.isOnline   = navigator.onLine;
 	this.env.isDOMReady = false;
 }));
 
@@ -224,7 +231,7 @@ if (typeof window.Node == 'undefined') {
 	};
 }
 
-// dummy object of window.console (Firbug etc)
+// dummy object of window.console
 if (typeof window.console != 'object') {
 	window.console = {
 		  element           : null
@@ -251,30 +258,6 @@ if (typeof window.console != 'object') {
 		, warn              : function(){}
 	};
 }
-
-
-
-
-
-
-
-/* =============== regester onload func =============== */
-
-(function() {
-	// prevent background image flicker on IE6.
-	if (Iroha.ua.isIE && Iroha.ua.version == 6) try { document.execCommand('BackgroundImageCache', false, true) } catch(err) { }
-
-	$(function() {
-		// indicates that the browser has ability to manipulate DOM tree.
-		Iroha.env.isDOMReady = true;
-
-		// add classname which indicates "Iroha is enabled".
-//		// onload で即座に実行すると古い IE でスピードダウンする現象を軽減するために delay しつつ適用
-//		// …するのはヤメた！
-//		Iroha.delay(1).done(function() { $(document.body).addClass(cnames.join(' ')) });
-		$(document.body).addClass('iroha-enabled');
-	});
-})();
 
 
 
@@ -529,14 +512,11 @@ if (!String.prototype.trim) {
 
 
 
-
-
 /* ============================== Iroha classes ============================== */
 
 /* -------------------- Class : Iroha.ViewClass -------------------- */
 /**
- * @constructor DOM要素ノードを取扱う典型的なクラスのためのクラスメソッドを提供
- * @name Iroha.ViewClass
+ * @class DOM要素ノードを取扱う典型的なクラスのためのクラスメソッドを提供
  * @param {Function} [constructor]    対象のコンストラクタ関数
  * @return 汎用クラスプロパティ・メソッド群を与えられたコンストラクタ
  */
@@ -555,7 +535,7 @@ $.extend(Iroha.ViewClass,
 	create : function() {
 		return $.extend(new this, {
 			  instances : []
-			, key       : 'Iroha.ViewClass.' + Iroha.String.guid().replace(/-/g, '')
+			, key       : _.uniqueId('Iroha.ViewClass.')
 		});
 	},
 
@@ -672,8 +652,9 @@ $.extend(Iroha.ViewClass.prototype,
 //			throw new TypeError('Iroha.ViewClass#create: 第1引数は要素ノード、要素ノードを内包した jQuery オブジェクト、要素ノードを見つけられる selector 文字列でなければなりません。');
 			console.warn('Iroha.ViewClass#create: 第1引数は要素ノード、要素ノードを内包した jQuery オブジェクト、要素ノードを見つけられる selector 文字列でなければなりません。')
 			console.trace && console.trace();
+		} else {
+			return this.getInstance(node) || this.add.apply(this, arguments);
 		}
-		return this.getInstance(node) || this.add.apply(this, arguments);
 	},
 
 	/**
@@ -724,8 +705,7 @@ $.extend(Iroha.ViewClass.prototype,
 
 /* --------------- Class : Iroha.Number --------------- */
 /**
- * @constructor 数値をいろいろ操作
- * @name Iroha.Number
+ * @class 数値をいろいろ操作
  */
 Iroha.Number = function() {
 	var args = arguments;
@@ -839,8 +819,7 @@ $.extend(Iroha.Number.prototype,
 
 /* --------------- Class : Iroha.String --------------- */
 /**
- * @constructor 文字列をいろいろ操作
- * @name Iroha.String
+ * @class 文字列をいろいろ操作
  */
 Iroha.String = function() {
 	var args = arguments;
@@ -1227,11 +1206,10 @@ $.extend(Iroha.String.prototype,
 /* --------------- Class : Iroha.StyleSheets --------------- */
 
 /**
- * @constructor スタイルシートコレクションをいろいろ操作
- * @name Iroha.StyleSheets
+ * @class スタイルシートコレクションをいろいろ操作
  * @example
- *  Iroha.StyleSheets().insertRule('body { color: red }');          // set font color to red
- *  Iroha.StyleSheets().each(function() { this.disabled = true });  // diable all style
+ *    Iroha.StyleSheets().insertRule('body { color: red }');          // set font color to red
+ *    Iroha.StyleSheets().each(function() { this.disabled = true });  // diable all style
  */
 Iroha.StyleSheets = function() {
 	var args = arguments;
@@ -1473,8 +1451,7 @@ $.extend(Iroha.StyleSheets.prototype,
 
 /* -------------------- Class : Iroha.Observable -------------------- */
 /**
- * @constructor observable object
- * @name Iroha.Observable
+ * @class observable object
  */
 Iroha.Observable = function() {
 	var args = arguments;
@@ -1662,8 +1639,7 @@ $.extend(Iroha.Observable.prototype,
 
 /* --------------- Class : Iroha.Iterator --------------- */
 /**
- * @constructor Iterator
- * @name Iroha.Iterator
+ * @class Iterator
  */
 Iroha.Iterator = function() {
 	var args = arguments;
@@ -1816,8 +1792,7 @@ $.extend(Iroha.Iterator.prototype,
 
 /* --------------- Class : Iroha.Timeout --------------- */
 /**
- * @constructor a wrapper of 'setTimeout()'.
- * @name Iroha.Timeout
+ * @class a wrapper of 'setTimeout()'.
  */
 Iroha.Timeout = function() {
 	var args = arguments;
@@ -1900,8 +1875,7 @@ $.extend(Iroha.Timeout.prototype,
 
 /* --------------- Class : Iroha.Interval --------------- */
 /**
- * @constructor a wrapper of 'setInterval()'.
- * @name Iroha.Interval
+ * @class a wrapper of 'setInterval()'.
  * @extends Iroha.Timeout
  */
 Iroha.Interval = function() {
@@ -1941,8 +1915,7 @@ Iroha.Interval.prototype = new Iroha.Timeout;
 
 /* --------------- Class : Iroha.Timer --------------- */
 /**
- * @constructor simple elapsed timer.
- * @name Iroha.Timer
+ * @class simple elapsed timer.
  */
 Iroha.Timer = function() {
 	var self = arguments.callee;
@@ -2005,8 +1978,7 @@ $.extend(Iroha.Timer.prototype,
 
 /* --------------- Class : Iroha.Tag --------------- */
 /**
- * @constructor tag-string as element object.
- * @name Iroha.Tag
+ * @class tag-string as element object.
  */
 Iroha.Tag = function() {
 	var args = arguments;
@@ -2462,50 +2434,34 @@ Iroha.getQuery = function(serialized) {
  * @todo Iroha.getGeometry にいくつかメソッドがぶら下がっているがドキュメント化できないため構造を検討
  */
 Iroha.getGeometry = function(e, win) {
-	var w = win || window;
-	var d = w.document.documentElement;
-	var b = w.document.body;
-	var g = Iroha.geom;
-	var _ = arguments.callee;
+	var win  = win || window;
+	var html = win.document.documentElement;
+	var body = win.document.body;
+	var geom = Iroha.geom;
+	var func = arguments.callee;
 
-	var isWinIEqm = (Iroha.ua.isIE && Iroha.ua.isWin && Iroha.ua.isQuirksMode);
-	var isMacIE   = (Iroha.ua.isIE && Iroha.ua.isMac);
-	var isSafari2 = (Iroha.ua.isSafari && Iroha.ua.version < 522); /* Safari 2.0.x or ealier */
-	var isAndrStd = Iroha.ua.isAndroidBrowser;
-	var isAndrCrm = Iroha.ua.isAndroid && Iroha.ua.isChrome;
+	var isAndrStd   = Iroha.ua.isAndroidBrowser;
+	var isAndrCrm   = Iroha.ua.isAndroid && Iroha.ua.isChrome;
+	var orientation = win.orientation;
 
-	g.density     = w.devicePixelRatio || 1;
-	g.orientation = w.orientation      || 0;
-	g.screenW     = Math.floor((isAndrCrm && Math.abs(g.orientation) == 90 ? screen.height : screen.width ) / (isAndrStd ? g.density : 1));
-	g.screenH     = Math.floor((isAndrCrm && Math.abs(g.orientation) == 90 ? screen.width  : screen.height) / (isAndrStd ? g.density : 1));
-	g.windowW     = w.innerWidth  || (isMacIE ? b.scrollWidth  : d.offsetWidth );
-	g.windowH     = w.innerHeight || (isMacIE ? b.scrollHeight : d.offsetHeight);
-	g.pageW       = (isMacIE) ? d.offsetWidth  : (isWinIEqm) ? b.scrollWidth  : d.scrollWidth ;
-	g.pageH       = (isMacIE) ? d.offsetHeight : (isWinIEqm) ? b.scrollHeight : d.scrollHeight;
-	g.scrollX     = w.scrollX || d.scrollLeft || b.scrollLeft || 0;
-	g.scrollY     = w.scrollY || d.scrollTop  || b.scrollTop  || 0;
-	g.windowX     = (!e) ? (g.windowX || 0) : e.clientX - (( isSafari2) ? g.scrollX : 0);
-	g.windowY     = (!e) ? (g.windowY || 0) : e.clientY - (( isSafari2) ? g.scrollY : 0);
-	g.pageX       = (!e) ? (g.pageX   || 0) : e.clientX + ((!isSafari2) ? g.scrollX : 0);
-	g.pageY       = (!e) ? (g.pageX   || 0) : e.clientY + ((!isSafari2) ? g.scrollY : 0);
-	g.zoom        = _.getZoomRatio();
-	g.scrollBar   = _.getScrollBarWidth();
-
-	if (Iroha.settings.common.showGeometry) {
-		var msg = [
-			  ['screen'     , '${screenW}x${screenH}']
-			, ['window'     , '${windowW}x${windowH}']
-			, ['page'       , '${pageW}x${pageH}'    ]
-			, ['scroll'     , '${scrollX},${scrollY}']
-			, ['pos(view)'  , '${windowX},${windowY}']
-			, ['pos(abs)'   , '${pageX},${pageY}'    ]
-			, ['zoom'       , '${zoom}'              ]
-			, ['scrollBar'  , '${scrollBar}'         ]
-			, ['density'    , '${density}'           ]
-			, ['orientation', '${orientation}'       ]
-		].map(function(a) { return a.join(': ') }).join(' | ');
-		window.status = Iroha.String(msg).format(g).get();
-	}
+	geom.density     = win.devicePixelRatio || 1;
+	geom.orientation = orientation;
+	geom.portrait    = orientation ==  0 ? 1 : orientation == 180 ? -1 : 0;  // 上: 1, 下: -1, 他 0
+	geom.landscape   = orientation == 90 ? 1 : orientation == -90 ? -1 : 0;  // 右: 1, 左: -1, 他 0
+	geom.screenW     = Math.floor((isAndrCrm && geom.landscape ? screen.height : screen.width ) / (isAndrStd ? geom.density : 1));
+	geom.screenH     = Math.floor((isAndrCrm && geom.landscape ? screen.width  : screen.height) / (isAndrStd ? geom.density : 1));
+	geom.windowW     = win.innerWidth  || html.offsetWidth ;
+	geom.windowH     = win.innerHeight || html.offsetHeight;
+	geom.pageW       = html.scrollWidth ;
+	geom.pageH       = html.scrollHeight;
+	geom.scrollX     = win.scrollX || html.scrollLeft || body.scrollLeft || 0;
+	geom.scrollY     = win.scrollY || html.scrollTop  || body.scrollTop  || 0;
+	geom.windowX     = !e ? (geom.windowX || 0) : e.clientX;
+	geom.windowY     = !e ? (geom.windowY || 0) : e.clientY;
+	geom.pageX       = !e ? (geom.pageX   || 0) : e.clientX + geom.scrollX;
+	geom.pageY       = !e ? (geom.pageX   || 0) : e.clientY + geom.scrollY;
+	geom.zoom        = func.getZoomRatio();
+	geom.scrollBar   = func.getScrollBarWidth();
 
 	return g;
 };
@@ -2516,36 +2472,36 @@ Iroha.getGeometry = function(e, win) {
  * @private
  */
 Iroha.getGeometry.getZoomRatio = function() {
-	var d = document.documentElement;
-	var b = document.body;
-	var _ = arguments.callee;
-	_._cache_ = _._cache_ || 1;
+	var html = document.documentElement;
+	var body = document.body;
+	var func = arguments.callee;
+	func._cache_ = func._cache_ || 1;
 	if (Iroha.ua.isIE && Iroha.ua.version >= 7.0) {
-		if (_._lock_) {
-			_._lock_.clear();
-			_._lock_ = new Iroha.Timeout(function() { _._lock_ = null }, 500);
+		if (func._lock_) {
+			func._lock_.clear();
+			func._lock_ = new Iroha.Timeout(function() { func._lock_ = null }, 500);
 		} else {
-			_._lock_ = new Iroha.Timeout(function() { _._lock_ = null }, 500);
+			func._lock_ = new Iroha.Timeout(function() { func._lock_ = null }, 500);
 			if (Iroha.ua.isQuirksMode) {
-				_._cache_ = d.offsetWidth / b.offsetWidth;
+				func._cache_ = html.offsetWidth / body.offsetWidth;
 			} else {
 				var id  = 'Iroha_getGeometry_getZoomRatio_TestNode';
 				var css = {
 					  'position'   : 'absolute'
 					, 'left'       : '0px'
 					, 'top'        : '0px'
-					, 'width'      : (d.scrollWidth * 10) + 'px'
+					, 'width'      : (html.scrollWidth * 10) + 'px'
 					, 'height'     : '10px'
 					, 'background' : 'red'
 				};
 				var node = $('#' + id).get(0) || $(document.createElement('ins')).attr('id', id).css(css).appendTo(document.body).get(0);
 				$(node).show();
-				_._cache_ = d.scrollWidth / node.offsetWidth;
+				func._cache_ = html.scrollWidth / node.offsetWidth;
 				$(node).hide();
 			}
 		}
 	}
-	return _._cache_;
+	return func._cache_;
 };
 
 /**
@@ -3063,24 +3019,18 @@ Iroha.delay = function(delay, aThisObject) {
  * @todo Iroha.injectWeinre にいくつかメソッドがぶら下がっているがドキュメント化できないため構造を検討
  */
 Iroha.injectWeinre = function(ident, base) {
-	var args = arguments;
-	var self = args.callee;
-
-	// baseURL が "//" を含まない (URLっぽくない) ものの時は旧引数形式の呼び出しとみなす
-	if (base && base.indexOf('//') == -1) {
-		return self.compat.apply(self, args);
-	}
-
+	var args  = arguments;
+	var self  = args.callee;
 	var param = {
-		  base  : base  || Iroha.String('//${0}:8080').format(location.hostname)
+		  base  : base  || _.template('//{{lh}}:8080')({ lh : location.hostname })
 		, ident : ident || 'anonymous'
 	};
-	var src = Iroha.String('${base}/target/target-script-min.js#${ident}').format(param);
+	var src = _.template('{{base}}/target/target-script-min.js#{{ident}}')(param);
 	var id  = self.SCRIPT_ID_PREFIX + param.ident;
 
 	if (!document.getElementById(id)) {
 		!Iroha.env.isDOMReady
-			? document.write(Iroha.String('<script src="${0}" id="${1}"></scr' + 'ipt>').format(src, id))
+			? document.write(_.template('<script src="{{src}}" id="{{id}}"></scr' + 'ipt>')({ src : src, id : id }))
 			: (function(node) {
 				node.setAttribute('src', src);
 				node.setAttribute('id' , id );
@@ -3102,29 +3052,20 @@ $.extend(Iroha.injectWeinre,
 	SCRIPT_ID_PREFIX : 'iroha-inject-weinre-',
 
 	/**
-	 * 古い引数形式による呼び出しのための互換措置
-	 * @param {string} [ident="anonymous"]         アプリケーション識別子。任意に設定。
-	 * @param {string} [host=location.hostname]    Weinre が稼働しているマシンのホストネーム。無指定時は表示中の HTML と同じものが指定される。
-	 * @param {string} [port="8080"]               Weinre が稼働している（Listenしている）ポート番号。無指定時はデフォルトの "8080"。
-	 * @return {Iroha} Iroha オブジェクト
-	 */
-	compat : function(ident, host, port) {
-		var url   = '${protocol}//${host}:${port}';
-		var param = { protocol : location.protocol , host : host, port : port || '8080' };
-		this(ident, Iroha.String(url).format(param).get());
-		return Iroha;
-	},
-
-	/**
 	 * 注入した Weinre についての各種 URL 等の情報を得る
 	 * @param {string} [ident="anonymous"]    アプリケーション識別子。任意に設定。
-	 * @return {Object} 連想配列 { injected:String, weinre:String, weinreUI:String, weinreDoc:String }
+	 * @return { injected:string, toppage:string, client:string, docs:string }
 	 */
 	getInfo : function(ident) {
 		ident = ident || 'anonymous';
 		var node  = document.getElementById(this.SCRIPT_ID_PREFIX + ident);
 		if (!node) {
-			return undefined;
+			return {
+				  injected : ''
+				, toppage  : ''
+				, client   : ''
+				, docs     : ''
+			};
 		} else {
 			var src  = node.src;
 			var base = /^.+?:\/+[^\/]+\//.test(src) ? RegExp.lastMatch : undefined;
@@ -3140,7 +3081,7 @@ $.extend(Iroha.injectWeinre,
 
 
 
-/* =============== additional jQuery plugin methods =============== */
+/* ============================== Libs modification ============================== */
 
 /* -------------------- jQuery.fn : Iroha_getComputedStyle -------------------- */
 /**
@@ -3336,6 +3277,26 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 
 
 
+/* -------------------- jQuery.fn : Iroha_getBoundingClientRect -------------------- */
+/**
+ * HTMLElement#getBoundingClientRect のエイリアス。要素集合1番目の要素の ClientRect を得る。
+ * @function external:jQuery#Iroha_getBoundingClientRect
+ * @return { top:number, bottom:number, left:number, right:number, width:number, height:number } ClientRect オブジェクト
+ */
+$.fn.Iroha_getBoundingClientRect = function() {
+	return (this.get(0) || document.createElement('i')).getBoundingClientRect();
+};
+
+
+
+/* -------------------- jQuery.fn : getBoundingClientRect -------------------- */
+/**
+ * @see jQuery#Iroha_getBoundingClientRect
+ */
+$.fn.getBoundingClientRect = $.fn.getBoundingClientRect || $.fn.Iroha_getBoundingClientRect;
+
+
+
 /* -------------------- jQuery.expr : Iroha_focusable -------------------- */
 // Fetch focusable elementsnippet from jQuery UI
 // http://jqueryui.com
@@ -3379,7 +3340,13 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 
 
 
-/* =============== for JSDoc output =============== */
+/* -------------------- Underscore : templateSettings -------------------- */
+
+_.templateSettings = { interpolate : /\{\{(.+?)\}\}/g };
+
+
+
+/* ============================== for JSDoc output ============================== */
 /**
  * The jQuery namespace.
  * @external jQuery
@@ -3388,4 +3355,16 @@ $.fn.Iroha_addBeforeUnload = function(listener, aThisObject) {
 
 
 
-})(jQuery, window, document);
+/* ============================== Startup ============================== */
+
+$(function() {
+	// indicates that the browser has ability to manipulate DOM tree.
+	Iroha.env.isDOMReady = true;
+	// add classname which indicates "Iroha is enabled".
+	$(document.body).addClass('iroha-enabled');
+});
+
+
+
+
+})(window.jQuery || window.Zepto, _, Iroha = window.Iroha || {});
