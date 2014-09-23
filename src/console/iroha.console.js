@@ -5,12 +5,13 @@
  *       Iroha - Necomesi JSLib : Tiny Console Display
  *       (charset : "UTF-8")
  *
- *    @version 1.02.20131031
- *    @requires jquery.js
+ *    @version 1.03.20140623
+ *    @requires jquery.js (or zepto.js)
+ *    @requires underscore.js (or lodash.js)
  *    @requires iroha.js
  */
 /* -------------------------------------------------------------------------- */
-(function($, Iroha, window, document) {
+;(function($, _, Iroha) {
 
 
 
@@ -26,6 +27,13 @@ Iroha.Console = function() {
 	 * @type jQuery
 	 */
 	this.$node = $();
+
+	/**
+	 * 最後に追加されたログ行。
+	 * @type jQuery
+	 * @private
+	 */
+	 this.$lastLog = $();
 
 	/**
 	 * ログ取得（溜め込み）を一時停止中かどうか
@@ -66,9 +74,11 @@ $.extend(Iroha.Console.prototype,
 	 * @type Iroha.Console
 	 */
 	init : function() {
+		var baseCN = this.constructor.BASE_CLASSNAME;
+
 		// 基底要素ノード生成
 		this.$node = $(document.createElement('ul'))
-			.addClass(this.constructor.BASE_CLASSNAME)
+			.addClass(baseCN)
 			.on('click', $.proxy(function(e) {
 				e.preventDefault();
 				this.clear();
@@ -80,6 +90,15 @@ $.extend(Iroha.Console.prototype,
 			this.$node.appendTo(document.body);
 			this.show();
 		}, this));
+
+		// info(), warn(), error() はここでつくりだす。
+		'info,warn,error'.split(',').forEach(function(level) {
+			this[level] = function() {
+				this.log.apply(this, arguments);
+				this.$lastLog.addClass(baseCN + '__log--' + level);
+				return this;
+			}
+		}, this);
 
 		this.log('console start');
 		return this;
@@ -105,12 +124,15 @@ $.extend(Iroha.Console.prototype,
 		    	, 'ss'   : ('00'   +  date.getSeconds()     ).slice(-2)
 		    	, 'ms'   : ('000'  +  date.getMilliseconds()).slice(-3)
 		    };
-		    date = Iroha.String('${hh}:${mm}:${ss}.${ms}| ').format(date).get();
-		var $log = $(document.createElement('li')).text(date + log);
+//		    date = Iroha.String('${hh}:${mm}:${ss}.${ms}| ').format(date).get();  // "Iroha.String" is not included in iroha.essential.js
+		    date = _.template('{{hh}}:{{mm}}:{{ss}}.{{ms}}| ')(date);
+		var $log = $(document.createElement('li'))
+			.addClass(this.constructor.BASE_CLASSNAME + '__log')
+			.text(date + log);
 
 		this.$node
-			.append($log)
-			.scrollTop(this.$node.height());
+			.append(this.$lastLog = $log)
+			.scrollTop(this.$node.prop('scrollHeight'));
 
 		return this.show();
 	},
@@ -134,8 +156,8 @@ $.extend(Iroha.Console.prototype,
 	show : function() {
 		var baseCN = this.constructor.BASE_CLASSNAME;
 		this.$node
-			.toggleClass(baseCN + '-is-shown' , true )
-			.toggleClass(baseCN + '-is-hidden', false);
+			.toggleClass(baseCN + '--shown' , true )
+			.toggleClass(baseCN + '--hidden', false);
 		return this;
 	},
 
@@ -147,8 +169,8 @@ $.extend(Iroha.Console.prototype,
 	hide : function() {
 		var baseCN = this.constructor.BASE_CLASSNAME;
 		this.$node
-			.toggleClass(baseCN + '-is-shown' , false)
-			.toggleClass(baseCN + '-is-hidden', true );
+			.toggleClass(baseCN + '--shown' , false)
+			.toggleClass(baseCN + '--hidden', true );
 		return this;
 	},
 
@@ -175,4 +197,4 @@ $.extend(Iroha.Console.prototype,
 
 
 
-})(Iroha.$, Iroha, window, document);
+})(Iroha.$, Iroha._, Iroha);

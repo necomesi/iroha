@@ -1,8 +1,7 @@
 @charset "UTF-8";
-@import "iroha.symbols";
 
 /* -----------------------------------------------------------------
- *      styles for Iroha.Console
+ *      Iroha : Iroha.Console
  * ----------------------------------------------------------------- */
 
 
@@ -18,27 +17,37 @@
 	margin: 0;
 	padding: 0 0.2em 0.2em;
 	background: rgba(255,255,230,0.95);
-	font: 11px/1 monospace;
-	white-space: pre;
+	font: 11px/1.1 monospace;
+	@include iroha-white-space(pre-wrap);
 	-webkit-overflow-scrolling: touch;
 	-webkit-touch-callout: none;
 
-	// 各行
-	& > * {
-		display: block;
-		margin: 0.2em 0 0;
-		padding: 0;
-	}
-
 	// 表示状態
-	&.iroha-console-is-shown {
+	&--shown {
 
 	}
 
 	// 非表示状態
-	&.iroha-console-is-hidden {
+	&---hidden {
 		visibility: hidden;
 		left: -10000px;
 		top: -10000px;
+	}
+
+	// ログ行
+	&__log {
+		display: block;
+		margin: 0.1em 0 0;
+		padding: 0;
+
+		&--info {
+			color: rgb(50, 50, 200);
+		}
+		&--warn {
+			color: rgb(200, 80, 0);
+		}
+		&--error {
+			color: red;
+		}
 	}
 }
