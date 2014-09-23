@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Smooth Scroller
  *       (charset : "UTF-8")
  *
- *    @version 3.21.20131020
+ *    @version 3.22.20140508
  *    @requires jquery.js
  *    @requires jquery.easing.js     (optional)
  *    @requires jquery.mousewheel.js (optional)
@@ -481,7 +481,7 @@ $.extend(Iroha.Scroller.prototype,
 		})(this.easing);
 
 		var $node      = node ? $(node).first() : this.$stage;
-		var transform  = 'translate3d(${x}px, ${y}px, 0px)';
+		var transform  = 'translate(${x}px, ${y}px) translateZ(0px)';
 		var transition = '${pfx}transform ${d}s ${f} 0s';
 		var params     = { x : x, y : y, d : d / 1000, f : f };
 
