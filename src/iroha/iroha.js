@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.60.20140923
+ *    @version 3.60.20140925
  *    @requires jquery.js (or zepto.js)
  *    @requires underscore.js (or lodash.js)
  */
@@ -2463,7 +2463,7 @@ Iroha.getGeometry = function(e, win) {
 	geom.zoom        = func.getZoomRatio();
 	geom.scrollBar   = func.getScrollBarWidth();
 
-	return g;
+	return geom;
 };
 
 /**
