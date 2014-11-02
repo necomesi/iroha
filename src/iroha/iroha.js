@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.60.20140925
+ *    @version 3.61.20141102
  *    @requires jquery.js (or zepto.js)
  *    @requires underscore.js (or lodash.js)
  */
@@ -258,6 +258,16 @@ if (typeof window.console != 'object') {
 		, warn              : function(){}
 	};
 }
+
+// windowAnimationFrame workaround for old browsers.
+!function(window) {
+	window.requestAnimationFrame =
+		   window.requestAnimationFrame
+		|| window.msRequestAnimationFrame
+		|| window.mozRequestAnimationFrame
+		|| window.webkitRequestAnimationFrame
+		|| function(callback) { _.delay(callback, 1000 / 60) };
+}(window);
 
 
 
