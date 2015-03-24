@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.61.20141102
+ *    @version 3.62.20150324
  *    @requires jquery.js (or zepto.js)
  *    @requires underscore.js (or lodash.js)
  */
@@ -1255,23 +1255,35 @@ $.extend(Iroha.StyleSheets.prototype,
 		var sheets = arg;
 
 		if (arguments.length == 0 || $.type(arg) == 'number') {
-			sheets = document.styleSheets;
+			    sheets   = document.styleSheets;
+			var $cssNode = $('link').filter(function() { return !!this.sheet });
+			var evaluted = 'BAJL.StyleSheets.Evaluted';
 
-			if (Iroha.ua.isSafari) {
-				var $cssNode = $('link').filter(function() { return Boolean(this.sheet) });
-				var dataName = 'Iroha.StyleSheets.Sheet.disabled';
+			$cssNode.each(function() {
+				var node  = this;
+				var sheet = node.sheet;
 
-				if ($cssNode.length > sheets.length) {
-					$cssNode.each(function() {
-						$(this).data(dataName, ($.inArray(this.sheet, sheets) == -1));
-						this.disabled = true;
-						this.disabled = false;
-					});
-					$.each(sheets, function() {
-						this.disabled = $(this.ownerNode).data(dataName);
-					});
+				// [少なくとも 2015-03-24 ごろの Safari 最新版 (Mac: 8.0.4, iOS Mobile Safari: 8.0) の場合]
+				//   なぜか、代替スタイルシートが document.styleSheets に含まれてこない。
+				//   なぜか、代替スタイルシートの ownerNode.disabled 値を無意味に2度真偽値反転すると、含まれるようになる。
+				//   ちなみに Safari の場合、代替スタイルシートであろうとなかろうと ownerNode.disabled の初期値は false。
+				//   これを true に変更するとまたも document.styleSheets に含まれなくなる。なぜなのか。
+				if ($.inArray(sheet, sheets) == -1) {
+					sheet[evaluted] = sheet.disabled = node.disabled = true;
+					                                   node.disabled = false;
 				}
-			}
+
+				// [少なくとも 2015-03-24 ごろの Chrome 最新版 (41.0.2272.101) の場合]
+				//   初期状態では、代替スタイルシートであろうとなかろうと、スタイルシート自身と ownerNode の disabled 初期値は false。
+				//   なお Chrome は、優先／代替スタイルシートの切替に、スタイルシート自身と ownerNode 双方の disabled 値の変更を要する。
+				if (!sheet[evaluted] && (!sheet.disabled || !node.disabled) && /\balternate\b/i.test(node.rel)) {
+					sheet[evaluted] = sheet.disabled = node.disabled = true;
+				}
+
+				// 2度目以降、上記 Chrome 用の代替スタイルシートの整合チェックをさせない。
+				// 代替スタイルシートへのオンザフライのスタイル切替ができなくなるから。
+				sheet[evaluted] = true;
+			});
 
 			// 指定インデックス番号の物のみに絞る
 			($.type(arg) == 'number') && (sheets = sheets[arg]);
