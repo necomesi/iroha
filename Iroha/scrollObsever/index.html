@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>XXXXXXXXXXXXXXXXXXXXXXXX</title>
+<link rel="stylesheet" type="text/css" href="../../_css/base.css">
+<script type="text/javascript" src="../_libs/jquery.js"></script>
+<script type="text/javascript" src="../iroha/iroha.js"></script>
+<script type="text/javascript" src="iroha.scrollObserver.js"></script>
+<script type="text/javascript">
+$(function() {
+//	Iroha.HogeFuga
+//		.create('#test1')
+//		.addCallback('statusChange', function() { console.log('#test1: ', arguments) })
+
+	Iroha.HogeFuga
+		.create('#test2', { view : '#test-view' })
+		.addCallback('statusChange', function() { console.log('#test2: ', arguments) })
+
+	$('#test-view').scroll(function(e) { e.stopPropagation() })
+})
+</script>
+<style>
+body {
+	width: 3000px;
+}
+.test {
+	width: 100px;
+	height: 100px;
+	margin: 500px auto;
+	border: 20px solid #999;
+	background: #ccc;
+}
+#test-view {
+	width: 400px;
+	height: 200px;
+	overflow: auto;
+	border: 1px solid red;
+}
+#test-view-inner {
+	width: 1000px;
+	height: 500px;
+}
+#test-view-inner .test {
+	margin: 0 0 0 410px;
+}
+
+</style>
+</head>
+<body>
+
+<h1>XXXXXXXXXXXXXXXXXXXX</h1>
+
+<ul id="to-index">
+	<li><a href="../index.html">Necomesi JavaScript Library (Iroha)</a></li>
+</ul>
+
+<h2 id="overview">概要</h2>
+
+<p>(fixme)</p>
+
+<h2 id="coverage">動作確認ブラウザ</h2>
+
+<p>(fixme)</p>
+
+<h2 id="deployment">実装ファイル配置</h2>
+
+<dl>
+	<dt>主ファイル</dt>
+	<dd>
+		<ul>
+			<li><a href="index.html">iroha.js</a></li>
+		</ul>
+	</dd>
+	<dt>依存ファイル（主ファイルの動作に必要） </dt>
+	<dd>
+		<ul>
+			<li><a href="http://jquery.com/">jQuery</a><span class="info">(<a href="../_libs/jquery.js">jquery.js</a>)</span><span class="info">(1.7.2+)</span></li>
+		</ul>
+	</dd>
+</dl>
+
+<h2 id="example">動作例</h2>
+
+
+
+<div class="test" id="test1"></div>
+<div id="test-view"><div id="test-view-inner"><div class="test" id="test2"></div></div></div>
+
+
+
+<h2 id="definitions">コンストラクタ・メソッド・プロパティ解説</h2>
+
+<ul>
+	<li><a href="../_jsdoc/index.html">JSDoc | Necomesi JavaScript Library</a></li>
+</ul>
+
+<address>written by Koji Kasugai (<a href="mailto:kojika@necomesi.jp">kojika@necomesi.jp</a>) 2012-08-21</address>
+
+</body>
+</html>

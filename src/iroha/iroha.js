@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.62.20150324
+ *    @version 3.63.20150523
  *    @requires jquery.js (or zepto.js)
  *    @requires underscore.js (or lodash.js)
  */
@@ -2133,7 +2133,7 @@ Iroha.setValue = function(expr, value, obj) {
 		throw new TypeError('Iroha.setValue: first argument type must be string (expr).');
 	} else if (obj !== null) {
 		var props = expr.split('.');
-		obj   = (obj === undefined) ? window : obj
+		    obj   = (obj === undefined) ? window : obj
 		if (props.length == 1) {
 			return (obj[expr] = value);
 		} else {
@@ -2282,7 +2282,8 @@ Iroha.alreadyApplied = function(func) {
 	if (typeof func != 'function') {
 		throw new TypeError('Iroha.alreadyApplied: first argument must be a function object.');
 	} else {
-		return func.__Iroha_alreadyApplied__ || !(func.__Iroha_alreadyApplied__ = true);
+		var stored = '__Iroha_alreadyAapplied__';
+		return func[stored] || !(func[stored] = true);
 	}
 };
 
@@ -2647,10 +2648,10 @@ Iroha.watchFor = function(expr, timeout, base, interval) {
  * @todo Iroha.openWindow にいくつかメソッドがぶら下がっているがドキュメント化できないため構造を検討
  */
 Iroha.openWindow = function(url, target, option) {
-	var _this    = arguments.callee;
-	target   = target || '_blank';
-	option  = $.type(option) == 'string' ? _this.parse(option) : option;
-		option  = $.extend(null, _this.DEF_OPTIONS, option);
+	var _this  = arguments.callee;
+	    target = target || '_blank';
+	    option = $.type(option) == 'string' ? _this.parse(option) : option;
+	    option = $.extend(null, _this.DEF_OPTIONS, option);
 
 	option.width  || delete option.width ;
 	option.height || delete option.height;
@@ -2801,23 +2802,20 @@ $.extend(Iroha.openWindow,
  */
 Iroha.addUserAgentCName = function() {
 	var cnames  = [];
-	var ua      = $.extend(null, this.ua);  // オブジェクト参照切断しつつコピー
+	var prefix  = 'iroha-ua-';
+	var ua      = _.clone(this.ua);
 	var mbVers  = String(ua.mbVersion).replace(/\./g, '_');
-	    mbVers += Iroha.String(mbVers).contains('_') ? '' : '_0';
+	    mbVers += /_/.test(mbVers) ? '' : '_0';
 
 	delete ua.isWebkit;
 	delete ua.isDOMReady;
 
-	$.each(ua, function(key, bool) { bool === true && cnames.push('iroha-ua-' + key) });
-	ua.isIE      && cnames.push('iroha-ua-isIE'      + ua.version);
-	ua.isiOS     && cnames.push('iroha-ua-isiOS'     + mbVers);
-	ua.isAndroid && cnames.push('iroha-ua-isAndroid' + mbVers);
+	$.each(ua, function(key, bool) { bool === true && cnames.push(prefix + key) });
+	ua.isIE      && cnames.push(prefix + 'isIE'      + ua.version);
+	ua.isiOS     && cnames.push(prefix + 'isiOS'     + mbVers);
+	ua.isAndroid && cnames.push(prefix + 'isAndroid' + mbVers);
 
-//	// onload で即座に実行すると古い IE でスピードダウンする現象を軽減するために delay しつつ適用
-//  // …するのはヤメた！
-//	Iroha.delay(1).done(function() { $(document.body).addClass(cnames.join(' ')) });
 	$(document.body).addClass(cnames.sort().join(' '));
-
 	return this;
 };
 
@@ -3030,6 +3028,20 @@ Iroha.delay = function(delay, aThisObject) {
 
 
 
+/* --------------- Function : Iroha.template --------------- */
+/**
+ * Underscore.js の _.template() の Wrapper。テンプレ文字列で Mustache スタイル {{ hoge }} を使う形。
+ * @param {string} templateString    Mustache スタイル {{ hoge }} を含むテンプレ文字列
+ * @param {Object} settings          _.template の第2引数と同じもの。
+ * @return {Function} _.template() の返値と同様。関数オブジェクト。
+ */
+Iroha.template = function(templateString, settings) {
+	settings = _.extend({ interpolate : /\{\{(.+?)\}\}/g }, settings);
+	return _.template(templateString, settings);
+};
+
+
+
 /* --------------- Function : Iroha.injectWeinre --------------- */
 /**
  * Weinre をつかってインスペクトを始める（そのための外部 JS を非同期で注入する）。
@@ -3044,15 +3056,15 @@ Iroha.injectWeinre = function(ident, base) {
 	var args  = arguments;
 	var self  = args.callee;
 	var param = {
-		  base  : base  || _.template('//{{lh}}:8080')({ lh : location.hostname })
+		  base  : base  || Iroha.template('//{{lh}}:8080')({ lh : location.hostname })
 		, ident : ident || 'anonymous'
 	};
-	var src = _.template('{{base}}/target/target-script-min.js#{{ident}}')(param);
+	var src = Iroha.template('{{base}}/target/target-script-min.js#{{ident}}')(param);
 	var id  = self.SCRIPT_ID_PREFIX + param.ident;
 
 	if (!document.getElementById(id)) {
 		!Iroha.env.isDOMReady
-			? document.write(_.template('<script src="{{src}}" id="{{id}}"></scr' + 'ipt>')({ src : src, id : id }))
+			? document.write(Iroha.template('<script src="{{src}}" id="{{id}}"></scr' + 'ipt>')({ src : src, id : id }))
 			: (function(node) {
 				node.setAttribute('src', src);
 				node.setAttribute('id' , id );
@@ -3359,12 +3371,6 @@ $.fn.getBoundingClientRect = $.fn.getBoundingClientRect || $.fn.Iroha_getBoundin
 		}
 	});
 }();
-
-
-
-/* -------------------- Underscore : templateSettings -------------------- */
-
-_.templateSettings = { interpolate : /\{\{(.+?)\}\}/g };
 
 
 
