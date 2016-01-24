@@ -5,7 +5,7 @@
  *       Iroha - Necomesi JSLib : Base Script
  *       (charset : "UTF-8")
  *
- *    @version 3.63.20150523
+ *    @version 3.64.20160102
  *    @requires jquery.js (or zepto.js)
  *    @requires underscore.js (or lodash.js)
  */
@@ -861,9 +861,9 @@ $.extend(Iroha.String,
 	 * @return {Iroha.String} 作成したランダム文字列を保持している Iroha.String インスタンス
 	 */
 	random : function(num, chars) {
-		num   = (num > 0) ? num : 24;
-		chars = ($.type(chars) == 'string') ? chars : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		var ret   = '';
+		num   = Math.max(0, num) || 24;
+		chars = _.isString(chars) ? chars : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		var ret = '';
 		while (num--) {
 			ret += chars.split('')[Math.floor(Math.random() * chars.length)]
 		}
@@ -871,13 +871,19 @@ $.extend(Iroha.String,
 	},
 
 	/**
-	 * グローバル一意識別子を得る。
-	 * @return {Iroha.String} 作成したグローバル一意識別子を保持している Iroha.String インスタンス
+	 * @deprecated {@link Iroha.String.uuid} に名称変更しました。
+	 * @see Iroha.String.uuid
 	 */
-	guid : function() {
+	guid : function() { return this.uuid() }
+
+	/**
+	 * 汎用一意識別子 (UUID; Universally Unique Identifier) を得る。
+	 * @return {string}
+	 */
+	uuid : function() {
 		var chars = '0123456789ABCDEF';
-		var arr   = [ 8, 4, 4, 4, 12 ].map(function(n) { return this.random(n, chars).get() }, this);
-		return (new this('${0}-${1}-${2}-${3}-${4}')).format(arr);
+		var arr   = [ 8, 4, 4, 4, 12 ].map(function(n) { return this.random(n, chars) }, this);
+		return new this(arr.join('-'));
 	},
 
 	/**
